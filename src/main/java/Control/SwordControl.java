@@ -19,9 +19,9 @@ import org.swordapp.client.UriRegistry;
 import java.io.FileInputStream;
 import java.util.List;
 import org.swordapp.client.SWORDWorkspace;
-import Entidades.Coleccion;
-import Entidades.FicheroSimple;
-import Entidades.MetadataSimple;
+import Modelo.Coleccion;
+import Modelo.Fichero;
+import Modelo.MetadataSimple;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -302,7 +302,7 @@ public final class SwordControl {
             return;
         }
 
-        fichero = ((FicheroSimple) FicheroControl.getInstancia().getListaFicheros().get(0)).getUnFile();
+        fichero = ((Fichero) FicheroControl.getInstancia().getListaFicheros().get(0)).getUnFile();
 
         Deposit deposit = new Deposit();
         deposit.setInProgress(true);
@@ -358,7 +358,7 @@ public final class SwordControl {
 
         File fichero = null;
         String aFormat = null;
-        DefaultListModel<FicheroSimple> archivos;
+        DefaultListModel<Fichero> archivos;
 
         StardogControl stdog = StardogControl.getInstancia();
         aFormat = stdog.isExistsFormat();
@@ -377,7 +377,7 @@ public final class SwordControl {
         nep = setearMetadatos();
 
         for (int i = 0; i < archivos.size(); ++i) {
-            fichero = ((FicheroSimple) archivos.get(0)).getUnFile();
+            fichero = ((Fichero) archivos.get(0)).getUnFile();
 
             Deposit deposit = new Deposit();
             deposit.setInProgress(true);

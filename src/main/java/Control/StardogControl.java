@@ -19,7 +19,7 @@ import org.openrdf.model.IRI;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQueryResult;
 
-import Entidades.MetadataSimple;
+import Modelo.MetadataSimple;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Dimension;

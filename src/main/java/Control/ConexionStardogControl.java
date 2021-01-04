@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.Vector;
+import sun.security.x509.AttributeNameEnumeration;
 
 /**
  *
@@ -24,6 +26,9 @@ public final class ConexionStardogControl {
     private String pass = "";
     private String url = "";
 
+    private Integer nroURL = 0;
+    private Vector<String> servidores = new Vector<>();
+    
     static ConexionStardogControl instancia = null;
 
     Properties properties = null;
@@ -32,6 +37,7 @@ public final class ConexionStardogControl {
 
     protected ConexionStardogControl() throws IOException, Exception {
         this.conectorProperty();
+        this.setUpRead();
     }
 
     public static ConexionStardogControl getInstancia() throws Exception {
@@ -55,12 +61,18 @@ public final class ConexionStardogControl {
      *
      * @throws Exception
      */
-    public void setUpRead() throws Exception {
+    private void setUpRead() throws Exception {
+        this.servidores.removeAllElements();
+        this.nroURL = Integer.parseInt(properties.getProperty("nroURL").trim());
+        for(int i=1;i<=this.nroURL;i++){
+            servidores.addElement(properties.getProperty("urlOnto"+"_"+String.valueOf(i).trim()).trim());
+        }
         this.to = properties.getProperty("to").trim();
         this.user = properties.getProperty("userOnto").trim();
         //el pass no se debe recuperar.
         //this.pass = properties.getProperty("passOnto").trim();
         this.url = properties.getProperty("urlOnto").trim();
+        this.pass = properties.getProperty("passOnto").trim();
     }
 
     /**
@@ -87,19 +99,7 @@ public final class ConexionStardogControl {
             properties.store(output, "datos conexion Sword v2");
         }
     }
-
-    private void setUpSave_viejo(String aTo, String aUrl, String aUser, String aPass) throws Exception {
-        properties.setProperty("to", aTo);
-        properties.setProperty("urlOnto", aUrl);
-        properties.setProperty("userOnto", aUser);
-        //properties.setProperty("passOnto", aPass);
-        File file = new File("src/main/java/propiedades/configStardog.properties");
-        if (file.exists()) {
-            output = new FileOutputStream(file.getAbsoluteFile());
-            properties.store(output, "datos conexion Sword v2");
-        }
-    }
-
+    
     public String getTo() {
         return to;
     }
@@ -130,6 +130,10 @@ public final class ConexionStardogControl {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Vector<String> getServidores() {
+        return servidores;
     }
 
 }

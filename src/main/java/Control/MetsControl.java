@@ -5,9 +5,9 @@
  */
 package Control;
 
-import Entidades.MetsXml;
-import Entidades.FicheroSimple;
-import Entidades.MetadataSimple;
+import Modelo.MetsXml;
+import Modelo.Fichero;
+import Modelo.MetadataSimple;
 import edu.harvard.hul.ois.mets.helper.MetsException;
 import java.awt.Component;
 import java.io.File;
@@ -138,7 +138,7 @@ public class MetsControl {
         java.io.File outfile = null;
 
         // agregamos los objetos de aprendizaje al zip - el ultimo argumento es si "is Primary Bitstream".
-        DefaultListModel<FicheroSimple> aFiles = ficheros.getListaFicheros();
+        DefaultListModel<Fichero> aFiles = ficheros.getListaFicheros();
         //System.out.println("tamaño de los archivos" + aFiles.size());
         for (int i = 0; i < aFiles.size(); ++i) {
             File unArchivo = aFiles.get(i).getUnFile();
@@ -201,7 +201,7 @@ public class MetsControl {
         //variable del archivo de salida.
         java.io.File outfile = null;
         // agregamos los objetos de aprendizaje al zip - el ultimo argumento es si "is Primary Bitstream".
-        DefaultListModel<FicheroSimple> aFiles = ficheros.getListaFicheros();
+        DefaultListModel<Fichero> aFiles = ficheros.getListaFicheros();
         for (int i = 0; i < aFiles.size(); ++i) {
             File unArchivo = aFiles.get(i).getUnFile();
             String aAbsoluto = aFiles.get(i).getUnFile().getAbsolutePath();

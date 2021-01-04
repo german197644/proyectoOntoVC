@@ -5,7 +5,7 @@
  */
 package Control;
 
-import Entidades.FicheroSimple;
+import Modelo.Fichero;
 import edu.harvard.hul.ois.mets.helper.MetsException;
 import java.awt.Component;
 import java.awt.HeadlessException;
@@ -25,7 +25,7 @@ public class FicheroControl {
     //Creamos el objeto JFileChooser
     JFileChooser fileChooser = new JFileChooser(".");
     //Contenedor de los ficheros seleccionados
-    DefaultListModel<FicheroSimple> listaFicheros = new DefaultListModel<>();
+    DefaultListModel<Fichero> listaFicheros = new DefaultListModel<>();
     //instancia unica de FicheroControl
     private static FicheroControl instancia = null;
 
@@ -77,7 +77,7 @@ public class FicheroControl {
             if (seleccion == JFileChooser.APPROVE_OPTION) {
                 //Seleccionamos el fichero
                 fichero = fileChooser.getSelectedFile();
-                FicheroSimple f = new FicheroSimple(fichero);
+                Fichero f = new Fichero(fichero);
                 listaFicheros.addElement(f);                
             } else {
                 //Si el usuario pulsa en cancelar o ocurre un error
@@ -157,7 +157,7 @@ public class FicheroControl {
 
     public String visualizarFicheros() {
         String retorno = "";
-        DefaultListModel<FicheroSimple> lista = this.getListaFicheros();
+        DefaultListModel<Fichero> lista = this.getListaFicheros();
         if (lista.size() > 0) {
             retorno += "\n -------------------------------------------------- \n";
         }
