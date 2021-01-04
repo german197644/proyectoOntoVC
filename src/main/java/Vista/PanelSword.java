@@ -240,7 +240,7 @@ public class PanelSword extends javax.swing.JPanel {
         try {            
             repositorio = SwordControl.getInstancia();
             if (repositorio != null) {
-                repositorio.setearVariables();
+                //repositorio.setearVariables();
                 DefaultListModel aComunidades = null;
                 aComunidades = repositorio.getColecciones();
                 if (aComunidades != null) {

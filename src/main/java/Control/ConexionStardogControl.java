@@ -25,8 +25,8 @@ public final class ConexionStardogControl {
     private String user = "";
     private String pass = "";
     private String url = "";
-
     private Integer nroURL = 0;
+    
     private Vector<String> servidores = new Vector<>();
     
     static ConexionStardogControl instancia = null;

@@ -37,10 +37,10 @@ import org.swordapp.client.SwordResponse;
 
 public final class SwordControl {
 
-    String sdIRI = null;
-    String user = null;
-    String pass = null;
-    String obo = null;
+    //String sdIRI = null;
+    //String user = null;
+    //String pass = null;
+    //String obo = null;
     String file = null; //archivo que va a ingerir.
     String fileMd5 = null; //verifica que el archivo no haya sido modificado.
     //this.file  = "/home/richard/Code/External/JavaClient2.0/src/test/resources/example.zip";   
@@ -50,12 +50,16 @@ public final class SwordControl {
     private static SwordControl instancia = null;
     ServiceDocument sd;
     private static final SWORDClient client = new SWORDClient(new ClientConfiguration());
-
+    
+    LoginControl login = LoginControl.getInstancia(); 
+    
     protected SwordControl() throws Exception {
-        this.setearVariables();
-        this.getServiceDocument();
+        //this.setearVariables();
+        //this.getServiceDocument();
+        this.sd = login.getSd();
     }
 
+    /*
     public void setearVariables() throws IOException {
         ConexionSwordControl dd = ConexionSwordControl.getInstancia();
         this.sdIRI = dd.getSdIRI().trim();
@@ -63,6 +67,7 @@ public final class SwordControl {
         this.pass = dd.getPass().trim();
         this.obo = dd.getObo().trim();
     }
+    */
 
     /**
      * Retorno una instancia unica de la clase.
@@ -77,17 +82,19 @@ public final class SwordControl {
         return instancia;
     }
 
+    /*    
     public void getServiceDocument() throws Exception {
         this.sd = client.getServiceDocument(this.sdIRI.trim(),
                 new AuthCredentials(this.user.trim(), this.pass.trim()));
     }
+    */
 
     public DefaultListModel getColecciones() throws Exception {
         DefaultListModel<Coleccion> colecciones = new DefaultListModel<>();
 
         //conectamos y traemos el service document.
-        this.sd = client.getServiceDocument(this.sdIRI,
-                new AuthCredentials(this.user, this.pass));
+        //this.sd = client.getServiceDocument(this.sdIRI,
+        //        new AuthCredentials(this.user, this.pass));
 
         //assertTrue(sd.getService() != null);
         //assertEquals(sd.getVersion(), "2.0");
@@ -114,44 +121,14 @@ public final class SwordControl {
      */
     public void getServiceDocumentOBO()
             throws Exception {
-        this.sd = client.getServiceDocument(this.sdIRI,
-                new AuthCredentials(this.user, this.pass, this.obo));
+        //this.sd = client.getServiceDocument(this.sdIRI,
+        //        new AuthCredentials(this.user, this.pass, this.obo));
         // verify that the service document contains the sorts of things we are expecting
         assertTrue(sd.getService() != null);
         assertEquals(sd.getVersion(), "2.0");
     }
 
-    public String getSdIRI() {
-        return sdIRI;
-    }
-
-    public void setSdIRI(String sdIRI) {
-        this.sdIRI = sdIRI;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
-
-    public String getObo() {
-        return obo;
-    }
-
-    public void setObo(String obo) {
-        this.obo = obo;
-    }
+   
 
     public String getFile() {
         return file;
@@ -322,7 +299,7 @@ public final class SwordControl {
 
         /*depositamos*/
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(this.user, this.pass));
+                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         /*controlamos*/
         assertEquals(receipt.getStatusCode(), 201);
@@ -333,11 +310,11 @@ public final class SwordControl {
         nep = setearMetadatos();
 
         /*recuperamos anterior y actualizamos*/
-        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(this.user, this.pass));
+        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
         Deposit replacement = new Deposit();
         replacement.setEntryPart(nep);
 
-        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(this.user, this.pass));
+        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         /*controlamos*/
         assertTrue((resp.getStatusCode() == 200) || (resp.getStatusCode() == 204));
@@ -394,15 +371,15 @@ public final class SwordControl {
             assertTrue(deposit.isBinaryOnly());
             /*depositamos*/
             DepositReceipt receipt = client.deposit(aCol, deposit,
-                    new AuthCredentials(this.user, this.pass));
+                    new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
             /*controlamos*/
             assertEquals(receipt.getStatusCode(), 201);
             assertTrue(receipt.getLocation() != null);
             /*recuperamos anterior y actualizamos*/
-            receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(this.user, this.pass));
+            receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
             Deposit replacement = new Deposit();
             replacement.setEntryPart(nep);
-            SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(this.user, this.pass));
+            SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
             /*controlamos*/
             assertTrue((resp.getStatusCode() == 200) || (resp.getStatusCode() == 204));
         }
@@ -441,7 +418,7 @@ public final class SwordControl {
         assertTrue(deposit.isBinaryOnly());
 
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(this.user, this.pass));
+                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         //controlamos        
         assertTrue((receipt.getStatusCode() == 201) && (receipt.getLocation() != null));
@@ -529,14 +506,14 @@ public final class SwordControl {
 
         /*depositamos*/
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(this.user, this.pass));
+                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         /*controlamos*/
         assertEquals(receipt.getStatusCode(), 201);
         assertTrue(receipt.getLocation() != null);
 
         /* enviamos los metadatos */
-        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(this.user, this.pass));
+        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         EntryPart nep = new EntryPart();
 
@@ -547,7 +524,7 @@ public final class SwordControl {
         Deposit replacement = new Deposit();
         replacement.setEntryPart(nep);
 
-        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(this.user, this.pass));
+        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
 
         assertTrue((resp.getStatusCode() == 200 || resp.getStatusCode() == 204));
 
