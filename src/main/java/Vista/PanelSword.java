@@ -248,7 +248,7 @@ public class PanelSword extends javax.swing.JPanel {
                     //habilitamos los botones
                     this.setEnableContainer(panelCentral, true);
                     this.setEnableContainer(this.panelBotones, true);                    
-                    this.listaSD.append(repositorio.outputServiceDocument());
+//                    this.listaSD.append(repositorio.outputServiceDocument());
                     listaSeguimiento.append("Se obtuvo el Service Document "
                             + "de SWORD y las colecciones que componen "
                             + "el repositorio.");

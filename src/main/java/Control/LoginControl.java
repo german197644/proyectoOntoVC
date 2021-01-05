@@ -47,7 +47,7 @@ public class LoginControl {
     private Integer nrourl = 0;   
     private Vector<String> servidores_st = new Vector<>();
   
-    // Variable de conexion a la base de datos
+    // Variable de conexion a la base de datos de Stardog
     private static ReasoningConnection conexionStardog;
     
     //Variables de coneccion de Sword
@@ -61,8 +61,8 @@ public class LoginControl {
             getProperty();
             setup_stardog();
             setup_sword();
-            conectarStardog();
-            ConectarSword();
+            //conectarStardog();
+            //ConectarSword();
         } catch (IOException ex) {
             Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);            
         } catch (Exception ex) {
@@ -81,18 +81,19 @@ public class LoginControl {
      * Este metodo permite la conexión al servidor de StarDog.
      *
      * @throws StardogException
-     * @throws java.lang.Exception
      */
-    private void conectarStardog() throws StardogException {        
+    public void conectarStardog() throws StardogException {        
         conexionStardog = ConnectionConfiguration
                 .to(this.base.trim())
                 .credentials(this.userst.trim(), this.passst.trim())
                 .server(this.url.trim())
                 .reasoning(true)
                 .connect()
-                .as(ReasoningConnection.class);
+                .as(ReasoningConnection.class);        
     }
 
+    
+    
     public static void desconectarServidor()  {
         conexionStardog.close();
     }
@@ -114,7 +115,7 @@ public class LoginControl {
     
     private void setup_stardog() throws IOException {       
         this.servidores_st.removeAllElements();
-        this.nrourl = Integer.parseInt(properties.getProperty("url").trim());
+        this.nrourl = Integer.parseInt(properties.getProperty("nrourl").trim());
         for(int i=1;i<=this.nrourl;i++){
             servidores_st.addElement(properties.getProperty("url"+"_"+String.valueOf(i).trim()).trim());
         }
@@ -129,7 +130,7 @@ public class LoginControl {
         this.servidores_sw.removeAllElements();
         this.nroiri = Integer.parseInt(properties.getProperty("nroiri").trim());
         for(int i=1;i<=this.nroiri;i++){
-            servidores_sw.addElement(properties.getProperty("swsdiri"+"_"+String.valueOf(i).trim()).trim());
+            servidores_sw.addElement(properties.getProperty("iri"+"_"+String.valueOf(i).trim()).trim());
         }
         this.iri = properties.getProperty("iri").trim();
         this.usesw = properties.getProperty("swuser").trim();
@@ -255,11 +256,11 @@ public class LoginControl {
         this.servidores_st = servidores_st;
     }
 
-    public static ReasoningConnection getConexionStardog() {
+    public ReasoningConnection getConexionStardog() {
         return conexionStardog;
     }
 
-    public static void setConexionStardog(ReasoningConnection conexionStardog) {
+    public void setConexionStardog(ReasoningConnection conexionStardog) {
         LoginControl.conexionStardog = conexionStardog;
     }
 

@@ -72,10 +72,12 @@ public final class StardogControl {
     //mensajes de validacion
     String retornoValidacion = null;
     
-    private LoginControl login = LoginControl.getInstancia(); 
+    private LoginControl login = null; 
 
     protected StardogControl() throws Exception {
-        
+        login = LoginControl.getInstancia(); 
+        login.conectarStardog();
+        conexionStardog = login.getConexionStardog();
     }
 
     public static StardogControl getInstancia() throws Exception {
@@ -84,6 +86,44 @@ public final class StardogControl {
         }
         return instancia;
     }
+    
+    
+    /**
+     * metodo usado para devolver los OAs SNRD existentes en la ontología.
+     *
+     * @return lista los tipos de SNRD existentes en la BDatos
+     * @throws StardogException
+     */
+    public DefaultListModel getTiposOA() throws StardogException {
+        DefaultListModel<MetadataSimple> resultado = new DefaultListModel<>();
+        BindingSet fila;
+        TupleQueryResult aResult;
+
+        IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasSnrdType");
+        IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#snrd");
+        SelectQuery aQuery = conexionStardog.select(
+                "SELECT DISTINCT ?tipoSnrd WHERE { "
+                + " ?sujeto ?typeSV ?objeto."
+                + " ?objeto ?typeON ?tipoSnrd."
+                + "}"
+        );
+        aQuery.parameter("typeSV", sv);
+        aQuery.parameter("typeON", on);
+        aResult = aQuery.execute();
+        //System.out.println("ejecutado ....:" );
+        while (aResult.hasNext()) {
+            fila = aResult.next();
+            final String aValue = fila.getValue("tipoSnrd").stringValue();
+            //System.out.println("tipo snrd ....:" + aValue);
+            MetadataSimple m;
+            m = new MetadataSimple(aValue, aValue);
+            resultado.addElement(m);
+        }
+        //System.out.println("dejando SNRD" );
+
+        return resultado;
+    }
+
 
     public DefaultListModel<MetadataSimple> getCapturaMetadados() {
         return capturaMetadados;
@@ -875,43 +915,6 @@ public final class StardogControl {
             }
             resultado.addElement(aux);
         }
-        return resultado;
-    }
-
-    /**
-     * metodo usado para devolver los OAs SNRD existentes en la ontología.
-     *
-     * @return lista los tipos de SNRD existentes en la BDatos
-     * @throws StardogException
-     */
-    public DefaultListModel getTiposOA() throws StardogException {
-        DefaultListModel<MetadataSimple> resultado = new DefaultListModel<>();
-        BindingSet fila;
-        TupleQueryResult aResult;
-        //System.out.println("ssssssssnrd ....:" );
-
-        IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasSnrdType");
-        IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#snrd");
-        SelectQuery aQuery = conexionStardog.select(
-                "SELECT DISTINCT ?tipoSnrd WHERE { "
-                + " ?sujeto ?typeSV ?objeto."
-                + " ?objeto ?typeON ?tipoSnrd."
-                + "}"
-        );
-        aQuery.parameter("typeSV", sv);
-        aQuery.parameter("typeON", on);
-        aResult = aQuery.execute();
-        //System.out.println("ejecutado ....:" );
-        while (aResult.hasNext()) {
-            fila = aResult.next();
-            final String aValue = fila.getValue("tipoSnrd").stringValue();
-            //System.out.println("tipo snrd ....:" + aValue);
-            MetadataSimple m;
-            m = new MetadataSimple(aValue, aValue);
-            resultado.addElement(m);
-        }
-        //System.out.println("dejando SNRD" );
-
         return resultado;
     }
 

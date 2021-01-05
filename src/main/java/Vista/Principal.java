@@ -6,16 +6,16 @@
 package Vista;
 
 import Control.DialogWait;
+import Control.FicheroControl;
 import Control.StardogControl;
 import Control.SwordControl;
 import Modelo.MetadataSimple;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
-import javax.swing.WindowConstants;
 
 /**
  *
@@ -42,35 +42,32 @@ public class Principal extends javax.swing.JFrame {
             SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
                 
                 @Override
-                protected Void doInBackground() throws Exception {
-                    
+                protected Void doInBackground() throws Exception {                    
                     //STARDOG
-                        //stardoginst = StardogControl.getInstancia();
-                    sword = null;
+                    stardog = StardogControl.getInstancia();
                     sword = SwordControl.getInstancia();
                     //...
                     wait.close();
-                    if (sword == null){
-                        System.out.println("nulo");
-                    }
-                    else {
-                        System.out.println("no nulo");
-                    }
                     return null;
                 }
             };
             mySwingWorker.execute();
             wait.makeWait("Conectando...", this);
+            //end            
+            
+            //sword           
+            DefaultListModel colecciones = new DefaultListModel();
+            colecciones = sword.getColecciones();
+            comunidades.removeAll();
+            comunidades.setModel(colecciones);
+            comunidades.updateUI();        
             //end
             
-            //sword
-            DefaultListModel colecc = new DefaultListModel();            
-            colecc = sword.getColecciones();
-            this.comunidades.removeAll();
-            this.comunidades.setModel(colecc);
-            //end
-            
-            //stardog
+            //stardog            
+            DefaultListModel aList = stardog.getTiposOA();
+            System.out.println(aList );                
+            listaOA.setModel(aList);
+            listaOA.updateUI();                                     
             //end 
         } catch (Exception ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,7 +107,15 @@ public class Principal extends javax.swing.JFrame {
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Objetos de Aprendizajes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
-        listaOA.setBackground(new java.awt.Color(240, 240, 240));
+        listaOA.setBackground(new java.awt.Color(255, 153, 51));
+        listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaOAMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                listaOAMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(listaOA);
 
         filtrar.setText("Filtrar metadatos");
@@ -122,7 +127,7 @@ public class Principal extends javax.swing.JFrame {
 
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Metadatos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
-        ListMetadatos.setBackground(new java.awt.Color(240, 240, 240));
+        ListMetadatos.setBackground(new java.awt.Color(255, 153, 51));
         jScrollPane2.setViewportView(ListMetadatos);
 
         captura.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Capturar metadatos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
@@ -143,6 +148,11 @@ public class Principal extends javax.swing.JFrame {
         });
 
         btnSubirFichero.setText("Subir Fichero(s)");
+        btnSubirFichero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubirFicheroActionPerformed(evt);
+            }
+        });
 
         ficheros.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ficheros(s)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
@@ -157,11 +167,6 @@ public class Principal extends javax.swing.JFrame {
 
         comunidades.setBackground(new java.awt.Color(0, 204, 204));
         comunidades.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        comunidades.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5Item 1", "Item 2", "Item 3", "Item 4", "Item 5Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane3.setViewportView(comunidades);
 
         jMenu1.setText("Herramienta");
@@ -197,56 +202,58 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                        .addGap(24, 24, 24))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnSubirFichero, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(2, 2, 2)
+                                .addComponent(btnQuitarF, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(filtrar)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(9, 9, 9)
                                 .addComponent(jButton2))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
-                                        .addComponent(filtrar)
-                                        .addComponent(jScrollPane2))
-                                    .addGap(15, 15, 15)
-                                    .addComponent(captura))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btnSubirFichero, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnQuitarF, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(535, 535, 535))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3)))
+                            .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(ficheros, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSubirFichero)
-                    .addComponent(btnQuitarF))
-                .addGap(14, 14, 14)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(11, 11, 11)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnSubirFichero)
+                            .addComponent(btnQuitarF))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(filtrar)
+                        .addGap(3, 3, 3)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(51, 51, 51))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(captura))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3)
+                            .addComponent(jButton2))
+                        .addContainerGap())))
         );
 
         pack();
@@ -272,7 +279,14 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     private void btnQuitarFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarFActionPerformed
-        // TODO add your handling code here:
+        try {
+            FicheroControl fichero = FicheroControl.getInstancia();
+            if (fichero.getListaFicheros().size() > 0) {            
+                fichero.quitarFichero(listaFicheros.getSelectedIndex());
+            }
+        } catch (Exception ex) {
+        Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }        
     }//GEN-LAST:event_btnQuitarFActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -284,6 +298,35 @@ public class Principal extends javax.swing.JFrame {
         this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
+
+    private void btnSubirFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubirFicheroActionPerformed
+        FicheroControl fichero = FicheroControl.getInstancia();
+        try {
+            fichero.getFileChooser(this);
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        listaFicheros.setModel(fichero.getListaFicheros());
+        listaFicheros.updateUI();
+    }//GEN-LAST:event_btnSubirFicheroActionPerformed
+
+    private void listaOAMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_listaOAMousePressed
+
+    private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+        try {
+            MetadataSimple dato = (MetadataSimple) ((Object) listaOA.getSelectedValue());
+            DefaultListModel datos2;        
+            datos2 = stardog.getMetadatos_v1(dato);       
+            this.ListMetadatos.setModel(datos2);
+            final JPanel aJp = stardog.preSeteoPanelCaptura();
+            captura.getViewport().setView(aJp);
+            captura.updateUI();
+        } catch (Exception ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_listaOAMouseClicked
 
     /**
      * @param args the command line arguments

@@ -41,7 +41,7 @@ public class MetsControl {
      *
      * @throws Exception
      */
-    protected MetsControl() throws Exception {
+    private MetsControl() throws Exception {
         //this.repositorio = RepositorioControl.getInstancia();
         this.ontologia = StardogControl.getInstancia();
         this.ficheros = FicheroControl.getInstancia();

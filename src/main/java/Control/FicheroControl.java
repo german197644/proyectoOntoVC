@@ -6,11 +6,9 @@
 package Control;
 
 import Modelo.Fichero;
-import edu.harvard.hul.ois.mets.helper.MetsException;
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.io.*;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.*;

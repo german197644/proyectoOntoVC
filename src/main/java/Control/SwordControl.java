@@ -8,7 +8,6 @@ package Control;
 import static org.junit.Assert.*;
 
 import org.swordapp.client.AuthCredentials;
-import org.swordapp.client.ClientConfiguration;
 import org.swordapp.client.Deposit;
 import org.swordapp.client.DepositReceipt;
 import org.swordapp.client.SWORDClient;
@@ -37,37 +36,25 @@ import org.swordapp.client.SwordResponse;
 
 public final class SwordControl {
 
-    //String sdIRI = null;
-    //String user = null;
-    //String pass = null;
-    //String obo = null;
-    String file = null; //archivo que va a ingerir.
-    String fileMd5 = null; //verifica que el archivo no haya sido modificado.
-    //this.file  = "/home/richard/Code/External/JavaClient2.0/src/test/resources/example.zip";   
+    private String file = ""; //archivo que va a ingerir.
+    private String fileMd5 = null; //verifica que el archivo no haya sido modificado.
+    
+    //file  = "/home/richard/Code/External/JavaClient2.0/src/test/resources/example.zip";      
     //this.fileMd5  = DigestUtils.md5Hex(new FileInputStream(this.file));
     private final String METS = "http://purl.org/net/sword/package/METSDSpaceSIP";
 
     private static SwordControl instancia = null;
     ServiceDocument sd;
-    private static final SWORDClient client = new SWORDClient(new ClientConfiguration());
+    private SWORDClient client = null;
     
-    LoginControl login = LoginControl.getInstancia(); 
+    private LoginControl login = null; 
     
-    protected SwordControl() throws Exception {
-        //this.setearVariables();
-        //this.getServiceDocument();
+    protected SwordControl() throws Exception {       
+        login = LoginControl.getInstancia();
+        login.ConectarSword();
         this.sd = login.getSd();
+        this.client = login.getClient();
     }
-
-    /*
-    public void setearVariables() throws IOException {
-        ConexionSwordControl dd = ConexionSwordControl.getInstancia();
-        this.sdIRI = dd.getSdIRI().trim();
-        this.user = dd.getUser().trim();
-        this.pass = dd.getPass().trim();
-        this.obo = dd.getObo().trim();
-    }
-    */
 
     /**
      * Retorno una instancia unica de la clase.
@@ -81,13 +68,6 @@ public final class SwordControl {
         }
         return instancia;
     }
-
-    /*    
-    public void getServiceDocument() throws Exception {
-        this.sd = client.getServiceDocument(this.sdIRI.trim(),
-                new AuthCredentials(this.user.trim(), this.pass.trim()));
-    }
-    */
 
     public DefaultListModel getColecciones() throws Exception {
         DefaultListModel<Coleccion> colecciones = new DefaultListModel<>();
@@ -159,6 +139,7 @@ public final class SwordControl {
      *
      * @throws Exception
      */
+    /*
     public String outputServiceDocument()
             throws Exception {
 
@@ -209,6 +190,7 @@ public final class SwordControl {
         }
         return sb;
     }
+    */
 
     //Seteamos los metadatos capturados.
     private EntryPart setearMetadatos() throws Exception {
