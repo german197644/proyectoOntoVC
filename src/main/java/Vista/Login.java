@@ -5,8 +5,7 @@
  */
 package Vista;
 
-import Control.ConexionStardogControl;
-import Control.ConexionSwordControl;
+import Control.LoginControl;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -24,8 +23,7 @@ public class Login extends javax.swing.JDialog {
      * Creates new form Coneccion
      */
       
-    private static ConexionStardogControl connOnto;
-    private static ConexionSwordControl connSW;
+    private LoginControl login = null; 
         
     public Login(java.awt.Frame parent, boolean modal)  {
         super(parent, modal);
@@ -35,24 +33,22 @@ public class Login extends javax.swing.JDialog {
             this.setResizable(false);
             this.setTitle("LogIn");
             
-            //STARDOG
-            connOnto = ConexionStardogControl.getInstancia();
+            login = LoginControl.getInstancia();
+            
+            //STARDOG            
             this.st_url.removeAllItems();
-            this.st_url.setModel(new DefaultComboBoxModel(connOnto.getServidores()));
-            this.st_bd.setText(connOnto.getTo());
-            this.st_usuario.setText(connOnto.getUser());
-            this.st_pass.setText(connOnto.getPass());
+            this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
+            this.st_bd.setText(login.getBase());
+            this.st_usuario.setText(login.getUserst());
+            this.st_pass.setText(login.getPassst());
                         
-            //SWORD
-            connSW = ConexionSwordControl.getInstancia();
+            //SWORD            
             this.sw_url.removeAllItems();
-            this.sw_url.setModel(new DefaultComboBoxModel(connSW.getServidores()));                      
-            this.sw_usuario.setText(connSW.getUser());
-            this.sw_pass.setText(connSW.getPass());
-            this.sw_obo.setText(connSW.getObo());
+            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
+            this.sw_usuario.setText(login.getUsesw());
+            this.sw_pass.setText(login.getPassw());
+            this.sw_obo.setText(login.getObo());
             //...
-        } catch (IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }

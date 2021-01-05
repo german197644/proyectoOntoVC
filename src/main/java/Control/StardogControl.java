@@ -5,7 +5,6 @@
  */
 package Control;
 
-import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.SelectQuery;
 import com.complexible.stardog.api.reasoning.ReasoningConnection;
 import com.complexible.common.rdf.model.Values;
@@ -64,19 +63,19 @@ public final class StardogControl {
     private DefaultListModel<MetadataSimple> capturaMetadados = new DefaultListModel<>();
 
     //Variable de conexion a stardog
-    private static ConexionStardogControl connOnto = null;
+    //private static ConexionStardogControl connOnto = null;
 
     //archivo de configuracion configMetadatas.properties
-    Properties properties;
+    Properties properties = new Properties();
     InputStream propertiesStream;
 
     //mensajes de validacion
     String retornoValidacion = null;
+    
+    private LoginControl login = LoginControl.getInstancia(); 
 
     protected StardogControl() throws Exception {
-        StardogControl.conectarServidor();
-        properties = new Properties();
-        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        
     }
 
     public static StardogControl getInstancia() throws Exception {
@@ -84,27 +83,6 @@ public final class StardogControl {
             instancia = new StardogControl();
         }
         return instancia;
-    }
-
-    /**
-     * Este metodo permite la conexión al servidor de StarDog.
-     *
-     * @throws StardogException
-     * @throws java.lang.Exception
-     */
-    public static void conectarServidor() throws StardogException, Exception {
-        connOnto = ConexionStardogControl.getInstancia();
-        conexionStardog = ConnectionConfiguration
-                .to(connOnto.getTo().trim())
-                .credentials(connOnto.getUser().trim(), connOnto.getPass().trim())
-                .server(connOnto.getUrl().trim())
-                .reasoning(true)
-                .connect()
-                .as(ReasoningConnection.class);
-    }
-
-    public static void desconectarServidor() throws StardogException {
-        conexionStardog.close();
     }
 
     public DefaultListModel<MetadataSimple> getCapturaMetadados() {

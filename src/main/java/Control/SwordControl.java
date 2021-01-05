@@ -299,7 +299,7 @@ public final class SwordControl {
 
         /*depositamos*/
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+                new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         /*controlamos*/
         assertEquals(receipt.getStatusCode(), 201);
@@ -310,11 +310,11 @@ public final class SwordControl {
         nep = setearMetadatos();
 
         /*recuperamos anterior y actualizamos*/
-        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUsesw(), login.getPassw()));
         Deposit replacement = new Deposit();
         replacement.setEntryPart(nep);
 
-        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         /*controlamos*/
         assertTrue((resp.getStatusCode() == 200) || (resp.getStatusCode() == 204));
@@ -371,15 +371,15 @@ public final class SwordControl {
             assertTrue(deposit.isBinaryOnly());
             /*depositamos*/
             DepositReceipt receipt = client.deposit(aCol, deposit,
-                    new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+                    new AuthCredentials(login.getUsesw(), login.getPassw()));
             /*controlamos*/
             assertEquals(receipt.getStatusCode(), 201);
             assertTrue(receipt.getLocation() != null);
             /*recuperamos anterior y actualizamos*/
-            receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+            receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUsesw(), login.getPassw()));
             Deposit replacement = new Deposit();
             replacement.setEntryPart(nep);
-            SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+            SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUsesw(), login.getPassw()));
             /*controlamos*/
             assertTrue((resp.getStatusCode() == 200) || (resp.getStatusCode() == 204));
         }
@@ -418,7 +418,7 @@ public final class SwordControl {
         assertTrue(deposit.isBinaryOnly());
 
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+                new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         //controlamos        
         assertTrue((receipt.getStatusCode() == 201) && (receipt.getLocation() != null));
@@ -506,14 +506,14 @@ public final class SwordControl {
 
         /*depositamos*/
         DepositReceipt receipt = client.deposit(aCol, deposit,
-                new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+                new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         /*controlamos*/
         assertEquals(receipt.getStatusCode(), 201);
         assertTrue(receipt.getLocation() != null);
 
         /* enviamos los metadatos */
-        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+        receipt = client.getDepositReceipt(receipt.getLocation(), new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         EntryPart nep = new EntryPart();
 
@@ -524,7 +524,7 @@ public final class SwordControl {
         Deposit replacement = new Deposit();
         replacement.setEntryPart(nep);
 
-        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUser_sw(), login.getPass_sw()));
+        SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUsesw(), login.getPassw()));
 
         assertTrue((resp.getStatusCode() == 200 || resp.getStatusCode() == 204));
 

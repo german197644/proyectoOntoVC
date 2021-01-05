@@ -7,7 +7,7 @@ package Control;
 
 /**
  *
- * @author germa
+ * @author Pogliani, german
  */
 import com.complexible.stardog.StardogException;
 import com.complexible.stardog.api.ConnectionConfiguration;
@@ -25,26 +25,26 @@ import org.swordapp.client.ClientConfiguration;
 import org.swordapp.client.SWORDClient;
 import org.swordapp.client.ServiceDocument;
 
-public final class LoginControl {
+public class LoginControl {
     
     Properties properties = null;
     InputStream propertiesStream = null;
     OutputStream output = null;
     
     // Sword - variables de seteo
-    int nroiri_sw = 0;
-    private String sdiri_sw = "";
-    private String user_sw = "";
-    private String pass_sw = "";
+    private int nroiri = 0;
+    private String iri = "";
+    private String usesw = "";
+    private String passw = "";
     private String obo = "";    
     private Vector<String> servidores_sw = new Vector<>();    
     
     // StarDog - variables de seteo
     private String base = "";
-    private String user_st = "";
-    private String pass_st = "";
-    private String url_st = "";
-    private Integer nrourl_st = 0;   
+    private String userst = "";
+    private String passst = "";
+    private String url = "";
+    private Integer nrourl = 0;   
     private Vector<String> servidores_st = new Vector<>();
   
     // Variable de conexion a la base de datos
@@ -56,7 +56,7 @@ public final class LoginControl {
 
     private static LoginControl instancia = null;
     
-    public LoginControl() {
+    private LoginControl() {
         try {
             getProperty();
             setup_stardog();
@@ -70,7 +70,7 @@ public final class LoginControl {
         }
     }
     
-    public static LoginControl getInstancia() throws IOException {
+    public static synchronized LoginControl getInstancia() throws IOException {
         if (instancia == null) {
             instancia = new LoginControl();
         }
@@ -86,8 +86,8 @@ public final class LoginControl {
     private void conectarStardog() throws StardogException {        
         conexionStardog = ConnectionConfiguration
                 .to(this.base.trim())
-                .credentials(this.user_st.trim(), this.pass_st.trim())
-                .server(this.url_st.trim())
+                .credentials(this.userst.trim(), this.passst.trim())
+                .server(this.url.trim())
                 .reasoning(true)
                 .connect()
                 .as(ReasoningConnection.class);
@@ -100,8 +100,8 @@ public final class LoginControl {
     public void ConectarSword() throws Exception {
         client = null; sd = null;
         client = new SWORDClient(new ClientConfiguration());
-        sd = client.getServiceDocument(sdiri_sw.trim(),
-                new AuthCredentials(user_sw.trim(), pass_sw.trim()));
+        sd = client.getServiceDocument(iri.trim(),
+                new AuthCredentials(usesw.trim(), passw.trim()));
     }
     
     
@@ -114,26 +114,26 @@ public final class LoginControl {
     
     private void setup_stardog() throws IOException {       
         this.servidores_st.removeAllElements();
-        this.nrourl_st = Integer.parseInt(properties.getProperty("sturl").trim());
-        for(int i=1;i<=this.nrourl_st;i++){
-            servidores_st.addElement(properties.getProperty("sturl"+"_"+String.valueOf(i).trim()).trim());
+        this.nrourl = Integer.parseInt(properties.getProperty("url").trim());
+        for(int i=1;i<=this.nrourl;i++){
+            servidores_st.addElement(properties.getProperty("url"+"_"+String.valueOf(i).trim()).trim());
         }
-        this.url_st = properties.getProperty("sturl").trim();
-        this.user_st = properties.getProperty("stuser").trim();
-        this.pass_st = properties.getProperty("stpass").trim();
+        this.url = properties.getProperty("url").trim();
+        this.userst = properties.getProperty("stuser").trim();
+        this.passst = properties.getProperty("stpass").trim();
         this.base = properties.getProperty("base").trim();
     }
  
     
     private void setup_sword() throws IOException {
         this.servidores_sw.removeAllElements();
-        this.nroiri_sw = Integer.parseInt(properties.getProperty("swnroiri").trim());
-        for(int i=1;i<=this.nroiri_sw;i++){
+        this.nroiri = Integer.parseInt(properties.getProperty("nroiri").trim());
+        for(int i=1;i<=this.nroiri;i++){
             servidores_sw.addElement(properties.getProperty("swsdiri"+"_"+String.valueOf(i).trim()).trim());
         }
-        this.sdiri_sw = properties.getProperty("swsdiri").trim();
-        this.user_sw = properties.getProperty("swuser").trim();
-        this.pass_sw = properties.getProperty("swpass").trim();
+        this.iri = properties.getProperty("iri").trim();
+        this.usesw = properties.getProperty("swuser").trim();
+        this.passw = properties.getProperty("swpass").trim();
         this.obo = properties.getProperty("obo").trim();
     }
     
@@ -160,35 +160,35 @@ public final class LoginControl {
     }
 
     public int getNroiri_sw() {
-        return nroiri_sw;
+        return nroiri;
     }
 
     public void setNroiri_sw(int nroiri_sw) {
-        this.nroiri_sw = nroiri_sw;
+        this.nroiri = nroiri_sw;
     }
 
-    public String getSdiri_sw() {
-        return sdiri_sw;
+    public String getIri() {
+        return iri;
     }
 
-    public void setSdiri_sw(String sdiri_sw) {
-        this.sdiri_sw = sdiri_sw;
+    public void setIri(String iri) {
+        this.iri = iri;
     }
 
-    public String getUser_sw() {
-        return user_sw;
+    public String getUsesw() {
+        return usesw;
     }
 
-    public void setUser_sw(String user_sw) {
-        this.user_sw = user_sw;
+    public void setUsesw(String usesw) {
+        this.usesw = usesw;
     }
 
-    public String getPass_sw() {
-        return pass_sw;
+    public String getPassw() {
+        return passw;
     }
 
-    public void setPass_sw(String pass_sw) {
-        this.pass_sw = pass_sw;
+    public void setPassw(String passw) {
+        this.passw = passw;
     }
 
     public String getObo() {
@@ -215,36 +215,36 @@ public final class LoginControl {
         this.base = base;
     }
 
-    public String getUser_st() {
-        return user_st;
+    public String getUserst() {
+        return userst;
     }
 
-    public void setUser_st(String user_st) {
-        this.user_st = user_st;
+    public void setUserst(String userst) {
+        this.userst = userst;
     }
 
-    public String getPass_st() {
-        return pass_st;
+    public String getPassst() {
+        return passst;
     }
 
-    public void setPass_st(String pass_st) {
-        this.pass_st = pass_st;
+    public void setPassst(String passst) {
+        this.passst = passst;
     }
 
     public String getUrl_st() {
-        return url_st;
+        return url;
     }
 
     public void setUrl_st(String url_st) {
-        this.url_st = url_st;
+        this.url = url_st;
     }
 
     public Integer getNrourl_st() {
-        return nrourl_st;
+        return nrourl;
     }
 
     public void setNrourl_st(Integer nrourl_st) {
-        this.nrourl_st = nrourl_st;
+        this.nrourl = nrourl_st;
     }
 
     public Vector<String> getServidores_st() {
@@ -277,7 +277,6 @@ public final class LoginControl {
 
     public void setClient(SWORDClient client) {
         this.client = client;
-    }
-    
+    }    
     
 } //fin
