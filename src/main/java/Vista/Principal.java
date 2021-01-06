@@ -85,7 +85,6 @@ public class Principal extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         listaOA = new javax.swing.JList<>();
-        filtrar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         ListMetadatos = new javax.swing.JList<>();
         captura = new javax.swing.JScrollPane();
@@ -102,12 +101,13 @@ public class Principal extends javax.swing.JFrame {
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Objetos de Aprendizajes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
-        listaOA.setBackground(new java.awt.Color(255, 153, 51));
         listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaOAMouseClicked(evt);
@@ -118,16 +118,8 @@ public class Principal extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(listaOA);
 
-        filtrar.setText("Filtrar metadatos");
-        filtrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filtrarActionPerformed(evt);
-            }
-        });
-
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Metadatos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
-        ListMetadatos.setBackground(new java.awt.Color(255, 153, 51));
         jScrollPane2.setViewportView(ListMetadatos);
 
         captura.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Capturar metadatos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
@@ -147,7 +139,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        btnSubirFichero.setText("Subir Fichero(s)");
+        btnSubirFichero.setText("Seleccionar Fichero");
         btnSubirFichero.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSubirFicheroActionPerformed(evt);
@@ -156,7 +148,6 @@ public class Principal extends javax.swing.JFrame {
 
         ficheros.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ficheros(s)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
-        listaFicheros.setBackground(new java.awt.Color(240, 240, 240));
         listaFicheros.setToolTipText("");
         listaFicheros.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         ficheros.setViewportView(listaFicheros);
@@ -165,7 +156,6 @@ public class Principal extends javax.swing.JFrame {
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Comunidades"));
 
-        comunidades.setBackground(new java.awt.Color(0, 204, 204));
         comunidades.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane3.setViewportView(comunidades);
 
@@ -192,6 +182,13 @@ public class Principal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
+        jMenu2.setText("jMenu2");
+
+        jMenuItem1.setText("jMenuItem1");
+        jMenu2.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu2);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -202,81 +199,58 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
-                        .addGap(24, 24, 24))
+                        .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnSubirFichero, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(2, 2, 2)
-                                .addComponent(btnQuitarF, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(filtrar)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(65, 65, 65)
+                                .addComponent(jButton3))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(9, 9, 9)
+                                .addComponent(btnSubirFichero, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(147, 147, 147)
+                                .addComponent(btnQuitarF, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
                                 .addComponent(jButton2))
-                            .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(25, 25, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ficheros, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(ficheros, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnSubirFichero)
                             .addComponent(btnQuitarF))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filtrar)
-                        .addGap(3, 3, 3)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(51, 51, 51))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(22, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(captura, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton3)
                             .addComponent(jButton2))
-                        .addContainerGap())))
+                        .addGap(29, 29, 29))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtrarActionPerformed
-        try {
-            MetadataSimple dato = (MetadataSimple) ((Object) listaOA.getSelectedValue());
-            DefaultListModel datos2 = stardog.getMetadatos_v1(dato);
-            this.ListMetadatos.setModel(datos2);
-            final JPanel aJp = stardog.preSeteoPanelCaptura();
-            captura.getViewport().setView(aJp);
-            captura.updateUI();
-        } catch (Exception ex) {
-        }
-    }//GEN-LAST:event_filtrarActionPerformed
-
-    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        Login conectar = new Login(this, rootPaneCheckingEnabled);
-        conectar.setVisible(true);
-        conectar.setResizable(false);
-    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     private void btnQuitarFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarFActionPerformed
         try {
@@ -296,7 +270,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jCheckBoxMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem2ActionPerformed
         this.setVisible(false);
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
 
     private void btnSubirFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubirFicheroActionPerformed
@@ -327,6 +301,13 @@ public class Principal extends javax.swing.JFrame {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_listaOAMouseClicked
+
+    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        Login conectar = new Login(this, rootPaneCheckingEnabled);
+        conectar.setVisible(true);
+        conectar.setResizable(false);
+    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -370,13 +351,14 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane captura;
     private javax.swing.JList<String> comunidades;
     private javax.swing.JScrollPane ficheros;
-    private javax.swing.JButton filtrar;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

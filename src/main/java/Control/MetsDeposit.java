@@ -74,7 +74,6 @@ public class MetsDeposit {
             deposit.setPackaging(this.METS);
             deposit.setMd5(this.fileMd5);
             
-
             DepositReceipt receipt = client.deposit(col, deposit, new AuthCredentials(this.user, this.pass));
             assertEquals(receipt.getStatusCode(), 201);
             assertTrue(receipt.getLocation() != null);

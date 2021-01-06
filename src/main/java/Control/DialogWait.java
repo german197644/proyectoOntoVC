@@ -27,7 +27,7 @@ public class DialogWait {
         
         Window win = SwingUtilities.getWindowAncestor(evt);
         dialog = new JDialog(win, msg, Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setTitle("Conectando...");
+        dialog.setTitle("Conectando...");        
         
         JProgressBar progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);

@@ -87,6 +87,8 @@ public class Login extends javax.swing.JDialog {
         btn_cancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "STARDOG", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
         cont_stardog.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -141,6 +143,8 @@ public class Login extends javax.swing.JDialog {
         cont_stardog.add(st_bd, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 480, 30));
         cont_stardog.add(st_pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 210, 30));
 
+        getContentPane().add(cont_stardog, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 570, 190));
+
         cont_sw.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SWORD", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
         cont_sw.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -194,10 +198,11 @@ public class Login extends javax.swing.JDialog {
         });
         cont_sw.add(sw_otro, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, 480, 30));
 
+        getContentPane().add(cont_sw, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 570, 180));
+
         jButton2.setText("Aceptar y conectar");
 
         btn_cancelar.setText("Cancelar");
-        btn_cancelar.setActionCommand("Cancelar");
         btn_cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_cancelarActionPerformed(evt);
@@ -209,11 +214,11 @@ public class Login extends javax.swing.JDialog {
         panel1Layout.setHorizontalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-                .addContainerGap(337, Short.MAX_VALUE)
+                .addContainerGap(319, Short.MAX_VALUE)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(27, 27, 27))
         );
         panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,30 +227,7 @@ public class Login extends javax.swing.JDialog {
                 .addComponent(btn_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cont_stardog, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cont_sw, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(cont_stardog, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(cont_sw, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        getContentPane().add(panel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 380, 580, 40));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
