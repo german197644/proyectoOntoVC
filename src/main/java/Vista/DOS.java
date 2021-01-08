@@ -5,6 +5,13 @@
  */
 package Vista;
 
+import java.awt.Image;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+
 /**
  *
  * @author germa
@@ -13,11 +20,20 @@ public class DOS extends javax.swing.JFrame {
 
     /**
      * Creates new form DOS
-     */
-    public DOS() {
+     */    
+     
+    public DOS() {       
+ 
         initComponents();
-        this.setTitle("Depósito Ontológico Simple.");
-        this.setSize(500, 600);
+        this.setTitle("Depósito Ontológico Simple."); 
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);        
+        this.setVisible(true);   
+        ImageIcon iconMnuSalir  = new ImageIcon(getClass().getResource("/img/exit2.png"));
+        ImageIcon iconMnuconectar  = new ImageIcon(getClass().getResource("/img/config.png"));
+        iconMnuconectar = new ImageIcon(iconMnuconectar.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT));
+        iconMnuSalir = new ImageIcon(iconMnuSalir.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT));
+        mnuConectar.setIcon(iconMnuconectar);
+        mnuSalir.setIcon(iconMnuSalir);                     
     }
 
     /**
@@ -29,27 +45,260 @@ public class DOS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenuItem2 = new javax.swing.JMenuItem();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        panel_superior = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        panel_inferior = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        btnDepositar = new javax.swing.JButton();
+        btnSalir = new javax.swing.JButton();
+        panel_central = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jList3 = new javax.swing.JList<>();
+        jLabel13 = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        jList4 = new javax.swing.JList<>();
+        jPanel8 = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        jLabel12 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel10 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        jPanel11 = new javax.swing.JPanel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        listaColecciones1 = new javax.swing.JList<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        listaRecursos = new javax.swing.JList<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTool = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
         mnuConectar = new javax.swing.JMenuItem();
-
-        jMenuItem2.setText("jMenuItem2");
+        mnuSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        mnuTool.setText("Herramienta");
+        panel_superior.setBackground(new java.awt.Color(0, 153, 204));
+        panel_superior.setLayout(new java.awt.BorderLayout());
 
-        jMenuItem1.setText("Conectar");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        jPanel1.setBackground(new java.awt.Color(0, 153, 204));
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("    ");
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(jLabel1, java.awt.BorderLayout.PAGE_START);
+
+        jLabel2.setText("          ");
+        jPanel1.add(jLabel2, java.awt.BorderLayout.WEST);
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("       ");
+        jPanel1.add(jLabel3, java.awt.BorderLayout.PAGE_END);
+
+        jLabel4.setText("       ");
+        jPanel1.add(jLabel4, java.awt.BorderLayout.LINE_END);
+
+        jLabel14.setFont(new java.awt.Font("Verdana", 0, 24)); // NOI18N
+        jLabel14.setText("Envío de ítems.");
+        jPanel1.add(jLabel14, java.awt.BorderLayout.CENTER);
+
+        panel_superior.add(jPanel1, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(panel_superior, java.awt.BorderLayout.PAGE_START);
+
+        panel_inferior.setBackground(new java.awt.Color(0, 153, 204));
+        panel_inferior.setLayout(new java.awt.BorderLayout());
+
+        jLabel5.setText("   ");
+        panel_inferior.add(jLabel5, java.awt.BorderLayout.LINE_END);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("          ");
+        panel_inferior.add(jLabel6, java.awt.BorderLayout.PAGE_START);
+
+        jLabel7.setText("          ");
+        panel_inferior.add(jLabel7, java.awt.BorderLayout.LINE_START);
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 3)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("          ");
+        panel_inferior.add(jLabel8, java.awt.BorderLayout.PAGE_END);
+
+        jPanel3.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel3.setOpaque(false);
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
+
+        btnDepositar.setBackground(new java.awt.Color(255, 51, 51));
+        btnDepositar.setText("Depositar");
+        jPanel3.add(btnDepositar);
+
+        btnSalir.setBackground(new java.awt.Color(255, 255, 0));
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                btnSalirActionPerformed(evt);
             }
         });
-        mnuTool.add(jMenuItem1);
+        jPanel3.add(btnSalir);
 
-        mnuConectar.setText("Salir");
+        panel_inferior.add(jPanel3, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+
+        panel_central.setLayout(new java.awt.BorderLayout());
+
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setLayout(new java.awt.GridLayout(0, 3, 4, 5));
+        jPanel4.add(jPanel5, java.awt.BorderLayout.PAGE_END);
+
+        jPanel6.setLayout(new java.awt.BorderLayout());
+
+        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("OAs"));
+
+        jList3.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jList3.setMaximumSize(new java.awt.Dimension(60, 80));
+        jList3.setMinimumSize(new java.awt.Dimension(60, 80));
+        jList3.setOpaque(false);
+        jList3.setPreferredSize(new java.awt.Dimension(60, 80));
+        jScrollPane6.setViewportView(jList3);
+
+        jPanel7.add(jScrollPane6);
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
+        jLabel13.setText("                                                                        ");
+        jPanel7.add(jLabel13);
+
+        jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
+
+        jList4.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jList4.setOpaque(false);
+        jScrollPane7.setViewportView(jList4);
+
+        jPanel7.add(jScrollPane7);
+
+        jPanel6.add(jPanel7, java.awt.BorderLayout.WEST);
+
+        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.LINE_AXIS));
+
+        jScrollPane8.setBorder(javax.swing.BorderFactory.createTitledBorder("Describir el ítem"));
+        jPanel8.add(jScrollPane8);
+
+        jPanel6.add(jPanel8, java.awt.BorderLayout.CENTER);
+
+        jPanel4.add(jPanel6, java.awt.BorderLayout.CENTER);
+
+        panel_central.add(jPanel4, java.awt.BorderLayout.CENTER);
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("            ");
+        panel_central.add(jLabel12, java.awt.BorderLayout.PAGE_END);
+
+        jPanel2.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel15.setText("          ");
+        jPanel2.add(jLabel15);
+
+        panel_central.add(jPanel2, java.awt.BorderLayout.WEST);
+
+        jPanel9.setLayout(new java.awt.BorderLayout());
+
+        jPanel12.setLayout(new javax.swing.BoxLayout(jPanel12, javax.swing.BoxLayout.LINE_AXIS));
+
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
+
+        jTextArea2.setColumns(50);
+        jTextArea2.setRows(5);
+        jTextArea2.setOpaque(false);
+        jScrollPane2.setViewportView(jTextArea2);
+
+        jPanel12.add(jScrollPane2);
+
+        jLabel9.setText("    ");
+        jPanel12.add(jLabel9);
+
+        jPanel9.add(jPanel12, java.awt.BorderLayout.CENTER);
+
+        panel_central.add(jPanel9, java.awt.BorderLayout.EAST);
+
+        jPanel10.setLayout(new java.awt.BorderLayout());
+
+        jLabel11.setBackground(new java.awt.Color(204, 255, 204));
+        jLabel11.setText("          ");
+        jLabel11.setOpaque(true);
+        jPanel10.add(jLabel11, java.awt.BorderLayout.LINE_START);
+
+        jPanel11.setLayout(new java.awt.GridLayout(0, 4, 5, 0));
+
+        jScrollPane9.setBorder(javax.swing.BorderFactory.createTitledBorder("Colección"));
+
+        listaColecciones1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaColecciones1.setMaximumSize(new java.awt.Dimension(33, 50));
+        listaColecciones1.setOpaque(false);
+        listaColecciones1.setPreferredSize(new java.awt.Dimension(33, 50));
+        listaColecciones1.setVisibleRowCount(5);
+        jScrollPane9.setViewportView(listaColecciones1);
+
+        jPanel11.add(jScrollPane9);
+
+        jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos"));
+
+        listaRecursos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaRecursos.setOpaque(false);
+        listaRecursos.setVisibleRowCount(5);
+        jScrollPane3.setViewportView(listaRecursos);
+
+        jPanel11.add(jScrollPane3);
+
+        jPanel10.add(jPanel11, java.awt.BorderLayout.CENTER);
+
+        panel_central.add(jPanel10, java.awt.BorderLayout.NORTH);
+
+        getContentPane().add(panel_central, java.awt.BorderLayout.CENTER);
+
+        mnuTool.setText("Herramienta");
+
+        mnuConectar.setText("Conectar");
         mnuConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuConectarActionPerformed(evt);
@@ -57,33 +306,36 @@ public class DOS extends javax.swing.JFrame {
         });
         mnuTool.add(mnuConectar);
 
+        mnuSalir.setText("Salir");
+        mnuSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuSalirActionPerformed(evt);
+            }
+        });
+        mnuTool.add(mnuSalir);
+
         jMenuBar1.add(mnuTool);
 
         setJMenuBar(jMenuBar1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 603, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 431, Short.MAX_VALUE)
-        );
-
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
+    private void mnuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSalirActionPerformed
         this.setVisible(false);
         System.exit(0);
-    }//GEN-LAST:event_mnuConectarActionPerformed
+    }//GEN-LAST:event_mnuSalirActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
         Login login = new Login(this, rootPaneCheckingEnabled);
         login.setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_mnuConectarActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        this.setVisible(false);
+        System.exit(0);
+    }//GEN-LAST:event_btnSalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -96,7 +348,7 @@ public class DOS extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -121,10 +373,52 @@ public class DOS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDepositar;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JList<String> jList3;
+    private javax.swing.JList<String> jList4;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JList<String> listaColecciones1;
+    private javax.swing.JList<String> listaRecursos;
     private javax.swing.JMenuItem mnuConectar;
+    private javax.swing.JMenuItem mnuSalir;
     private javax.swing.JMenu mnuTool;
+    private javax.swing.JPanel panel_central;
+    private javax.swing.JPanel panel_inferior;
+    private javax.swing.JPanel panel_superior;
     // End of variables declaration//GEN-END:variables
 }
