@@ -11,13 +11,9 @@ import org.swordapp.client.SWORDClient;
 import org.swordapp.client.SWORDCollection;
 import org.swordapp.client.ServiceDocument;
 import org.swordapp.client.SwordResponse;
-import org.swordapp.client.UriRegistry;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

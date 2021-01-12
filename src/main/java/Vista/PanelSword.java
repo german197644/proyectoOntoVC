@@ -5,11 +5,11 @@
  */
 package Vista;
 
-import Control.SwordControl;
-import Control.MetsControl;
+import Control.SwordControler;
+import Control.MetsControler;
 import Control.ErrorControl;
-import Control.FicheroControl;
-import Control.StardogControl;
+import Control.FicheroControler;
+import Control.StardogControler;
 import Modelo.Coleccion;
 
 import java.awt.Component;
@@ -27,10 +27,10 @@ import javax.swing.SwingUtilities;
  */
 public class PanelSword extends javax.swing.JPanel {
 
-    SwordControl repositorio;
-    StardogControl stardog;
-    FicheroControl fichero;
-    MetsControl xmlMets;
+    SwordControler repositorio;
+    StardogControler stardog;
+    FicheroControler fichero;
+    MetsControler xmlMets;
 
     /**
      * Creates new form PanelSword2
@@ -208,8 +208,8 @@ public class PanelSword extends javax.swing.JPanel {
     //metadatos.
     private boolean depositoZIP() throws Exception {
         this.viewMsjSeguimiento("\nIniciando depósito zip.");
-        this.repositorio = SwordControl.getInstancia();
-        this.fichero = FicheroControl.getInstancia();
+        this.repositorio = SwordControler.getInstancia();
+        this.fichero = FicheroControler.getInstancia();
         /*generamos el ZIP*/
         final boolean ret = fichero.crearZip(this);
         if (!ret) {
@@ -238,7 +238,7 @@ public class PanelSword extends javax.swing.JPanel {
     private void btnGetSDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetSDActionPerformed
         this.restablecerPanel();
         try {            
-            repositorio = SwordControl.getInstancia();
+            repositorio = SwordControler.getInstancia();
             if (repositorio != null) {
                 //repositorio.setearVariables();
                 DefaultListModel aComunidades = null;
@@ -287,11 +287,11 @@ public class PanelSword extends javax.swing.JPanel {
         
         this.viewMsjSeguimiento("\nIniciando depósito SIP"
                 + "(Submission Information Package).");
-        repositorio = SwordControl.getInstancia();
-        //fichero = FicheroControl.getInstancia();
-        xmlMets = MetsControl.getInstancia();
+        repositorio = SwordControler.getInstancia();
+        //fichero = FicheroControler.getInstancia();
+        xmlMets = MetsControler.getInstancia();
         /*generamos el zip con el mets*/
-        xmlMets.crearMets();        
+        xmlMets.newMETS();        
         this.viewMsjSeguimiento("Archivo Mets generado.");
         /* depositado en el repositorio, en la coleccion... */
         Coleccion col = (Coleccion) ((Object) listaComunidades.getSelectedValue());
@@ -304,9 +304,9 @@ public class PanelSword extends javax.swing.JPanel {
     private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
 
         try {
-            this.stardog = StardogControl.getInstancia();
+            this.stardog = StardogControler.getInstancia();
             String retStardog = this.stardog.visualizarMetadatos();
-            String retFichero = FicheroControl.getInstancia().visualizarFicheros();
+            String retFichero = FicheroControler.getInstancia().visualizarFicheros();
             String valError = this.stardog.validateMetadatos();            
             if ((retStardog.length() == 0) || (retFichero.length() == 0)
                     || (valError.length() > 0)) {
@@ -346,7 +346,7 @@ public class PanelSword extends javax.swing.JPanel {
 
     private void btnSubirFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubirFicheroActionPerformed
         try {
-            fichero = FicheroControl.getInstancia();
+            fichero = FicheroControler.getInstancia();
             fichero.getFileChooser(this);
             listaFicheros.setModel(fichero.getListaFicheros());
             panelCentral.setEnabled(true);
@@ -362,7 +362,7 @@ public class PanelSword extends javax.swing.JPanel {
 
     private void btnQuitarFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarFActionPerformed
         try {
-            fichero = FicheroControl.getInstancia();
+            fichero = FicheroControler.getInstancia();
             if (fichero.getListaFicheros().size() > 0) {
                 fichero.quitarFichero(listaFicheros.getSelectedIndex());
             } else {

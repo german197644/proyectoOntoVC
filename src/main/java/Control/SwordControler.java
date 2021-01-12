@@ -20,12 +20,14 @@ import java.util.List;
 import org.swordapp.client.SWORDWorkspace;
 import Modelo.Coleccion;
 import Modelo.Fichero;
-import Modelo.MetadataSimple;
+import Modelo.Metadato;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.swordapp.client.EntryPart;
@@ -34,7 +36,7 @@ import org.swordapp.client.SWORDClientException;
 import org.swordapp.client.SWORDError;
 import org.swordapp.client.SwordResponse;
 
-public final class SwordControl {
+public final class SwordControler {
 
     private String file = ""; //archivo que va a ingerir.
     private String fileMd5 = null; //verifica que el archivo no haya sido modificado.
@@ -42,15 +44,16 @@ public final class SwordControl {
     //file  = "/home/richard/Code/External/JavaClient2.0/src/test/resources/example.zip";      
     //this.fileMd5  = DigestUtils.md5Hex(new FileInputStream(this.file));
     private final String METS = "http://purl.org/net/sword/package/METSDSpaceSIP";
-
-    private static SwordControl instancia = null;
+    
+    private static SwordControler instancia = null;
+    
     ServiceDocument sd;
     private SWORDClient client = null;
     
-    private LoginControl login = null; 
+    //private LoginControler login = null; 
     
-    protected SwordControl() throws Exception {       
-        login = LoginControl.getInstancia();
+    protected SwordControler() throws Exception {
+        LoginControler login = LoginControler.getInstancia();
         login.ConectarSword();
         this.sd = login.getSd();
         this.client = login.getClient();
@@ -62,9 +65,9 @@ public final class SwordControl {
      * @return instancia
      * @throws java.lang.Exception
      */
-    public static SwordControl getInstancia() throws Exception {
+    public static SwordControler getInstancia() throws Exception {
         if (instancia == null) {
-            instancia = new SwordControl();
+            instancia = new SwordControler();
         }
         return instancia;
     }
@@ -108,28 +111,7 @@ public final class SwordControl {
         assertEquals(sd.getVersion(), "2.0");
     }
 
-   
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
-
-    public String getFileMd5() {
-        return fileMd5;
-    }
-
-    public void setFileMd5(String fileMd5) {
-        this.fileMd5 = fileMd5;
-    }
-
-    public ServiceDocument getSd() {
-        return sd;
-    }
-
+ 
     /**
      * Visualiza el documento de servicio de SWORD.
      *
@@ -139,7 +121,7 @@ public final class SwordControl {
      *
      * @throws Exception
      */
-    /*
+    
     public String outputServiceDocument()
             throws Exception {
 
@@ -190,15 +172,15 @@ public final class SwordControl {
         }
         return sb;
     }
-    */
+    
 
     //Seteamos los metadatos capturados.
     private EntryPart setearMetadatos() throws Exception {
         EntryPart ep = new EntryPart();
-        DefaultListModel<MetadataSimple> captura = new DefaultListModel<>();
-        DublinCoreControl dc = DublinCoreControl.getInstancia();
+        DefaultListModel<Metadato> captura = new DefaultListModel<>();
+        DublinCoreControler dc = DublinCoreControler.getInstancia();
 
-        captura = StardogControl.getInstancia().getCapturaMetadados();
+        captura = StardogControler.getInstancia().getCapturaMetadados();
 
         for (int i = 0; i < captura.size(); ++i) {
             final String metadato = captura.get(i).getTipo();
@@ -239,11 +221,11 @@ public final class SwordControl {
      */
     public void depositoDeFicheroSimple(SWORDCollection aCol, Component parent)
             throws Exception {
-
+        LoginControler login = LoginControler.getInstancia();
         File fichero = null;
         String aFormat = null;
 
-        StardogControl stdog = StardogControl.getInstancia();
+        StardogControler stdog = StardogControler.getInstancia();
         aFormat = stdog.isExistsFormat();
         //System.out.println("aFormat:------------------- " + aFormat);
         if (aFormat == null) {
@@ -255,13 +237,13 @@ public final class SwordControl {
         }
 
         /* seteamos el archivo ZIP que contiene(n) nuestro(s) OA(s) */
-        if (FicheroControl.getInstancia().getListaFicheros().size() != 1) {
+        if (FicheroControler.getInstancia().getListaFicheros().size() != 1) {
             //aValue += "\n |-> Fichero nulo.";
             //aValue += "\n Operación de deposito avanzado sin paquete cancelada.";
             return;
         }
 
-        fichero = ((Fichero) FicheroControl.getInstancia().getListaFicheros().get(0)).getUnFile();
+        fichero = ((Fichero) FicheroControler.getInstancia().getListaFicheros().get(0)).getUnFile();
 
         Deposit deposit = new Deposit();
         deposit.setInProgress(true);
@@ -314,21 +296,21 @@ public final class SwordControl {
      */
     public void depositoDeFicheroSimple_repetitivo(SWORDCollection aCol, Component parent)
             throws Exception {
-
+        LoginControler login = LoginControler.getInstancia();
         File fichero = null;
         String aFormat = null;
         DefaultListModel<Fichero> archivos;
 
-        StardogControl stdog = StardogControl.getInstancia();
+        StardogControler stdog = StardogControler.getInstancia();
         aFormat = stdog.isExistsFormat();
         if (aFormat == null) {
             return;
         }
 
-        if (FicheroControl.getInstancia().getListaFicheros().size() == 0) {
+        if (FicheroControler.getInstancia().getListaFicheros().size() == 0) {
             return;
         } else {
-            archivos = FicheroControl.getInstancia().getListaFicheros();
+            archivos = FicheroControler.getInstancia().getListaFicheros();
         }
 
         /*seteamos los metadatos*/
@@ -368,7 +350,7 @@ public final class SwordControl {
     }
 
     /**
-     * Simula multiPart. Deposita el ZIP mas mets.xml
+     * Deposita el ZIP mas mets.xml
      *
      * @param aCol Coleccion a la que se le manda el archivo zip.
      * @param parent sobre que ventana mostramos las ventana de error.
@@ -376,10 +358,10 @@ public final class SwordControl {
      */
     public void depositoMetsZip(SWORDCollection aCol, Component parent)
             throws Exception {
-
+        LoginControler login = LoginControler.getInstancia();    
         File fzip = null; //ZIP        
 
-        fzip = MetsControl.getInstancia().getFileZIP();
+        fzip = MetsControler.getInstancia().getRutaFileZIP();
         if (fzip == null) {            
             return;
         }
@@ -453,13 +435,13 @@ public final class SwordControl {
      */
     public void depositoZipMasMetadatos(SWORDCollection aCol, Component parent)
             throws SWORDClientException, FileNotFoundException, IOException, SWORDError, ProtocolViolationException, Exception {
-
+        LoginControler login = LoginControler.getInstancia();
         File ficheroZip;
 
         /* 
         seteamos el archivo ZIP que contiene(n) nuestro(s) item(s).        
          */
-        this.file = FicheroControl.getInstancia().getFolderZip();
+        this.file = FicheroControler.getInstancia().getFolderZip();
 
         if (this.file == null) {
             return;
@@ -511,5 +493,41 @@ public final class SwordControl {
         assertTrue((resp.getStatusCode() == 200 || resp.getStatusCode() == 204));
 
     }
-
+    
+    public String myDepositoMets (SWORDCollection col)  {        
+        String msg = ""; 
+        try {
+            MetsControler myMets = MetsControler.getInstancia();            
+            LoginControler login = LoginControler.getInstancia();
+            
+            //Depositamos el recurso
+            Deposit deposit = new Deposit();
+            deposit.setInProgress(false);
+            deposit.setMetadataRelevant(false);                        
+            file = myMets.getRutaFileZIP().getAbsolutePath();
+            deposit.setFile(new FileInputStream(file));
+            deposit.setMimeType("application/zip");
+            deposit.setFilename(myMets.getNomFileZip());
+            deposit.setPackaging(METS);
+            fileMd5 = DigestUtils.md5Hex(new FileInputStream(file));
+            deposit.setMd5(fileMd5);
+            
+            DepositReceipt receipt = client.deposit(col, deposit, new AuthCredentials(login.getUsesw(), login.getPassw()));
+            
+            if (receipt.getStatusCode() == 201) {
+                msg = "El deposito fué un exito";
+            } 
+            else{
+                msg = "El deposito no se pudo realizar";
+            }
+            //assertEquals(receipt.getStatusCode(), 201);
+            //assertTrue(receipt.getLocation() != null);            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SWORDClientException | SWORDError | ProtocolViolationException | IOException ex) {
+            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return msg;
+    }
+    
 }

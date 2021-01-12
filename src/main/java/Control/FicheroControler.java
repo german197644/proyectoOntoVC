@@ -18,23 +18,23 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author germa
  */
-public class FicheroControl {
+public class FicheroControler {
 
     //Creamos el objeto JFileChooser
     JFileChooser fileChooser = new JFileChooser(".");
     //Contenedor de los ficheros seleccionados
     DefaultListModel<Fichero> listaFicheros = new DefaultListModel<>();
-    //instancia unica de FicheroControl
-    private static FicheroControl instancia = null;
+    //instancia unica de FicheroControler
+    private static FicheroControler instancia = null;
 
     private String folderZip = null;
 
-    protected FicheroControl() {
+    protected FicheroControler() {
     }
 
-    public static FicheroControl getInstancia() {
+    public static FicheroControler getInstancia() {
         if (instancia == null) {
-            instancia = new FicheroControl();
+            instancia = new FicheroControler();
         }
         return instancia;
     }
@@ -53,7 +53,7 @@ public class FicheroControl {
 
     
     /**
-     * Metodo que permite seleccionar ficheros.
+     * Metodo que permite seleccionar recursos(ficheros).
      *
      * @param parent
      * @throws java.io.IOException

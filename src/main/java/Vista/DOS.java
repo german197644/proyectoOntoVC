@@ -5,12 +5,26 @@
  */
 package Vista;
 
+import Control.DialogWaitControler;
+import Control.FicheroControler;
+import Control.MetsControler;
+import Control.StardogControler;
+import Control.SwordControler;
+import Modelo.Coleccion;
+import Modelo.Metadato;
 import java.awt.Image;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -18,22 +32,37 @@ import javax.swing.JFrame;
  */
 public class DOS extends javax.swing.JFrame {
 
-    /**
-     * Creates new form DOS
-     */    
-     
+    
     public DOS() {       
- 
+         
         initComponents();
-        this.setTitle("Depósito Ontológico Simple."); 
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);        
-        this.setVisible(true);   
-        ImageIcon iconMnuSalir  = new ImageIcon(getClass().getResource("/img/exit2.png"));
-        ImageIcon iconMnuconectar  = new ImageIcon(getClass().getResource("/img/config.png"));
-        iconMnuconectar = new ImageIcon(iconMnuconectar.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT));
-        iconMnuSalir = new ImageIcon(iconMnuSalir.getImage().getScaledInstance(25, 25, Image.SCALE_DEFAULT));
-        mnuConectar.setIcon(iconMnuconectar);
-        mnuSalir.setIcon(iconMnuSalir);                     
+        this.setTitle("Depósito Ontológico Simple.");
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setVisible(true);                       
+
+        try {
+            StardogControler stardog = StardogControler.getInstancia();
+            SwordControler sword = SwordControler.getInstancia();
+
+            // sword                
+            DefaultListModel colecciones = new DefaultListModel();
+            colecciones = sword.getColecciones();
+            listaColecciones.removeAll();
+            listaColecciones.setModel(colecciones);
+            listaColecciones.updateUI();
+            // end
+
+            // stardog
+            DefaultListModel aList = stardog.getTiposOA();
+            System.out.println(aList );
+            listaOA.setModel(aList);
+            listaOA.updateUI();                
+            // end                                
+
+        } catch (Exception ex) {
+            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -66,28 +95,35 @@ public class DOS extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        jList3 = new javax.swing.JList<>();
         jLabel13 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listaOA = new javax.swing.JList<>();
+        jLabel19 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jList4 = new javax.swing.JList<>();
+        listaMetadato = new javax.swing.JList<>();
         jPanel8 = new javax.swing.JPanel();
-        jScrollPane8 = new javax.swing.JScrollPane();
+        jLabel20 = new javax.swing.JLabel();
+        captura = new javax.swing.JScrollPane();
         jLabel12 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
         jLabel9 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
-        jScrollPane9 = new javax.swing.JScrollPane();
-        listaColecciones1 = new javax.swing.JList<>();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        listaColecciones = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        btnAddFichero = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        btnDelFichero = new javax.swing.JButton();
+        jLabel16 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTool = new javax.swing.JMenu();
         mnuConectar = new javax.swing.JMenuItem();
@@ -148,11 +184,14 @@ public class DOS extends javax.swing.JFrame {
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
 
-        btnDepositar.setBackground(new java.awt.Color(255, 51, 51));
         btnDepositar.setText("Depositar");
+        btnDepositar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDepositarActionPerformed(evt);
+            }
+        });
         jPanel3.add(btnDepositar);
 
-        btnSalir.setBackground(new java.awt.Color(255, 255, 0));
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -176,43 +215,47 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("OAs"));
-
-        jList3.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jList3.setMaximumSize(new java.awt.Dimension(60, 80));
-        jList3.setMinimumSize(new java.awt.Dimension(60, 80));
-        jList3.setOpaque(false);
-        jList3.setPreferredSize(new java.awt.Dimension(60, 80));
-        jScrollPane6.setViewportView(jList3);
-
-        jPanel7.add(jScrollPane6);
-
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
         jLabel13.setText("                                                                        ");
         jPanel7.add(jLabel13);
 
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Objetos de Aprendizajes"));
+
+        listaOA.setBackground(new java.awt.Color(240, 240, 240));
+        listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaOAMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(listaOA);
+
+        jPanel7.add(jScrollPane1);
+
+        jLabel19.setText("          ");
+        jPanel7.add(jLabel19);
+
         jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
 
-        jList4.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        listaMetadato.setBackground(new java.awt.Color(240, 240, 240));
+        listaMetadato.setOpaque(false);
+        listaMetadato.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaMetadatoMouseClicked(evt);
+            }
         });
-        jList4.setOpaque(false);
-        jScrollPane7.setViewportView(jList4);
+        jScrollPane7.setViewportView(listaMetadato);
 
         jPanel7.add(jScrollPane7);
 
         jPanel6.add(jPanel7, java.awt.BorderLayout.WEST);
 
-        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.X_AXIS));
 
-        jScrollPane8.setBorder(javax.swing.BorderFactory.createTitledBorder("Describir el ítem"));
-        jPanel8.add(jScrollPane8);
+        jLabel20.setText("          ");
+        jPanel8.add(jLabel20);
+
+        captura.setBorder(javax.swing.BorderFactory.createTitledBorder("Describir el ítem"));
+        jPanel8.add(captura);
 
         jPanel6.add(jPanel8, java.awt.BorderLayout.CENTER);
 
@@ -237,16 +280,7 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel12.setLayout(new javax.swing.BoxLayout(jPanel12, javax.swing.BoxLayout.LINE_AXIS));
 
-        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
-
-        jTextArea2.setColumns(50);
-        jTextArea2.setRows(5);
-        jTextArea2.setOpaque(false);
-        jScrollPane2.setViewportView(jTextArea2);
-
-        jPanel12.add(jScrollPane2);
-
-        jLabel9.setText("    ");
+        jLabel9.setText("                                                    ");
         jPanel12.add(jLabel9);
 
         jPanel9.add(jPanel12, java.awt.BorderLayout.CENTER);
@@ -262,33 +296,54 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel11.setLayout(new java.awt.GridLayout(0, 4, 5, 0));
 
-        jScrollPane9.setBorder(javax.swing.BorderFactory.createTitledBorder("Colección"));
+        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder("Colección"));
 
-        listaColecciones1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        listaColecciones1.setMaximumSize(new java.awt.Dimension(33, 50));
-        listaColecciones1.setOpaque(false);
-        listaColecciones1.setPreferredSize(new java.awt.Dimension(33, 50));
-        listaColecciones1.setVisibleRowCount(5);
-        jScrollPane9.setViewportView(listaColecciones1);
+        listaColecciones.setBackground(new java.awt.Color(240, 240, 240));
+        listaColecciones.setVisibleRowCount(5);
+        jScrollPane4.setViewportView(listaColecciones);
 
-        jPanel11.add(jScrollPane9);
+        jPanel11.add(jScrollPane4);
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos"));
 
-        listaRecursos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        listaRecursos.setBackground(new java.awt.Color(240, 240, 240));
         listaRecursos.setOpaque(false);
         listaRecursos.setVisibleRowCount(5);
         jScrollPane3.setViewportView(listaRecursos);
 
         jPanel11.add(jScrollPane3);
+
+        jPanel13.setLayout(new java.awt.GridLayout(4, 2, 5, 5));
+
+        jLabel17.setText("  ");
+        jPanel13.add(jLabel17);
+
+        jLabel10.setText("  ");
+        jPanel13.add(jLabel10);
+
+        btnAddFichero.setText("Agregar Recurso");
+        btnAddFichero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddFicheroActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnAddFichero);
+
+        jLabel18.setText("  ");
+        jPanel13.add(jLabel18);
+
+        btnDelFichero.setText("Quitar Recurso");
+        btnDelFichero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDelFicheroActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnDelFichero);
+
+        jLabel16.setText("  ");
+        jPanel13.add(jLabel16);
+
+        jPanel11.add(jPanel13);
 
         jPanel10.add(jPanel11, java.awt.BorderLayout.CENTER);
 
@@ -298,6 +353,7 @@ public class DOS extends javax.swing.JFrame {
 
         mnuTool.setText("Herramienta");
 
+        mnuConectar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuConectar.setText("Conectar");
         mnuConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -306,6 +362,7 @@ public class DOS extends javax.swing.JFrame {
         });
         mnuTool.add(mnuConectar);
 
+        mnuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
         mnuSalir.setText("Salir");
         mnuSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -337,6 +394,79 @@ public class DOS extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnSalirActionPerformed
 
+    private void btnAddFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddFicheroActionPerformed
+        try {
+            FicheroControler fichero = FicheroControler.getInstancia();        
+            fichero.getFileChooser(this);
+            listaRecursos.setModel(fichero.getListaFicheros());
+        } catch (IOException ex) {
+            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnAddFicheroActionPerformed
+
+    private void btnDelFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelFicheroActionPerformed
+        try {
+            FicheroControler fichero = FicheroControler.getInstancia();
+            if (fichero.getListaFicheros().size() > 0) {
+                fichero.quitarFichero(listaRecursos.getSelectedIndex());
+            }    
+        } catch (Exception ex) {
+            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+    }//GEN-LAST:event_btnDelFicheroActionPerformed
+
+    private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+        StardogControler stardog = null;
+        try {
+            Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
+            DefaultListModel datos2 = stardog.getMetadatos_v1(dato);
+            listaMetadato.setModel(datos2);
+            
+            //preseteamos el panel de captura con los metadatos obligatorios.
+            final JPanel aJp = stardog.preSeteoPanelCaptura();
+            captura.getViewport().setView(aJp);
+            captura.updateUI();
+        } catch (Exception ex) {
+            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_listaOAMouseClicked
+
+    private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
+        StardogControler stardog = null;   
+        try {
+            List objeto = listaMetadato.getSelectedValuesList();
+            final JPanel aJp = stardog.setPanelCaptura(objeto);
+            captura.getViewport().setView(aJp);
+            captura.updateUI();
+            //eliminamos los metadatos afectados si estos no se repiten.
+            //if (ListMetadatos.getSelectedIndices().length > 0) {
+            //    stardog.removerItemSeleccionados(ListMetadatos.getSelectedIndices());
+            //}
+            //this.viewMsjTextArea("Operación finalizada.\nSe agregaron " + objeto.size() + " metadatos para su registro.");
+
+        } catch (Exception ex) {            
+            JOptionPane.showMessageDialog(this, "Error", "Informe", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_listaMetadatoMouseClicked
+
+    private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
+        try {
+            SwordControler repositorio = SwordControler.getInstancia();
+            //fichero = FicheroControler.getInstancia();
+            MetsControler xmlMets = MetsControler.getInstancia();
+            /*generamos el zip con el mets*/
+            xmlMets.newMETS();
+            //this.viewMsjSeguimiento("Archivo Mets generado.");
+            /* depositado en el repositorio, en la coleccion... */
+            Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
+            //this.viewMsjSeguimiento("Comenzando el deposito de item(s) sobre la coleccion: " + col.getColeccion().getTitle());
+            repositorio.myDepositoMets(col.getColeccion());
+            //this.viewMsjSeguimiento("Deposito de ítem(s) terminado.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnDepositarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -348,7 +478,7 @@ public class DOS extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -373,15 +503,24 @@ public class DOS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddFichero;
+    private javax.swing.JButton btnDelFichero;
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JScrollPane captura;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -389,13 +528,12 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList3;
-    private javax.swing.JList<String> jList4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -404,15 +542,14 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane8;
-    private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JList<String> listaColecciones1;
+    private javax.swing.JList<String> listaColecciones;
+    private javax.swing.JList<String> listaMetadato;
+    private javax.swing.JList<String> listaOA;
     private javax.swing.JList<String> listaRecursos;
     private javax.swing.JMenuItem mnuConectar;
     private javax.swing.JMenuItem mnuSalir;

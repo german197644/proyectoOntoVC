@@ -5,11 +5,11 @@
  */
 package Vista;
 
-import Control.DialogWait;
-import Control.FicheroControl;
-import Control.StardogControl;
-import Control.SwordControl;
-import Modelo.MetadataSimple;
+import Control.DialogWaitControler;
+import Control.FicheroControler;
+import Control.StardogControler;
+import Control.SwordControler;
+import Modelo.Metadato;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +27,8 @@ public class Principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
         //private RepositorioControl repositorio;
-    private StardogControl stardog = null;
-    private SwordControl sword = null; 
+    private StardogControler stardog = null;
+    private SwordControler sword = null; 
     
     public Principal() {
         try {
@@ -36,16 +36,16 @@ public class Principal extends javax.swing.JFrame {
             this.setTitle("Depósito ontolÓgico - SWORD");
             this.setLocationRelativeTo(null);
             
-            //
-            DialogWait wait = new DialogWait();
+            //Ventana inicio
+            DialogWaitControler wait = new DialogWaitControler();
             
             SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
                 
                 @Override
                 protected Void doInBackground() throws Exception {                    
                     //STARDOG
-                    stardog = StardogControl.getInstancia();
-                    sword = SwordControl.getInstancia();
+                    stardog = StardogControler.getInstancia();
+                    sword = SwordControler.getInstancia();
                     //...
                     wait.close();
                     return null;
@@ -254,7 +254,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void btnQuitarFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarFActionPerformed
         try {
-            FicheroControl fichero = FicheroControl.getInstancia();
+            FicheroControler fichero = FicheroControler.getInstancia();
             if (fichero.getListaFicheros().size() > 0) {            
                 fichero.quitarFichero(listaFicheros.getSelectedIndex());
             }
@@ -274,7 +274,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxMenuItem2ActionPerformed
 
     private void btnSubirFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubirFicheroActionPerformed
-        FicheroControl fichero = FicheroControl.getInstancia();
+        FicheroControler fichero = FicheroControler.getInstancia();
         try {
             fichero.getFileChooser(this);
         } catch (IOException ex) {
@@ -290,7 +290,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
         try {
-            MetadataSimple dato = (MetadataSimple) ((Object) listaOA.getSelectedValue());
+            Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
             DefaultListModel datos2;        
             datos2 = stardog.getMetadatos_v1(dato);       
             this.ListMetadatos.setModel(datos2);

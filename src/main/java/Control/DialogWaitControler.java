@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
  *
  * @author germa
  */
-public class DialogWait {
+public class DialogWaitControler {
     private JDialog dialog;
 
     //public void makeWait(String msg, ActionEvent evt) {

@@ -6,8 +6,8 @@
 package Vista;
 
 import Control.ErrorControl;
-import Control.StardogControl;
-import Modelo.MetadataSimple;
+import Control.StardogControler;
+import Modelo.Metadato;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.List;
@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 public class PanelOntologico extends javax.swing.JPanel {
 
     //private RepositorioControl repositorio;
-    private StardogControl stardog;
+    private StardogControler stardog;
 
     /**
      * Creates new form PanelOntologico2
@@ -206,7 +206,7 @@ public class PanelOntologico extends javax.swing.JPanel {
     private void getOntologiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getOntologiaActionPerformed
         try {
             //this.viewMsjTextArea(new StringBuffer("Instancia actual de stardog :" + stardog));
-            stardog = StardogControl.getInstancia();
+            stardog = StardogControler.getInstancia();
             if (stardog != null) {
 
                 DefaultListModel aList = stardog.getTiposOA();
@@ -236,7 +236,7 @@ public class PanelOntologico extends javax.swing.JPanel {
     private void btn_validarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_validarActionPerformed
         String auxString = new String();
         String retString = new String();
-        DefaultListModel<MetadataSimple> lista = stardog.getCapturaMetadados();
+        DefaultListModel<Metadato> lista = stardog.getCapturaMetadados();
         try {
             if (lista.size() > 0) {
                 auxString = "\n\n ==========================================================";
@@ -322,7 +322,7 @@ public class PanelOntologico extends javax.swing.JPanel {
 
     private void filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtrarActionPerformed
         try {
-            MetadataSimple dato = (MetadataSimple) ((Object) listaOA.getSelectedValue());
+            Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
             DefaultListModel datos2 = stardog.getMetadatos_v1(dato);
             this.ListMetadatos.setModel(datos2);
             this.viewMsjTextArea("\nSe encontraron " + datos2.size() + " metadatos.");

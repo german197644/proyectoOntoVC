@@ -18,7 +18,7 @@ import org.openrdf.model.IRI;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQueryResult;
 
-import Modelo.MetadataSimple;
+import Modelo.Metadato;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -48,19 +48,19 @@ import javax.swing.JTextField;
  * @author Pogliani, Germán
  *
  */
-public final class StardogControl {
+public final class StardogControler {
 
     //
-    private static StardogControl instancia = null;
+    private static StardogControler instancia = null;
 
     // Variable de conexion a la base de datos
     private static ReasoningConnection conexionStardog;
 
     //Variable que contiene la lista de Metadatos
-    private DefaultListModel<MetadataSimple> listaMetadados = new DefaultListModel<>();
+    private DefaultListModel<Metadato> listaMetadados = new DefaultListModel<>();
 
     //Variable que contiene la lista de metadatos a capturar
-    private DefaultListModel<MetadataSimple> capturaMetadados = new DefaultListModel<>();
+    private DefaultListModel<Metadato> capturaMetadados = new DefaultListModel<>();
 
     //Variable de conexion a stardog
     //private static ConexionStardogControl connOnto = null;
@@ -72,17 +72,17 @@ public final class StardogControl {
     //mensajes de validacion
     String retornoValidacion = null;
     
-    private LoginControl login = null; 
+    private LoginControler login = null; 
 
-    protected StardogControl() throws Exception {
-        login = LoginControl.getInstancia(); 
+    protected StardogControler() throws Exception {
+        login = LoginControler.getInstancia(); 
         login.conectarStardog();
         conexionStardog = login.getConexionStardog();
     }
 
-    public static StardogControl getInstancia() throws Exception {
+    public static StardogControler getInstancia() throws Exception {
         if (instancia == null) {
-            instancia = new StardogControl();
+            instancia = new StardogControler();
         }
         return instancia;
     }
@@ -95,7 +95,7 @@ public final class StardogControl {
      * @throws StardogException
      */
     public DefaultListModel getTiposOA() throws StardogException {
-        DefaultListModel<MetadataSimple> resultado = new DefaultListModel<>();
+        DefaultListModel<Metadato> resultado = new DefaultListModel<>();
         BindingSet fila;
         TupleQueryResult aResult;
 
@@ -115,8 +115,8 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("tipoSnrd").stringValue();
             //System.out.println("tipo snrd ....:" + aValue);
-            MetadataSimple m;
-            m = new MetadataSimple(aValue, aValue);
+            Metadato m;
+            m = new Metadato(aValue, aValue);
             resultado.addElement(m);
         }
         //System.out.println("dejando SNRD" );
@@ -125,7 +125,7 @@ public final class StardogControl {
     }
 
 
-    public DefaultListModel<MetadataSimple> getCapturaMetadados() {
+    public DefaultListModel<Metadato> getCapturaMetadados() {
         return capturaMetadados;
     }
 
@@ -133,7 +133,7 @@ public final class StardogControl {
         capturaMetadados.clear();
     }
 
-    public void setCapturaMetadados(MetadataSimple m) {
+    public void setCapturaMetadados(Metadato m) {
         capturaMetadados.addElement(m);
     }
 
@@ -148,7 +148,7 @@ public final class StardogControl {
     public void removerItemSeleccionados(int[] o) throws Exception {
         for (int i = 0; i < o.length; i++) {
 
-            MetadataSimple m = listaMetadados.get(o[i]);
+            Metadato m = listaMetadados.get(o[i]);
             if (!repiteMetadato(m.getTipo())) {
                 listaMetadados.removeElementAt(o[i]);
             }
@@ -157,7 +157,7 @@ public final class StardogControl {
     }
 
     //setea el orden en que se mostraran de los metadatos en el panel.    
-    private int setOrdenMetadatos(MetadataSimple m) throws Exception {
+    private int setOrdenMetadatos(Metadato m) throws Exception {
         String pos = null;
         int ret = 0;
         //Properties properties = new Properties();
@@ -175,7 +175,7 @@ public final class StardogControl {
     }
 
     public String validateMetadatos() throws Exception {
-        DefaultListModel<MetadataSimple> lista = this.capturaMetadados;
+        DefaultListModel<Metadato> lista = this.capturaMetadados;
         retornoValidacion = "";
 
         for (int i = 0; i < lista.size(); ++i) {
@@ -195,7 +195,7 @@ public final class StardogControl {
      */
     public String visualizarMetadatos() throws Exception {
         String retorno = "";
-        DefaultListModel<MetadataSimple> lista = this.getCapturaMetadados();
+        DefaultListModel<Metadato> lista = this.getCapturaMetadados();
 
         if (lista.size() > 0) {
             retorno += "\nMetados capturados. ";
@@ -256,7 +256,7 @@ public final class StardogControl {
         return rot;
     }
 
-    private boolean isExists(MetadataSimple m) throws Exception {
+    private boolean isExists(Metadato m) throws Exception {
         for (int i = 0; i < capturaMetadados.size(); i++) {
             if (capturaMetadados.get(i).getTipo().equals(m.getTipo())) {
                 return true;
@@ -328,7 +328,7 @@ public final class StardogControl {
      */
     public JPanel preSeteoPanelCaptura() throws Exception {
         JPanel jp = new JPanel();
-        DefaultListModel<MetadataSimple> eliminar = new DefaultListModel<>();
+        DefaultListModel<Metadato> eliminar = new DefaultListModel<>();
 
         //seteamos las variables contenedoras a cero.
         this.capturaMetadados.clear();
@@ -337,10 +337,10 @@ public final class StardogControl {
         for (int i = 0; i < listaMetadados.size(); ++i) {
             //y sino si ya no esta en la lista de captura
             //antes de agregar controlar si el metadatos se debe repetir
-            MetadataSimple m = listaMetadados.get(i);
+            Metadato m = listaMetadados.get(i);
             //System.out.println("mertadato:" + m.getTipo() + " | repite: " + m.isRepite() + " | obligatorio: " + m.isObligatorio());
             if (m.isObligatorio()) { //podria obviarse el isExists()
-                //final MetadataSimple met = getComponente(objeto.get(i));
+                //final Metadato met = getComponente(objeto.get(i));
                 if (m.isRepite()) {
                     this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
                 } else {
@@ -420,14 +420,14 @@ public final class StardogControl {
         for (int i = 0; i < objeto.size(); ++i) {
             //y sino si ya no esta en la lista de captura
             //antes de agregar controlar si el metadatos se debe repetir
-            MetadataSimple m = (MetadataSimple) objeto.get(i);
+            Metadato m = (Metadato) objeto.get(i);
             if (isExists(m)) {
                 //para el caso de que el metadato exista
                 //verificamos si este se puede repetir
                 //en tal caso se agrega a la lista
                 //if (repiteMetadato(m)) { //podria obviarse el isExists()
                 if (m.isRepite()) { //podria obviarse el isExists()
-                    //final MetadataSimple met = getComponente(objeto.get(i));
+                    //final Metadato met = getComponente(objeto.get(i));
                     this.setCapturaMetadados(getComponente(objeto.get(i)));
                 }
             } else {
@@ -473,7 +473,7 @@ public final class StardogControl {
         return jp;
     }
 
-    private MetadataSimple setearFecha(MetadataSimple m) throws ParseException, Exception {
+    private Metadato setearFecha(Metadato m) throws ParseException, Exception {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
@@ -523,7 +523,7 @@ public final class StardogControl {
         return m;
     }
 
-    private MetadataSimple setearTexArea(MetadataSimple m) throws Exception {
+    private Metadato setearTexArea(Metadato m) throws Exception {
         int ord = 99;
 
         /*seteamos el JTextLabel*/
@@ -548,7 +548,7 @@ public final class StardogControl {
         return m;
     }
 
-    private MetadataSimple setearComboBox(MetadataSimple m, Vector data) throws Exception {
+    private Metadato setearComboBox(Metadato m, Vector data) throws Exception {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
@@ -572,7 +572,7 @@ public final class StardogControl {
         return m;
     }
 
-    private MetadataSimple setearDefault(MetadataSimple m) throws Exception {
+    private Metadato setearDefault(Metadato m) throws Exception {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
@@ -593,7 +593,7 @@ public final class StardogControl {
         return m;
     }
 
-    private MetadataSimple setearNombre(MetadataSimple m) {
+    private Metadato setearNombre(Metadato m) {
         JPanel jp = new JPanel(new GridBagLayout());
         jp.setPreferredSize(new Dimension(400, 150));
         JLabel jlape = new JLabel("Apellido:");
@@ -640,13 +640,13 @@ public final class StardogControl {
      * recorre y lo carga en el panel.
      *
      * @param o
-     * @return MetadataSimple
+     * @return Metadato
      * @throws java.lang.Exception
      */
-    public MetadataSimple getComponente(Object o) throws Exception {
+    public Metadato getComponente(Object o) throws Exception {
         int ord = 0;
-        MetadataSimple aMetaParam = (MetadataSimple) o;
-        MetadataSimple m = new MetadataSimple(aMetaParam.getTipo());
+        Metadato aMetaParam = (Metadato) o;
+        Metadato m = new Metadato(aMetaParam.getTipo());
         m.setRotulo(aMetaParam.getRotulo());
         //JLabel e = new JLabel();
         //e.setFont(new Font("Serif", Font.BOLD, 12));
@@ -733,11 +733,11 @@ public final class StardogControl {
 
     //arreglar esto por favor.
     private void ordenar() {
-        ArrayList<MetadataSimple> auxList = new ArrayList<>();
+        ArrayList<Metadato> auxList = new ArrayList<>();
         for (int i = 0; i < capturaMetadados.size(); ++i) {
             auxList.add(capturaMetadados.get(i));
         }
-        auxList.sort(Comparator.comparing(MetadataSimple::getOrden));
+        auxList.sort(Comparator.comparing(Metadato::getOrden));
         capturaMetadados.removeAllElements();
         for (int j = 0; j < auxList.size(); ++j) {
             capturaMetadados.add(j, auxList.get(j));
@@ -753,7 +753,7 @@ public final class StardogControl {
      * @throws StardogException
      * @throws java.lang.Exception
      */
-    public DefaultListModel getMetadatos_v1(MetadataSimple filtro) throws StardogException, Exception {
+    public DefaultListModel getMetadatos_v1(Metadato filtro) throws StardogException, Exception {
         ArrayList<String> auxMetadatos = new ArrayList<>();
         BindingSet fila;
         TupleQueryResult aResult;
@@ -794,9 +794,9 @@ public final class StardogControl {
             final String aValue1 = fila.getValue("dominio").stringValue();
             final String aValue2 = fila.getValue("rango").stringValue();
             final String aValue3 = fila.getValue("subClase").stringValue();
-            final MetadataSimple m1 = new MetadataSimple(aValue1);
-            final MetadataSimple m2 = new MetadataSimple(aValue2);
-            final MetadataSimple m3 = new MetadataSimple(aValue3);
+            final Metadato m1 = new Metadato(aValue1);
+            final Metadato m2 = new Metadato(aValue2);
+            final Metadato m3 = new Metadato(aValue3);
             if (!auxMetadatos.contains(m1.getTipo())) {
                 auxMetadatos.add(m1.getTipo());
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
@@ -867,7 +867,7 @@ public final class StardogControl {
             //System.out.println("rango..:" + aValue2); //revisamos el campo.
             //System.out.println("subClase..:" + aValue3); //revisamos el campo.
             //System.out.println("Sujeto..:" + aSujeto); //revisamos el campo.
-            final MetadataSimple m1 = new MetadataSimple(aSujeto, aSujeto);
+            final Metadato m1 = new Metadato(aSujeto, aSujeto);
 
             if (!auxMetadatos.contains(aSujeto)) {
                 auxMetadatos.add(aSujeto);
@@ -905,7 +905,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripFormat").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -948,7 +948,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("descrip").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -984,7 +984,7 @@ public final class StardogControl {
             final String aValue = fila.getValue("descrip").stringValue();
             //System.out.println("tipo snrd ....:" + aValue);
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             final String aux;
             if (aValue.contains("#")) {
                 aux = aValue.substring(aValue.indexOf("#") + 1, aValue.length());
@@ -1023,7 +1023,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripDifficulty").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             final String aux;
             if (aValue.contains("#")) {
                 aux = aValue.substring(aValue.indexOf("#") + 1, aValue.length());
@@ -1063,7 +1063,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripLenguaje").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1098,7 +1098,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripInteractivityType").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1133,7 +1133,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripInteractivityLevel").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1168,7 +1168,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripVersion").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1204,7 +1204,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripResource").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1240,7 +1240,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripRole").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {
@@ -1276,7 +1276,7 @@ public final class StardogControl {
             fila = aResult.next();
             final String aValue = fila.getValue("DescripContext").stringValue();
             //MetadataSimple m;
-            //m = new MetadataSimple(aValue, aValue);
+            //m = new Metadato(aValue, aValue);
             //resultado.addElement(m);
             final String aux;
             if (aValue.contains("#")) {

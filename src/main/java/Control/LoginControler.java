@@ -25,15 +25,15 @@ import org.swordapp.client.ClientConfiguration;
 import org.swordapp.client.SWORDClient;
 import org.swordapp.client.ServiceDocument;
 
-public class LoginControl {
+public class LoginControler {
     
     Properties properties = null;
     InputStream propertiesStream = null;
     OutputStream output = null;
     
     // Sword - variables de seteo
-    private int nroiri = 0;
-    private String iri = "";
+    private int nrouri = 0;
+    private String uri = "";
     private String usesw = "";
     private String passw = "";
     private String obo = "";    
@@ -54,25 +54,23 @@ public class LoginControl {
     ServiceDocument sd; 
     private SWORDClient client = null;              
 
-    private static LoginControl instancia = null;
+    private static LoginControler instancia = null;
     
-    private LoginControl() {
+    private LoginControler() {
         try {
             getProperty();
             setup_stardog();
             setup_sword();
-            //conectarStardog();
-            //ConectarSword();
         } catch (IOException ex) {
-            Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);            
+            Logger.getLogger(LoginControler.class.getName()).log(Level.SEVERE, null, ex);            
         } catch (Exception ex) {
-            Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginControler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public static synchronized LoginControl getInstancia() throws IOException {
+    public static synchronized LoginControler getInstancia() throws IOException {
         if (instancia == null) {
-            instancia = new LoginControl();
+            instancia = new LoginControler();
         }
         return instancia;
     }
@@ -82,7 +80,7 @@ public class LoginControl {
      *
      * @throws StardogException
      */
-    public void conectarStardog() throws StardogException {        
+    protected void conectarStardog() throws StardogException {        
         conexionStardog = ConnectionConfiguration
                 .to(this.base.trim())
                 .credentials(this.userst.trim(), this.passst.trim())
@@ -94,14 +92,18 @@ public class LoginControl {
 
     
     
-    public static void desconectarServidor()  {
+    protected void desconectarServidor()  {
         conexionStardog.close();
     }
     
-    public void ConectarSword() throws Exception {
+    /**
+     *
+     * @throws Exception
+     */
+    protected void ConectarSword() throws Exception {
         client = null; sd = null;
         client = new SWORDClient(new ClientConfiguration());
-        sd = client.getServiceDocument(iri.trim(),
+        sd = client.getServiceDocument(uri.trim(),
                 new AuthCredentials(usesw.trim(), passw.trim()));
     }
     
@@ -128,11 +130,11 @@ public class LoginControl {
     
     private void setup_sword() throws IOException {
         this.servidores_sw.removeAllElements();
-        this.nroiri = Integer.parseInt(properties.getProperty("nroiri").trim());
-        for(int i=1;i<=this.nroiri;i++){
-            servidores_sw.addElement(properties.getProperty("iri"+"_"+String.valueOf(i).trim()).trim());
+        this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
+        for(int i=1;i<=this.nrouri;i++){
+            servidores_sw.addElement(properties.getProperty("uri"+"_"+String.valueOf(i).trim()).trim());
         }
-        this.iri = properties.getProperty("iri").trim();
+        this.uri = properties.getProperty("uri").trim();
         this.usesw = properties.getProperty("swuser").trim();
         this.passw = properties.getProperty("swpass").trim();
         this.obo = properties.getProperty("obo").trim();
@@ -161,19 +163,19 @@ public class LoginControl {
     }
 
     public int getNroiri_sw() {
-        return nroiri;
+        return nrouri;
     }
 
     public void setNroiri_sw(int nroiri_sw) {
-        this.nroiri = nroiri_sw;
+        this.nrouri = nroiri_sw;
     }
 
-    public String getIri() {
-        return iri;
+    public String getUri() {
+        return uri;
     }
 
-    public void setIri(String iri) {
-        this.iri = iri;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getUsesw() {
@@ -261,7 +263,7 @@ public class LoginControl {
     }
 
     public void setConexionStardog(ReasoningConnection conexionStardog) {
-        LoginControl.conexionStardog = conexionStardog;
+        LoginControler.conexionStardog = conexionStardog;
     }
 
     public ServiceDocument getSd() {

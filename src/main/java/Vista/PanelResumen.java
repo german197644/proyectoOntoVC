@@ -5,9 +5,9 @@
  */
 package Vista;
 
-import Control.FicheroControl;
-import Control.StardogControl;
-import Control.SwordControl;
+import Control.FicheroControler;
+import Control.StardogControler;
+import Control.SwordControler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,9 +18,9 @@ import java.util.logging.Logger;
 public class PanelResumen extends javax.swing.JDialog {
 
     String boton = "";
-    StardogControl stardog;
-    SwordControl sword;
-    FicheroControl fichero;
+    StardogControler stardog;
+    SwordControler sword;
+    FicheroControler fichero;
 
     /**
      * Creates new form ResumenControl
@@ -40,10 +40,10 @@ public class PanelResumen extends javax.swing.JDialog {
         setTitle("Resumen - Deposito Cliente");
 
         try {
-            stardog = StardogControl.getInstancia();
+            stardog = StardogControler.getInstancia();
             contenido.append(stardog.visualizarMetadatos());
             if (setea) {
-                fichero = FicheroControl.getInstancia();
+                fichero = FicheroControler.getInstancia();
                 contenido.append(fichero.visualizarFicheros());
                 contenido.append("\n\nEstoy conforme: Deposito mi item?");
                 //this.pack();

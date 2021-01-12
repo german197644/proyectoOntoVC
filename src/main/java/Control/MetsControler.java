@@ -1,13 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ *
+ * @author Pogliani, German
+ * 
  */
 package Control;
 
-import Modelo.MetsXml;
 import Modelo.Fichero;
-import Modelo.MetadataSimple;
+import Modelo.Metadato;
 import edu.harvard.hul.ois.mets.helper.MetsException;
 import java.awt.Component;
 import java.io.File;
@@ -19,40 +18,28 @@ import java.util.zip.Deflater;
 import javax.swing.DefaultListModel;
 import org.jdom.Element;
 
-/**
- *
- * @author Pogliani, German
- */
-public class MetsControl {
 
-    //private final RepositorioControl repositorio;
-    //private final DCoreControl dc;
-    private DublinCoreControl dcore;
+public class MetsControler {
 
-    private final StardogControl ontologia;
-    private MetsXml mets;
-    private final FicheroControl ficheros;
-    private File fileZIP; //archivo donde depositar el zip con el mets.
+    private XmlMetsControler mets; //clase que genera el mets.xml
+    private FicheroControler ficheros;
+    private File rutaFileZIP; //archivo donde depositar el zip con el mets.
+    private String nomFileZip; 
     private Component aParent;
 
-    private static MetsControl instancia = null;
+    private static MetsControler instancia = null;
 
     /**
      *
      * @throws Exception
      */
-    private MetsControl() throws Exception {
-        //this.repositorio = RepositorioControl.getInstancia();
-        this.ontologia = StardogControl.getInstancia();
-        this.ficheros = FicheroControl.getInstancia();
-        //this.dc = DCoreControl.getInstancia();
-        this.dcore = DublinCoreControl.getInstancia();
+    private MetsControler() throws Exception {
     }
 
-    public static MetsControl getInstancia() {
+    public static MetsControler getInstancia() {
         try {
             if (instancia == null) {
-                instancia = new MetsControl();
+                instancia = new MetsControler();
             }
 
         } catch (Exception e) {
@@ -66,18 +53,21 @@ public class MetsControl {
      *
      * @return
      */
-    public File getFileZIP() {
-        return fileZIP;
+    public File getRutaFileZIP() {
+        return rutaFileZIP;
     }
 
     //encapsulamos los metadatos capturados.    
     private List myMakeMetadata() throws Exception {
 
         List<Element> aListEle = new ArrayList<>();
-        DefaultListModel<MetadataSimple> aListMetadatos = ontologia.getCapturaMetadados();
+        StardogControler ontologia = StardogControler.getInstancia();
+        DublinCoreControler dcore = DublinCoreControler.getInstancia();
+        
+        DefaultListModel<Metadato> aListMetadatos = ontologia.getCapturaMetadados();
 
         for (int i = 0; i < aListMetadatos.size(); ++i) {
-            MetadataSimple m = aListMetadatos.get(i);
+            Metadato m = aListMetadatos.get(i);
             //System.out.println("pase por aca!. metadato: " + m.getTipo());
             Object aDC = dcore.getEquivalenciaDC(m.getTipo().toLowerCase().trim());
             if (aDC != null) {
@@ -123,13 +113,13 @@ public class MetsControl {
      * @throws MetsException
      * @throws IOException
      */
-    public void crearMets() throws MetsException, IOException, Exception {
+    public void newMETS() throws MetsException, IOException, Exception {
 
         // Creamos un mets; validate = false, ZIP compression = BEST_SPEED
-        mets = new MetsXml(false, Deflater.BEST_SPEED);
+        mets = new XmlMetsControler(false, Deflater.BEST_SPEED);
 
         // Optional: configurar el METS OBJID
-        mets.setOBJID("Sword-Mets");
+        mets.setOBJID("Sword-Mets-Ontologico");
 
         // Optional: Set the METS creator
         mets.addAgent("CREATOR", "ORGANIZATION", "RIA - UTN - FRSF");
@@ -153,47 +143,37 @@ public class MetsControl {
             }
         }
 
-        //System.out.println("pase por aca!.");
         // aggregamos la descripcion de los metadatos como JDOM element        
         List<Element> dcElt = myMakeMetadata();
-        //System.out.println("pase por aca!. tamaño de dcElt: " + dcElt.size());
+
+
         mets.addDescriptiveMD("DC", dcElt);
         //sip.addDescriptiveMD("DC", myMakeMetadata2());
 
-        // Write SIP to an output file}
-        fileZIP = ficheros.getCarpeta(this.aParent);
-        outfile = java.io.File.createTempFile("fichero", ".zip", fileZIP);
+        // escribimos el SIP a un fichero de salida
+        
+        //fileZIP = ficheros.getCarpeta(this.aParent);
+        //System.getProperty("java.io.tmpdir");
+        outfile = java.io.File.createTempFile("ficheroMETS_", ".zip" );
 
         //guardamos la ruta al zip para su posterior envio.
         File afileZIP = new File(outfile.getAbsolutePath());
         if (afileZIP.exists()) {
-            fileZIP = afileZIP;
+            rutaFileZIP = afileZIP;
+            nomFileZip = afileZIP.getName();
         }
-        /*
-        fileZIP = new java.io.File("/outDeposit");
-        if (fileZIP.exists()) {
-            outfile = java.io.File.createTempFile("deposito", ".zip", new java.io.File("/outDeposit"));
-        } else {
-            JFileChooser fc = new JFileChooser(".");
-            fc.setDialogTitle("Selección de Directorio");
-            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int respuesta = fc.showOpenDialog(null);
-            if (respuesta == JFileChooser.APPROVE_OPTION) {
-                //File directorioElegido = fc.getSelectedFile();
-                fileZIP = fc.getSelectedFile(); //path absoluto?
-                outfile = java.io.File.createTempFile("fichero", ".zip", fileZIP);
-            }
-        }
-         */
-
         mets.write(outfile);
-
-        //System.out.println("terminamos el mets!.");
     }
 
+    public String getNomFileZip() {
+        return nomFileZip;
+    }
+
+    
+    
     public void crearMets_v2() throws MetsException, IOException, Exception {
         // Creamos un mets; validate = false, ZIP compression = BEST_SPEED
-        mets = new MetsXml(false, Deflater.BEST_SPEED);
+        mets = new XmlMetsControler(false, Deflater.BEST_SPEED);
         // Optional: configurar el METS OBJID
         mets.setOBJID("Sword-Mets");
         // Optional: Set the METS creator
@@ -215,12 +195,12 @@ public class MetsControl {
         List<Element> dcElt = myMakeMetadata();        
         mets.addDescriptiveMD("DC", dcElt);       
         /* Write SIP to an output file} */
-        fileZIP = ficheros.getCarpeta(this.aParent);
-        outfile = java.io.File.createTempFile("fichero", ".zip", fileZIP);
+        rutaFileZIP = ficheros.getCarpeta(this.aParent);
+        outfile = java.io.File.createTempFile("fichero", ".zip", rutaFileZIP);
         /*guardamos la ruta al zip para su posterior envio.*/
         File afileZIP = new File(outfile.getAbsolutePath());
         if (afileZIP.exists()) {
-            fileZIP = afileZIP;
+            rutaFileZIP = afileZIP;
         }       
         mets.write(outfile);
     }

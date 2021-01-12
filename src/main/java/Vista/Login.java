@@ -5,7 +5,8 @@
  */
 package Vista;
 
-import Control.LoginControl;
+import Control.LoginControler;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -17,20 +18,20 @@ import javax.swing.DefaultComboBoxModel;
 public class Login extends javax.swing.JDialog {
 
     /**
-     * Creates new form Coneccion
+     * Creates new form Login
      */
-      
-    private LoginControl login = null; 
-        
-    public Login(java.awt.Frame parent, boolean modal)  {
+    private LoginControler login = null; 
+    
+    public Login(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         try {
             initComponents();
             this.setLocationRelativeTo(null);
-            this.setResizable(false);
+            this.setSize(750, 350);
+            this.setResizable(true);
             this.setTitle("LogIn");
             
-            login = LoginControl.getInstancia();
+            login = LoginControler.getInstancia();
             
             //STARDOG            
             this.st_url.removeAllItems();
@@ -38,7 +39,7 @@ public class Login extends javax.swing.JDialog {
             this.st_bd.setText(login.getBase());
             this.st_usuario.setText(login.getUserst());
             this.st_pass.setText(login.getPassst());
-                        
+            
             //SWORD            
             this.sw_url.removeAllItems();
             this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
@@ -46,7 +47,7 @@ public class Login extends javax.swing.JDialog {
             this.sw_pass.setText(login.getPassw());
             this.sw_obo.setText(login.getObo());
             //...
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -60,147 +61,45 @@ public class Login extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        cont_stardog = new javax.swing.JPanel();
-        st_url = new javax.swing.JComboBox<>();
-        nombreBDStardogLabel = new javax.swing.JLabel();
-        userStardogLabel = new javax.swing.JLabel();
-        st_otro = new javax.swing.JTextField();
-        passStardogLabel = new javax.swing.JLabel();
-        nombreBDStardogLabel1 = new javax.swing.JLabel();
-        nombreBDStardogLabel4 = new javax.swing.JLabel();
-        st_usuario = new javax.swing.JTextField();
-        st_bd = new javax.swing.JTextField();
-        st_pass = new javax.swing.JPasswordField();
-        cont_sw = new javax.swing.JPanel();
-        sw_url = new javax.swing.JComboBox<>();
-        nombreBDStardogLabel2 = new javax.swing.JLabel();
-        userStardogLabel1 = new javax.swing.JLabel();
-        sw_usuario = new javax.swing.JTextField();
-        passStardogLabel1 = new javax.swing.JLabel();
-        sw_obo = new javax.swing.JTextField();
-        nombreBDStardogLabel3 = new javax.swing.JLabel();
-        sw_pass = new javax.swing.JPasswordField();
-        nombreBDStardogLabel5 = new javax.swing.JLabel();
-        sw_otro = new javax.swing.JTextField();
-        panel1 = new java.awt.Panel();
+        panel_inferior = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         btn_cancelar = new javax.swing.JButton();
+        panel_Superior = new javax.swing.JPanel();
+        cont_stardog = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        nombreBDStardogLabel = new javax.swing.JLabel();
+        st_url = new javax.swing.JComboBox<>();
+        nombreBDStardogLabel4 = new javax.swing.JLabel();
+        st_otro = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        userStardogLabel = new javax.swing.JLabel();
+        st_usuario = new javax.swing.JTextField();
+        passStardogLabel = new javax.swing.JLabel();
+        st_pass = new javax.swing.JPasswordField();
+        jPanel3 = new javax.swing.JPanel();
+        nombreBDStardogLabel1 = new javax.swing.JLabel();
+        st_bd = new javax.swing.JTextField();
+        cont_sword = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        nombreBDStardogLabel2 = new javax.swing.JLabel();
+        sw_url = new javax.swing.JComboBox<>();
+        nombreBDStardogLabel5 = new javax.swing.JLabel();
+        sw_otro = new javax.swing.JTextField();
+        jPanel5 = new javax.swing.JPanel();
+        nombreBDStardogLabel3 = new javax.swing.JLabel();
+        sw_usuario = new javax.swing.JTextField();
+        userStardogLabel1 = new javax.swing.JLabel();
+        sw_pass = new javax.swing.JPasswordField();
+        jPanel6 = new javax.swing.JPanel();
+        passStardogLabel1 = new javax.swing.JLabel();
+        sw_obo = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(false);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "STARDOG", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
-        cont_stardog.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
 
-        st_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cont_stardog.add(st_url, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 480, 30));
-
-        nombreBDStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel.setText("URL");
-        nombreBDStardogLabel.setName(""); // NOI18N
-        cont_stardog.add(nombreBDStardogLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 30, 20));
-
-        userStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        userStardogLabel.setText("Usuario");
-        userStardogLabel.setName(""); // NOI18N
-        cont_stardog.add(userStardogLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 50, 20));
-
-        st_otro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                st_otroActionPerformed(evt);
-            }
-        });
-        cont_stardog.add(st_otro, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, 480, 30));
-
-        passStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        passStardogLabel.setText("Clave");
-        passStardogLabel.setName(""); // NOI18N
-        cont_stardog.add(passStardogLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 150, 40, 20));
-
-        nombreBDStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel1.setText("BD");
-        nombreBDStardogLabel1.setName(""); // NOI18N
-        cont_stardog.add(nombreBDStardogLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 20, 20));
-
-        nombreBDStardogLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel4.setText("Otro");
-        nombreBDStardogLabel4.setName(""); // NOI18N
-        cont_stardog.add(nombreBDStardogLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 30, 20));
-
-        st_usuario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                st_usuarioActionPerformed(evt);
-            }
-        });
-        cont_stardog.add(st_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 140, 220, 30));
-
-        st_bd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                st_bdActionPerformed(evt);
-            }
-        });
-        cont_stardog.add(st_bd, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 480, 30));
-        cont_stardog.add(st_pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 210, 30));
-
-        getContentPane().add(cont_stardog, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 570, 190));
-
-        cont_sw.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SWORD", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
-        cont_sw.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        sw_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cont_sw.add(sw_url, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 480, 30));
-
-        nombreBDStardogLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel2.setText("URL");
-        nombreBDStardogLabel2.setName(""); // NOI18N
-        cont_sw.add(nombreBDStardogLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 30, 20));
-
-        userStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        userStardogLabel1.setText("Clave");
-        userStardogLabel1.setName(""); // NOI18N
-        cont_sw.add(userStardogLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 40, 20));
-
-        sw_usuario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sw_usuarioActionPerformed(evt);
-            }
-        });
-        cont_sw.add(sw_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 200, 30));
-
-        passStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        passStardogLabel1.setText("Mediador (On Behalf of)");
-        passStardogLabel1.setName(""); // NOI18N
-        cont_sw.add(passStardogLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 150, 20));
-        cont_sw.add(sw_obo, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 140, 380, 30));
-
-        nombreBDStardogLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel3.setText("Usuario");
-        nombreBDStardogLabel3.setName(""); // NOI18N
-        cont_sw.add(nombreBDStardogLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 50, 20));
-
-        sw_pass.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sw_passActionPerformed(evt);
-            }
-        });
-        cont_sw.add(sw_pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 210, 30));
-
-        nombreBDStardogLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel5.setText("Otro");
-        nombreBDStardogLabel5.setName(""); // NOI18N
-        cont_sw.add(nombreBDStardogLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 30, 20));
-
-        sw_otro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sw_otroActionPerformed(evt);
-            }
-        });
-        cont_sw.add(sw_otro, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, 480, 30));
-
-        getContentPane().add(cont_sw, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 570, 180));
-
-        jButton2.setText("Aceptar y conectar");
+        jButton2.setText("Conectar");
+        panel_inferior.add(jButton2);
 
         btn_cancelar.setText("Cancelar");
         btn_cancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -208,33 +107,181 @@ public class Login extends javax.swing.JDialog {
                 btn_cancelarActionPerformed(evt);
             }
         });
+        panel_inferior.add(btn_cancelar);
 
-        javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
-        panel1.setLayout(panel1Layout);
-        panel1Layout.setHorizontalGroup(
-            panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-                .addContainerGap(319, Short.MAX_VALUE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
-        );
-        panel1Layout.setVerticalGroup(
-            panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(btn_cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
 
-        getContentPane().add(panel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 380, 580, 40));
+        panel_Superior.setLayout(new javax.swing.BoxLayout(panel_Superior, javax.swing.BoxLayout.Y_AXIS));
+
+        cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "StarDog", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_stardog.setLayout(new java.awt.GridLayout(3, 1));
+
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        nombreBDStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel.setText("URL");
+        nombreBDStardogLabel.setName(""); // NOI18N
+        jPanel1.add(nombreBDStardogLabel);
+
+        st_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        st_url.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        st_url.setEditor(null);
+        st_url.setFocusTraversalPolicyProvider(true);
+        jPanel1.add(st_url);
+
+        nombreBDStardogLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel4.setText("Otro");
+        nombreBDStardogLabel4.setName(""); // NOI18N
+        jPanel1.add(nombreBDStardogLabel4);
+
+        st_otro.setColumns(30);
+        st_otro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_otroActionPerformed(evt);
+            }
+        });
+        jPanel1.add(st_otro);
+
+        cont_stardog.add(jPanel1);
+
+        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        userStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        userStardogLabel.setText("Usuario");
+        userStardogLabel.setName(""); // NOI18N
+        userStardogLabel.setPreferredSize(new java.awt.Dimension(50, 17));
+        jPanel2.add(userStardogLabel);
+
+        st_usuario.setColumns(30);
+        st_usuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_usuarioActionPerformed(evt);
+            }
+        });
+        jPanel2.add(st_usuario);
+
+        passStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        passStardogLabel.setText("Clave");
+        passStardogLabel.setName(""); // NOI18N
+        jPanel2.add(passStardogLabel);
+
+        st_pass.setColumns(30);
+        jPanel2.add(st_pass);
+
+        cont_stardog.add(jPanel2);
+
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        nombreBDStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel1.setText("BD");
+        nombreBDStardogLabel1.setName(""); // NOI18N
+        jPanel3.add(nombreBDStardogLabel1);
+
+        st_bd.setColumns(30);
+        st_bd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_bdActionPerformed(evt);
+            }
+        });
+        jPanel3.add(st_bd);
+
+        cont_stardog.add(jPanel3);
+
+        panel_Superior.add(cont_stardog);
+
+        cont_sword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sword", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_sword.setLayout(new java.awt.GridLayout(3, 1, 5, 5));
+
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        nombreBDStardogLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel2.setText("URL");
+        nombreBDStardogLabel2.setName(""); // NOI18N
+        jPanel4.add(nombreBDStardogLabel2);
+
+        sw_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel4.add(sw_url);
+
+        nombreBDStardogLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel5.setText("Otro");
+        nombreBDStardogLabel5.setName(""); // NOI18N
+        jPanel4.add(nombreBDStardogLabel5);
+
+        sw_otro.setColumns(30);
+        sw_otro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sw_otroActionPerformed(evt);
+            }
+        });
+        jPanel4.add(sw_otro);
+
+        cont_sword.add(jPanel4);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        nombreBDStardogLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombreBDStardogLabel3.setText("Usuario");
+        nombreBDStardogLabel3.setName(""); // NOI18N
+        jPanel5.add(nombreBDStardogLabel3);
+
+        sw_usuario.setColumns(30);
+        sw_usuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sw_usuarioActionPerformed(evt);
+            }
+        });
+        jPanel5.add(sw_usuario);
+
+        userStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        userStardogLabel1.setText("Clave");
+        userStardogLabel1.setName(""); // NOI18N
+        jPanel5.add(userStardogLabel1);
+
+        sw_pass.setColumns(30);
+        sw_pass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sw_passActionPerformed(evt);
+            }
+        });
+        jPanel5.add(sw_pass);
+
+        cont_sword.add(jPanel5);
+
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        passStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        passStardogLabel1.setText("Mediador (On Behalf of)");
+        passStardogLabel1.setName(""); // NOI18N
+        jPanel6.add(passStardogLabel1);
+
+        sw_obo.setColumns(30);
+        jPanel6.add(sw_obo);
+
+        cont_sword.add(jPanel6);
+
+        panel_Superior.add(cont_sword);
+
+        getContentPane().add(panel_Superior, java.awt.BorderLayout.PAGE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
+        this.setVisible(false);
+        this.dispose();
+    }//GEN-LAST:event_btn_cancelarActionPerformed
+
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_st_otroActionPerformed
+
+    private void st_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_usuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_usuarioActionPerformed
+
+    private void st_bdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_bdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_bdActionPerformed
 
     private void sw_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_usuarioActionPerformed
         // TODO add your handling code here:
@@ -248,19 +295,6 @@ public class Login extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_sw_otroActionPerformed
 
-    private void st_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_usuarioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_st_usuarioActionPerformed
-
-    private void st_bdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_bdActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_st_bdActionPerformed
-
-    private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
-       this.setVisible(false);
-       this.dispose();
-    }//GEN-LAST:event_btn_cancelarActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -272,7 +306,7 @@ public class Login extends javax.swing.JDialog {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
+                if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -307,15 +341,22 @@ public class Login extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancelar;
     private javax.swing.JPanel cont_stardog;
-    private javax.swing.JPanel cont_sw;
+    private javax.swing.JPanel cont_sword;
     private javax.swing.JButton jButton2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel nombreBDStardogLabel;
     private javax.swing.JLabel nombreBDStardogLabel1;
     private javax.swing.JLabel nombreBDStardogLabel2;
     private javax.swing.JLabel nombreBDStardogLabel3;
     private javax.swing.JLabel nombreBDStardogLabel4;
     private javax.swing.JLabel nombreBDStardogLabel5;
-    private java.awt.Panel panel1;
+    private javax.swing.JPanel panel_Superior;
+    private javax.swing.JPanel panel_inferior;
     private javax.swing.JLabel passStardogLabel;
     private javax.swing.JLabel passStardogLabel1;
     private javax.swing.JTextField st_bd;

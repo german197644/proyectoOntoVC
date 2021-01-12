@@ -28,7 +28,7 @@ import javax.swing.JViewport;
  *
  * @author Pogliani, Germán
  */
-public class MetadataSimple {
+public class Metadato {
 
     private String tipo = null; //Title, SubTitle, Creator, etc   
     private String rotulo = null; //nombre a mostrar en la visualización
@@ -68,10 +68,10 @@ public class MetadataSimple {
         }
     }
 
-    public MetadataSimple() {
+    public Metadato() {
     }
 
-    public MetadataSimple(String aTipo) {
+    public Metadato(String aTipo) {
         final String atipo = extraeMata(aTipo);
         tipo = atipo.toLowerCase().trim();
         //data = atipo.toLowerCase().trim();
@@ -82,13 +82,13 @@ public class MetadataSimple {
      * @param aTipo
      * @param aData
      */
-    public MetadataSimple(String aTipo, String aData) {
+    public Metadato(String aTipo, String aData) {
         final String atipo = extraeMata(aTipo);
         tipo = atipo;
         rotulo = atipo;
     }
 
-    public MetadataSimple(String aTipo, String aData, boolean aObligatorio) {
+    public Metadato(String aTipo, String aData, boolean aObligatorio) {
         tipo = aTipo;
         //data = aData;
         obligatorio = aObligatorio;

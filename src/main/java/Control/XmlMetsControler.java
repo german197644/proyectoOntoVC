@@ -31,7 +31,7 @@
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-package Modelo;
+package Control;
 
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
@@ -88,7 +88,7 @@ import edu.harvard.hul.ois.mets.helper.Any;
  *
  * @author germa
  */
-public class MetsXml {
+public class XmlMetsControler {
 
     /**
      * <pre> Prepara un METS SIP (paquete de información de envío) para ingerir
@@ -188,7 +188,7 @@ public class MetsXml {
     /**
      * Default constructor.
      */
-    public MetsXml()
+    public XmlMetsControler()
             throws MetsException {
         super();
         init(VALIDATE_DEFAULT, Deflater.DEFAULT_COMPRESSION);
@@ -200,7 +200,7 @@ public class MetsXml {
      * @param validate whether or not to validate the resulting METS
      * @param compression level of compression (0-9) to use in Zipfile.
      */
-    public MetsXml(boolean validate, int compression)
+    public XmlMetsControler(boolean validate, int compression)
             throws MetsException {
         super();
         init(validate, compression);
