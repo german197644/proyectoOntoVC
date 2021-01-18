@@ -39,7 +39,7 @@ import org.swordapp.client.SwordResponse;
 public final class SwordControler {
 
     private String file = ""; //archivo que va a ingerir.
-    private String fileMd5 = null; //verifica que el archivo no haya sido modificado.
+    private String fileMd5 = ""; //verifica que el archivo no haya sido modificado.
     
     //file  = "/home/richard/Code/External/JavaClient2.0/src/test/resources/example.zip";      
     //this.fileMd5  = DigestUtils.md5Hex(new FileInputStream(this.file));
@@ -50,6 +50,8 @@ public final class SwordControler {
     ServiceDocument sd;
     private SWORDClient client = null;
     
+    DepositReceipt receipt = null;
+    
     //private LoginControler login = null; 
     
     protected SwordControler() throws Exception {
@@ -59,6 +61,55 @@ public final class SwordControler {
         this.client = login.getClient();
     }
 
+    /**
+     *
+     * @param col recibe la colección donde depositar
+     */
+    public void myDepositoMets (SWORDCollection col)  {                
+        try {
+            MetsControler myMets = MetsControler.getInstancia();     
+            LoginControler login = LoginControler.getInstancia();
+            
+            //Depositamos el recurso
+            Deposit deposit = new Deposit();
+            deposit.setInProgress(false);
+            deposit.setMetadataRelevant(false);                  
+            file = myMets.getRutaFileZIP().getAbsolutePath();
+            deposit.setFile(new FileInputStream(file));
+            deposit.setMimeType("application/zip");
+            deposit.setFilename(myMets.getNomFileZip());
+            deposit.setPackaging(METS);
+            fileMd5 = DigestUtils.md5Hex(new FileInputStream(file));
+            deposit.setMd5(fileMd5);
+            
+            receipt = client.deposit(col, deposit, new AuthCredentials(login.getUsesw(), login.getPassw()));
+            
+            //assertEquals(receipt.getStatusCode(), 201);
+            //assertTrue(receipt.getLocation() != null);            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SWORDClientException | SWORDError | ProtocolViolationException | IOException ex) {
+            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }  
+
+    
+    public String getReceiptResult() {
+        String msj="";
+        if (receipt.getStatusCode() == 201){
+            msj="Se depositó con éxito";
+        }
+        else{    
+            msj="El depósito no fué exitoso";
+        }
+        return msj;
+    }
+    
+    
+    public String getReceiptLocation() {        
+        return (receipt.getLocation()!= null)? receipt.getLocation():"No hay valores";
+    }
+    
     /**
      * Retorno una instancia unica de la clase.
      *
@@ -490,44 +541,8 @@ public final class SwordControler {
 
         SwordResponse resp = client.replace(receipt, replacement, new AuthCredentials(login.getUsesw(), login.getPassw()));
 
-        assertTrue((resp.getStatusCode() == 200 || resp.getStatusCode() == 204));
-
+        //assertTrue((resp.getStatusCode() == 200 || resp.getStatusCode() == 204));
     }
     
-    public String myDepositoMets (SWORDCollection col)  {        
-        String msg = ""; 
-        try {
-            MetsControler myMets = MetsControler.getInstancia();            
-            LoginControler login = LoginControler.getInstancia();
-            
-            //Depositamos el recurso
-            Deposit deposit = new Deposit();
-            deposit.setInProgress(false);
-            deposit.setMetadataRelevant(false);                        
-            file = myMets.getRutaFileZIP().getAbsolutePath();
-            deposit.setFile(new FileInputStream(file));
-            deposit.setMimeType("application/zip");
-            deposit.setFilename(myMets.getNomFileZip());
-            deposit.setPackaging(METS);
-            fileMd5 = DigestUtils.md5Hex(new FileInputStream(file));
-            deposit.setMd5(fileMd5);
-            
-            DepositReceipt receipt = client.deposit(col, deposit, new AuthCredentials(login.getUsesw(), login.getPassw()));
-            
-            if (receipt.getStatusCode() == 201) {
-                msg = "El deposito fué un exito";
-            } 
-            else{
-                msg = "El deposito no se pudo realizar";
-            }
-            //assertEquals(receipt.getStatusCode(), 201);
-            //assertTrue(receipt.getLocation() != null);            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SWORDClientException | SWORDError | ProtocolViolationException | IOException ex) {
-            Logger.getLogger(SwordControler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return msg;
-    }
     
 }

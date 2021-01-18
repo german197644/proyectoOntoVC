@@ -21,7 +21,7 @@ import org.jdom.Element;
 
 public class MetsControler {
 
-    private XmlMetsControler mets; //clase que genera el mets.xml
+    private SIPControler mets; //clase que genera el mets.xml
     private FicheroControler ficheros;
     private File rutaFileZIP; //archivo donde depositar el zip con el mets.
     private String nomFileZip; 
@@ -116,7 +116,7 @@ public class MetsControler {
     public void newMETS() throws MetsException, IOException, Exception {
 
         // Creamos un mets; validate = false, ZIP compression = BEST_SPEED
-        mets = new XmlMetsControler(false, Deflater.BEST_SPEED);
+        mets = new SIPControler(false, Deflater.BEST_SPEED);
 
         // Optional: configurar el METS OBJID
         mets.setOBJID("Sword-Mets-Ontologico");
@@ -150,7 +150,7 @@ public class MetsControler {
         mets.addDescriptiveMD("DC", dcElt);
         //sip.addDescriptiveMD("DC", myMakeMetadata2());
 
-        // escribimos el SIP a un fichero de salida
+        // escribimos el SIPControler a un fichero de salida
         
         //fileZIP = ficheros.getCarpeta(this.aParent);
         //System.getProperty("java.io.tmpdir");
@@ -173,7 +173,7 @@ public class MetsControler {
     
     public void crearMets_v2() throws MetsException, IOException, Exception {
         // Creamos un mets; validate = false, ZIP compression = BEST_SPEED
-        mets = new XmlMetsControler(false, Deflater.BEST_SPEED);
+        mets = new SIPControler(false, Deflater.BEST_SPEED);
         // Optional: configurar el METS OBJID
         mets.setOBJID("Sword-Mets");
         // Optional: Set the METS creator
@@ -194,7 +194,7 @@ public class MetsControler {
         /* aggregamos la descripcion de los metadatos como JDOM element  */      
         List<Element> dcElt = myMakeMetadata();        
         mets.addDescriptiveMD("DC", dcElt);       
-        /* Write SIP to an output file} */
+        /* Write SIPControler to an output file} */
         rutaFileZIP = ficheros.getCarpeta(this.aParent);
         outfile = java.io.File.createTempFile("fichero", ".zip", rutaFileZIP);
         /*guardamos la ruta al zip para su posterior envio.*/

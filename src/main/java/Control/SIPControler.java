@@ -88,7 +88,7 @@ import edu.harvard.hul.ois.mets.helper.Any;
  *
  * @author germa
  */
-public class XmlMetsControler {
+public class SIPControler {
 
     /**
      * <pre> Prepara un METS SIP (paquete de información de envío) para ingerir
@@ -117,7 +117,7 @@ public class XmlMetsControler {
      * @autor Larry Stone
      * @version $ Revisión: 2108 $
      */
-    // Describes the DSpace SIP version implemented here
+    // Describes the DSpace SIPControler version implemented here
     private static final String METS_PROFILE = "DSpace METS SIP Profile 1.0";
 
     // default value for validate
@@ -139,7 +139,7 @@ public class XmlMetsControler {
     // Put all DMD sections for the Item into one group with this ID
     private String dmdGroupID = gensym("dmd_group");
 
-    // attempt to validate the METS manifest before writing SIP
+    // attempt to validate the METS manifest before writing SIPControler
     private boolean validate = VALIDATE_DEFAULT;
 
     // Zip file compression level
@@ -188,7 +188,7 @@ public class XmlMetsControler {
     /**
      * Default constructor.
      */
-    public XmlMetsControler()
+    public SIPControler()
             throws MetsException {
         super();
         init(VALIDATE_DEFAULT, Deflater.DEFAULT_COMPRESSION);
@@ -200,7 +200,7 @@ public class XmlMetsControler {
      * @param validate whether or not to validate the resulting METS
      * @param compression level of compression (0-9) to use in Zipfile.
      */
-    public XmlMetsControler(boolean validate, int compression)
+    public SIPControler(boolean validate, int compression)
             throws MetsException {
         super();
         init(validate, compression);
@@ -644,7 +644,7 @@ public class XmlMetsControler {
     /**
      * Write out the package to filesystem at the designated path.
      *
-     * @param path the File to which to write this SIP.
+     * @param path the File to which to write this SIPControler.
      */
     public void write(File path)
             throws IOException, MetsException {
