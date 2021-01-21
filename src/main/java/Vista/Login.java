@@ -165,7 +165,24 @@ public class Login extends javax.swing.JDialog {
         passStardogLabel.setName(""); // NOI18N
         jPanel2.add(passStardogLabel);
 
+        st_pass.setEditable(false);
+        st_pass.setBackground(new java.awt.Color(255, 255, 255));
         st_pass.setColumns(30);
+        st_pass.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                st_passFocusLost(evt);
+            }
+        });
+        st_pass.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                st_passMouseClicked(evt);
+            }
+        });
+        st_pass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_passActionPerformed(evt);
+            }
+        });
         jPanel2.add(st_pass);
 
         cont_stardog.add(jPanel2);
@@ -238,6 +255,16 @@ public class Login extends javax.swing.JDialog {
         jPanel5.add(userStardogLabel1);
 
         sw_pass.setColumns(30);
+        sw_pass.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                sw_passFocusLost(evt);
+            }
+        });
+        sw_pass.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                sw_passMouseClicked(evt);
+            }
+        });
         sw_pass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sw_passActionPerformed(evt);
@@ -294,6 +321,26 @@ public class Login extends javax.swing.JDialog {
     private void sw_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_otroActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_sw_otroActionPerformed
+
+    private void st_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_st_passMouseClicked
+        st_pass.setEchoChar((char)0);
+    }//GEN-LAST:event_st_passMouseClicked
+
+    private void st_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_st_passFocusLost
+        st_pass.setEchoChar('\u25cf');
+    }//GEN-LAST:event_st_passFocusLost
+
+    private void st_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_passActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_passActionPerformed
+
+    private void sw_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sw_passMouseClicked
+        sw_pass.setEchoChar((char)0);
+    }//GEN-LAST:event_sw_passMouseClicked
+
+    private void sw_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_sw_passFocusLost
+        sw_pass.setEchoChar('\u25cf');
+    }//GEN-LAST:event_sw_passFocusLost
 
     /**
      * @param args the command line arguments

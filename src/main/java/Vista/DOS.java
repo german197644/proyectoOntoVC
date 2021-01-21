@@ -19,6 +19,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -27,8 +28,7 @@ import javax.swing.JPanel;
 public class DOS extends javax.swing.JFrame {
 
     
-    public DOS() {       
-         
+    public DOS() {                        
         initComponents();
         this.setTitle("Depósito Ontológico Simple.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -68,7 +68,6 @@ public class DOS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane5 = new javax.swing.JScrollPane();
         panel_superior = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -85,9 +84,17 @@ public class DOS extends javax.swing.JFrame {
         btnDepositar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         panel_central = new javax.swing.JPanel();
+        panelSur = new javax.swing.JPanel();
+        jPanel15 = new javax.swing.JPanel();
+        jLabel26 = new javax.swing.JLabel();
+        jPanel16 = new javax.swing.JPanel();
+        jLabel27 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taConsola = new javax.swing.JTextArea();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -95,10 +102,11 @@ public class DOS extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         listaMetadato = new javax.swing.JList<>();
+        jPanel14 = new javax.swing.JPanel();
+        btnAgregarMetadato = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         captura = new javax.swing.JScrollPane();
-        jLabel12 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
@@ -121,6 +129,7 @@ public class DOS extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTool = new javax.swing.JMenu();
         mnuConectar = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mnuSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -200,6 +209,37 @@ public class DOS extends javax.swing.JFrame {
 
         panel_central.setLayout(new java.awt.BorderLayout());
 
+        panelSur.setLayout(new java.awt.BorderLayout());
+
+        jPanel15.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel15.setLayout(new java.awt.GridLayout(7, 0));
+
+        jLabel26.setText("          ");
+        jPanel15.add(jLabel26);
+
+        panelSur.add(jPanel15, java.awt.BorderLayout.WEST);
+
+        jPanel16.setLayout(new java.awt.GridLayout(5, 0));
+
+        jLabel27.setText("          ");
+        jPanel16.add(jLabel27);
+
+        panelSur.add(jPanel16, java.awt.BorderLayout.LINE_END);
+
+        taConsola.setBackground(new java.awt.Color(255, 204, 153));
+        taConsola.setColumns(20);
+        taConsola.setLineWrap(true);
+        taConsola.setRows(5);
+        taConsola.setToolTipText("");
+        taConsola.setWrapStyleWord(true);
+        taConsola.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
+        taConsola.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
+        jScrollPane2.setViewportView(taConsola);
+
+        panelSur.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+
+        panel_central.add(panelSur, java.awt.BorderLayout.SOUTH);
+
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setLayout(new java.awt.GridLayout(0, 3, 4, 5));
@@ -207,7 +247,10 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel6.setLayout(new java.awt.BorderLayout());
 
-        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.PAGE_AXIS));
+        jLabel12.setText("  ");
+        jPanel6.add(jLabel12, java.awt.BorderLayout.PAGE_END);
+
+        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.Y_AXIS));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
         jLabel13.setText("                                                                        ");
@@ -216,6 +259,7 @@ public class DOS extends javax.swing.JFrame {
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Objetos de Aprendizajes"));
 
         listaOA.setBackground(new java.awt.Color(240, 240, 240));
+        listaOA.setVisibleRowCount(5);
         listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaOAMouseClicked(evt);
@@ -232,6 +276,7 @@ public class DOS extends javax.swing.JFrame {
 
         listaMetadato.setBackground(new java.awt.Color(240, 240, 240));
         listaMetadato.setOpaque(false);
+        listaMetadato.setVisibleRowCount(5);
         listaMetadato.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaMetadatoMouseClicked(evt);
@@ -241,26 +286,36 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel7.add(jScrollPane7);
 
+        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        btnAgregarMetadato.setText("Agregar Metadato");
+        btnAgregarMetadato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarMetadatoActionPerformed(evt);
+            }
+        });
+        jPanel14.add(btnAgregarMetadato);
+
+        jPanel7.add(jPanel14);
+
         jPanel6.add(jPanel7, java.awt.BorderLayout.WEST);
 
-        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.X_AXIS));
+        jPanel8.setLayout(new java.awt.BorderLayout());
 
-        jLabel20.setText("          ");
-        jPanel8.add(jLabel20);
+        jLabel20.setText("     ");
+        jPanel8.add(jLabel20, java.awt.BorderLayout.WEST);
 
-        captura.setBorder(javax.swing.BorderFactory.createTitledBorder("Describir el ítem"));
-        jPanel8.add(captura);
+        captura.setBackground(new java.awt.Color(204, 204, 255));
+        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Describir el ítem"));
+        captura.setToolTipText("");
+        captura.setMaximumSize(new java.awt.Dimension(33, 44));
+        jPanel8.add(captura, java.awt.BorderLayout.CENTER);
 
         jPanel6.add(jPanel8, java.awt.BorderLayout.CENTER);
 
         jPanel4.add(jPanel6, java.awt.BorderLayout.CENTER);
 
         panel_central.add(jPanel4, java.awt.BorderLayout.CENTER);
-
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("            ");
-        panel_central.add(jLabel12, java.awt.BorderLayout.PAGE_END);
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 204));
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
@@ -274,7 +329,7 @@ public class DOS extends javax.swing.JFrame {
 
         jPanel12.setLayout(new javax.swing.BoxLayout(jPanel12, javax.swing.BoxLayout.LINE_AXIS));
 
-        jLabel9.setText("                                                    ");
+        jLabel9.setText("          ");
         jPanel12.add(jLabel9);
 
         jPanel9.add(jPanel12, java.awt.BorderLayout.CENTER);
@@ -355,6 +410,7 @@ public class DOS extends javax.swing.JFrame {
             }
         });
         mnuTool.add(mnuConectar);
+        mnuTool.add(jSeparator1);
 
         mnuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
         mnuSalir.setText("Salir");
@@ -426,6 +482,54 @@ public class DOS extends javax.swing.JFrame {
     }//GEN-LAST:event_listaOAMouseClicked
 
     private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
+
+    }//GEN-LAST:event_listaMetadatoMouseClicked
+
+    private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
+        try {            
+            SwingWorker<SwordControler, Void> mySwingWorker = new SwingWorker<SwordControler, Void>() {
+
+                @Override
+                protected SwordControler doInBackground() throws Exception {
+                    // Sword
+                     SwordControler repositorio = SwordControler.getInstancia();
+                    //wait.close();
+                    return repositorio;
+                }
+            };
+            mySwingWorker.execute();
+            //SwordControler repositorio = mySwingWorker.get();
+            //---------------------------------------------------------
+            taConsola.append("********************************"); taConsola.append(System.getProperty("line.separator"));
+            taConsola.append("Iniciando depósito.");taConsola.append(System.getProperty("line.separator"));
+            taConsola.append("Generando METS.");taConsola.append(System.getProperty("line.separator"));
+            taConsola.append("********************************");taConsola.append(System.getProperty("line.separator"));
+            taConsola.updateUI();
+            //espera a que termine.
+            //SwordControler repositorio = mySwingWorker.get();
+                //fichero = FicheroControler.getInstancia();                     
+            //MetsControler xmlMets = MetsControler.getInstancia();
+            /*generamos el zip con el mets*/
+            //xmlMets.newMETS();
+            taConsola.append("METS generado");taConsola.append(System.getProperty("line.separator"));
+            taConsola.append("Depositando... Por Favor espere...");
+            //taConsola.append(System.getProperty("line.separator"));
+            //this.viewMsjSeguimiento("Archivo Mets generado.");
+            /* depositado en el repositorio, en la coleccion... */
+            //Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
+            //----------------------------------------------------------------
+            //repositorio.myDepositoMets(col.getColeccion());
+            //----------------------------------------------------------------
+            taConsola.append("Deposito finalizado.");
+            //taConsola.append(System.getProperty("line.separator"));
+        } catch (Exception ex) {
+            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
+        }
+       
+    }//GEN-LAST:event_btnDepositarActionPerformed
+
+    private void btnAgregarMetadatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMetadatoActionPerformed
         StardogControler stardog = null;   
         try {
             List objeto = listaMetadato.getSelectedValuesList();
@@ -433,6 +537,7 @@ public class DOS extends javax.swing.JFrame {
             captura.getViewport().setView(aJp);
             captura.updateUI();
             //eliminamos los metadatos afectados si estos no se repiten.
+            
             //if (ListMetadatos.getSelectedIndices().length > 0) {
             //    stardog.removerItemSeleccionados(ListMetadatos.getSelectedIndices());
             //}
@@ -441,25 +546,7 @@ public class DOS extends javax.swing.JFrame {
         } catch (Exception ex) {            
             JOptionPane.showMessageDialog(this, "Error", "Informe", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_listaMetadatoMouseClicked
-
-    private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
-        try {
-            SwordControler repositorio = SwordControler.getInstancia();
-            //fichero = FicheroControler.getInstancia();
-            MetsControler xmlMets = MetsControler.getInstancia();
-            /*generamos el zip con el mets*/
-            xmlMets.newMETS();
-            //this.viewMsjSeguimiento("Archivo Mets generado.");
-            /* depositado en el repositorio, en la coleccion... */
-            Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
-            //this.viewMsjSeguimiento("Comenzando el deposito de item(s) sobre la coleccion: " + col.getColeccion().getTitle());
-            repositorio.myDepositoMets(col.getColeccion());
-            //this.viewMsjSeguimiento("Deposito de ítem(s) terminado.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_btnDepositarActionPerformed
+    }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -498,6 +585,7 @@ public class DOS extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddFichero;
+    private javax.swing.JButton btnAgregarMetadato;
     private javax.swing.JButton btnDelFichero;
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnSalir;
@@ -515,6 +603,8 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -528,6 +618,9 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -537,10 +630,11 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JList<String> listaColecciones;
     private javax.swing.JList<String> listaMetadato;
     private javax.swing.JList<String> listaOA;
@@ -548,8 +642,10 @@ public class DOS extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuConectar;
     private javax.swing.JMenuItem mnuSalir;
     private javax.swing.JMenu mnuTool;
+    private javax.swing.JPanel panelSur;
     private javax.swing.JPanel panel_central;
     private javax.swing.JPanel panel_inferior;
     private javax.swing.JPanel panel_superior;
+    private javax.swing.JTextArea taConsola;
     // End of variables declaration//GEN-END:variables
 }
