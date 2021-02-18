@@ -50,8 +50,8 @@ public class DublinCoreControler {
     public String buscarEquivalencias(String aValue) throws Exception {
         propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
         properties.load(propertiesStream);
-        final String equi = properties.getProperty(aValue.trim().toLowerCase());        
-        return equi;
+        final String equi = properties.getProperty(aValue.trim().toLowerCase());
+        return equi.trim();
     }
 }
 

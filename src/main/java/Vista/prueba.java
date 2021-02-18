@@ -6,8 +6,34 @@
 package Vista;
 
 import Control.MetsDeposit;
+import Control.SIPControler;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.io.File;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.jdom.Element;
+
+import au.edu.apsr.mtk.base.*;
+import edu.harvard.hul.ois.mets.helper.MetsException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.Deflater;
+import org.jdom.Namespace;
+
+import org.xml.sax.SAXException;
+
+
+
+
+
 /**
  *
  * @author germa
@@ -19,6 +45,8 @@ public class prueba extends javax.swing.JFrame {
      */
     
     MetsDeposit deposito; 
+    
+    private static METS mets = null;
     
     public prueba() {
         initComponents();
@@ -34,6 +62,8 @@ public class prueba extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -44,19 +74,45 @@ public class prueba extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("mets");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("METS 2");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(38, 38, 38))
             .addGroup(layout.createSequentialGroup()
-                .addGap(330, 330, 330)
-                .addComponent(jButton1))
+                .addGap(71, 71, 71)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton3)
+                    .addComponent(jButton2))
+                .addContainerGap(271, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(230, 230, 230)
-                .addComponent(jButton1))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(64, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addGap(41, 41, 41)
+                .addComponent(jButton1)
+                .addGap(30, 30, 30)
+                .addComponent(jButton3)
+                .addGap(49, 49, 49))
         );
 
         pack();
@@ -72,6 +128,57 @@ public class prueba extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+      
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String myObjID = "miMETS";
+        final String ns = "http://purl.org/dc/elements/1.1/";
+        try {
+            // Create SIP; validate = false, ZIP compression = BEST_SPEED
+            SIPControler sip = new SIPControler(false, Deflater.BEST_SPEED);              
+            // Optional: Set the METS OBJID
+            sip.setOBJID(myObjID);
+                        
+            
+            // Optional: Set the METS creator
+            sip.addAgent("CREATOR", "ORGANIZATION", "MyUniversity Libraries");
+            
+            // add content objects - last arg is "is Primary Bitstream"
+            String dir = System.getProperty("java.io.tmpdir");
+            sip.addBitstream(new File(dir+"/pdf1.pdf"), "pdf1.pdf", "ORIGINAL", false);
+           
+            //sip.addBitstream(new File("thesis102.doc"), "content/thesis.doc", "ORIGINAL", false);
+            
+            // add the descriptive metadata as JDOM Element; the package also
+            // accepts a String of serialized XML or a file of any format.
+            //Element modsElt = myMakeMetadata();
+            
+            List <Element> listE = new ArrayList<>();
+            
+            //Namespace nsProj = Namespace.getNamespace("dc", ns);                                   
+            
+            Element t = new Element("title", "dc", ns + "title");
+            t.setText("Dia nublado para celebrar.");
+            listE.add(t);
+            Element ti = new Element("creator", "dc", ns + "creator");
+            
+            ti.setText("Pogliani, German Dario");
+            listE.add(ti);
+            sip.addDescriptiveMD("DC", listE, "Metadatos Dublin Core");
+            
+            
+            // Write SIP to a file
+            File outfile = File.createTempFile(myObjID,".zip");
+            sip.write(outfile);
+        } catch (MetsException | IOException ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+   
+    
     /**
      * @param args the command line arguments
      */
@@ -109,5 +216,7 @@ public class prueba extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     // End of variables declaration//GEN-END:variables
 }

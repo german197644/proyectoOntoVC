@@ -79,6 +79,18 @@
             <version>7.0-preview-1</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.mets</groupId>
+            <artifactId>mets-bundle</artifactId>
+            <version>1.2</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+            <version>2.0.2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

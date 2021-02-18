@@ -12,7 +12,9 @@ package Control;
 import com.complexible.stardog.StardogException;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.reasoning.ReasoningConnection;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -113,13 +115,12 @@ public class LoginControler {
         propertiesStream = new FileInputStream("src/main/java/propiedades/login.properties");        
         properties.load(propertiesStream);
     }
-    
-    
-    private void setup_stardog() throws IOException {       
+        
+    public void setup_stardog() throws IOException {       
         this.servidores_st.removeAllElements();
         this.nrourl = Integer.parseInt(properties.getProperty("nrourl").trim());
         for(int i=1;i<=this.nrourl;i++){
-            servidores_st.addElement(properties.getProperty("url"+"_"+String.valueOf(i).trim()).trim());
+            servidores_st.addElement(properties.getProperty("url_"+String.valueOf(i).trim()).trim());
         }
         this.url = properties.getProperty("url").trim();
         this.userst = properties.getProperty("stuser").trim();
@@ -128,7 +129,7 @@ public class LoginControler {
     }
  
     
-    private void setup_sword() throws IOException {
+    public void setup_sword() throws IOException {
         this.servidores_sw.removeAllElements();
         this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
         for(int i=1;i<=this.nrouri;i++){
@@ -140,19 +141,31 @@ public class LoginControler {
         this.obo = properties.getProperty("obo").trim();
     }
     
-    
-    /*
-    public void setUpSave(String aSdIRI, String aUser, String aPass, String aObo) 
+        
+    //public void grabar_url_st(String aSdIRI, String aUser, String aPass, String aObo) 
+    public void grabarUrlSt(String url) 
             throws Exception {
-        properties.setProperty("sdIRI", aSdIRI.trim());
-        properties.setProperty("user", aUser.trim());
-        File file = new File("src/main/java/propiedades/configSword.properties");
+        nrourl = Integer.parseInt(properties.getProperty("nrourl"));        
+        properties.setProperty("nrourl", String.valueOf(nrourl + 1));
+        properties.setProperty("url_"+(nrourl+1), url);
+        File file = new File("src/main/java/propiedades/login.properties");
         if (file.exists()) {
             output = new FileOutputStream(file.getAbsoluteFile());
             properties.store(output, "datos conexion Sword v2");
         }
-    }
-    */
+    }   
+    
+    public void grabarUriSw(String uri)
+            throws Exception {
+        nrouri = Integer.parseInt(properties.getProperty("nrouri"));
+        properties.setProperty("nrouri", String.valueOf(nrouri + 1));
+        properties.setProperty("uri_"+(nrourl+1), uri);
+        File file = new File("src/main/java/propiedades/login.properties");
+        if (file.exists()) {
+            output = new FileOutputStream(file.getAbsoluteFile());
+            properties.store(output, "datos conexion Sword v2");
+        }
+    }  
 
     public Properties getProperties() {
         return properties;

@@ -6,7 +6,6 @@
 package Vista;
 
 import Control.LoginControler;
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,41 +15,40 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author germa
  */
-public class Login extends javax.swing.JFrame {
+public class Login2 extends javax.swing.JFrame {
 
     /**
-     * Creates new form Login
+     * Creates new form Login2
      */
+    
     private LoginControler login = null; 
     
-    public Login(java.awt.Frame parent, boolean modal) {
-        //super(parent, modal);
-        
+    public Login2() {
         try {
             initComponents();
             this.setLocationRelativeTo(null);
-            //this.setSize(750, 350);            
+            //this.setSize(750, 350);
             this.setResizable(true);
             this.setTitle("LogIn");
             
             login = LoginControler.getInstancia();
             
-            //STARDOG                        
+            //STARDOG
             this.st_url.removeAllItems();
             this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
             this.st_bd.setText(login.getBase());
             this.st_usuario.setText(login.getUserst());
             this.st_pass.setText(login.getPassst());
             
-            //SWORD            
+            //SWORD
             this.sw_url.removeAllItems();
             this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
             this.sw_usuario.setText(login.getUsesw());
             this.sw_pass.setText(login.getPassw());
             this.sw_obo.setText(login.getObo());
-            //...
+            //...        
         } catch (IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Login2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -100,7 +98,7 @@ public class Login extends javax.swing.JFrame {
         passStardogLabel1 = new javax.swing.JLabel();
         sw_obo = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
 
@@ -139,6 +137,11 @@ public class Login extends javax.swing.JFrame {
         st_url.setEditor(null);
         st_url.setFocusTraversalPolicyProvider(true);
         st_url.setMaximumSize(new java.awt.Dimension(56, 20));
+        st_url.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_urlActionPerformed(evt);
+            }
+        });
         jPanel1.add(st_url);
 
         cont_stardog.add(jPanel1);
@@ -329,6 +332,10 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
         this.setVisible(false);
         this.dispose();
@@ -337,50 +344,6 @@ public class Login extends javax.swing.JFrame {
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_st_otroActionPerformed
-
-    private void st_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_usuarioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_st_usuarioActionPerformed
-
-    private void st_bdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_bdActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_st_bdActionPerformed
-
-    private void sw_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_usuarioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sw_usuarioActionPerformed
-
-    private void sw_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_passActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sw_passActionPerformed
-
-    private void sw_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_otroActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sw_otroActionPerformed
-
-    private void st_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_st_passMouseClicked
-        st_pass.setEchoChar((char)0);
-    }//GEN-LAST:event_st_passMouseClicked
-
-    private void st_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_st_passFocusLost
-        st_pass.setEchoChar('\u25cf');
-    }//GEN-LAST:event_st_passFocusLost
-
-    private void st_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_passActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_st_passActionPerformed
-
-    private void sw_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sw_passMouseClicked
-        sw_pass.setEchoChar((char)0);
-    }//GEN-LAST:event_sw_passMouseClicked
-
-    private void sw_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_sw_passFocusLost
-        sw_pass.setEchoChar('\u25cf');
-    }//GEN-LAST:event_sw_passFocusLost
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btn_agregar_stActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_stActionPerformed
         try {
@@ -393,16 +356,60 @@ public class Login extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_agregar_stActionPerformed
 
+    private void st_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_usuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_usuarioActionPerformed
+
+    private void st_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_st_passFocusLost
+        st_pass.setEchoChar('\u25cf');
+    }//GEN-LAST:event_st_passFocusLost
+
+    private void st_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_st_passMouseClicked
+        st_pass.setEchoChar((char)0);
+    }//GEN-LAST:event_st_passMouseClicked
+
+    private void st_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_passActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_passActionPerformed
+
+    private void st_bdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_bdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_bdActionPerformed
+
+    private void sw_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_otroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sw_otroActionPerformed
+
     private void btn_agregar_swActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_swActionPerformed
         try {
             login.grabarUriSw(this.sw_otro.getText());
             login.setup_sword();
-            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw())); 
+            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
             this.sw_url.updateUI();
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btn_agregar_swActionPerformed
+
+    private void sw_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_usuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sw_usuarioActionPerformed
+
+    private void sw_passFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_sw_passFocusLost
+        sw_pass.setEchoChar('\u25cf');
+    }//GEN-LAST:event_sw_passFocusLost
+
+    private void sw_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sw_passMouseClicked
+        sw_pass.setEchoChar((char)0);
+    }//GEN-LAST:event_sw_passMouseClicked
+
+    private void sw_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_passActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sw_passActionPerformed
+
+    private void st_urlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_urlActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_st_urlActionPerformed
 
     /**
      * @param args the command line arguments
@@ -415,34 +422,26 @@ public class Login extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the dialog */
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Login dialog = new Login(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                new Login2().setVisible(true);
             }
         });
     }

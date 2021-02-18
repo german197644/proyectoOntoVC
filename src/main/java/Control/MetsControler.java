@@ -12,11 +12,14 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.Deflater;
 import javax.swing.DefaultListModel;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 
 public class MetsControler {
@@ -57,21 +60,20 @@ public class MetsControler {
         return rutaFileZIP;
     }
 
-    //encapsulamos los metadatos capturados.    
+    //encapsulamos los metadatos.
     private List myMakeMetadata() throws Exception {
 
         List<Element> aListEle = new ArrayList<>();
         StardogControler ontologia = StardogControler.getInstancia();
-        DublinCoreControler dcore = DublinCoreControler.getInstancia();
-        
+        DublinCoreControler dublincore = DublinCoreControler.getInstancia();
         DefaultListModel<Metadato> aListMetadatos = ontologia.getCapturaMetadados();
-
+        final String uri = "http://purl.org/dc/elements/1.1/";
+        
         for (int i = 0; i < aListMetadatos.size(); ++i) {
             Metadato m = aListMetadatos.get(i);
             //System.out.println("pase por aca!. metadato: " + m.getTipo());
-            Object aDC = dcore.getEquivalenciaDC(m.getTipo().toLowerCase().trim());
+            Object aDC = dublincore.getEquivalenciaDC(m.getTipo().toLowerCase().trim());
             if (aDC != null) {
-
                 if (aDC instanceof StringTokenizer) {
                     StringTokenizer aux = (StringTokenizer) aDC;
                     //String[] result = "this is a test".split("\\s");
@@ -81,24 +83,27 @@ public class MetsControler {
                     while (aux.hasMoreTokens()) {
                         //System.out.println(aux.nextToken());
                         //final String uri = "http://purl.org/dc/terms/" + aux.nextToken().trim().toLowerCase();
-                        final String uri = "http://purl.org/dc/terms/";
+                        //final String uri = "http://purl.org/dc/elements/1.1/";
                         //Element t = new Element(aux.nextToken(), "dcterms", uri);
-                        Element t = new Element(aux.nextToken(), "dc", uri);
+                        Element t = new Element(aux.nextToken(), "dc", uri+aux.nextToken());
                         //t.setText(m.getDataContenedor());
                         //System.out.println("entre al WHILE: " + aux.nextToken());
                         t.setText(result[i]);
-                        aListEle.add(t);
+                        aListEle.add(t); //revisar
                         i++;
                     }
                 } else {
+                    //titulo, creator, etc. ...    
+                    // Esto de abajo no sirve, hay que mejorar ...
                     final String auxDC = ((String) aDC);
                     //System.out.println("entre al else " + auxDC);
                     //final String uri = "http://purl.org/dc/terms/" + auxDC;
-                    final String uri = "http://purl.org/dc/terms/";
-                    //Element t = new Element(auxDC, "dcterms", uri);
-                    Element t = new Element(auxDC, "dc", uri);
+                    //final String uri = "http://purl.org/dc/elements/1.1/";
+                    Element t = new Element(auxDC, "dc", uri+auxDC);
+                    t.setText(m.getContenidoMetadato());
+
                     //t.setText(m.getContenidoMetadato());
-                    t = t.setAttribute(auxDC, m.getContenidoMetadato());
+                    //t = t.setAttribute(auxDC, m.getContenidoMetadato());
                     //System.out.println("entre al else " + auxDC);
                     aListEle.add(t);
                 }
@@ -128,6 +133,7 @@ public class MetsControler {
         java.io.File outfile = null;
 
         // agregamos los objetos de aprendizaje al zip - el ultimo argumento es si "is Primary Bitstream".
+        ficheros = FicheroControler.getInstancia();
         DefaultListModel<Fichero> aFiles = ficheros.getListaFicheros();
         //System.out.println("tamaño de los archivos" + aFiles.size());
         for (int i = 0; i < aFiles.size(); ++i) {
@@ -147,7 +153,7 @@ public class MetsControler {
         List<Element> dcElt = myMakeMetadata();
 
 
-        mets.addDescriptiveMD("DC", dcElt);
+        mets.addDescriptiveMD("DC", dcElt, "Metadatos Dublin Core");
         //sip.addDescriptiveMD("DC", myMakeMetadata2());
 
         // escribimos el SIPControler a un fichero de salida
@@ -193,7 +199,7 @@ public class MetsControler {
         }
         /* aggregamos la descripcion de los metadatos como JDOM element  */      
         List<Element> dcElt = myMakeMetadata();        
-        mets.addDescriptiveMD("DC", dcElt);       
+        mets.addDescriptiveMD("DC", dcElt, "Metadatos Dublin Core");       
         /* Write SIPControler to an output file} */
         rutaFileZIP = ficheros.getCarpeta(this.aParent);
         outfile = java.io.File.createTempFile("fichero", ".zip", rutaFileZIP);

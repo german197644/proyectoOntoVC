@@ -83,6 +83,9 @@ import edu.harvard.hul.ois.mets.helper.PCData;
 import edu.harvard.hul.ois.mets.helper.PreformedXML;
 import edu.harvard.hul.ois.mets.helper.MetsReader;
 import edu.harvard.hul.ois.mets.helper.Any;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -291,17 +294,19 @@ public class SIPControler {
 
     /**
      * Adds a section of descriptive metadata (DMD) to the METS document, based
-     * on a list of JDOM elements. The elements become the contents of the
-     * dmdSec in the METS document. Note that all DMD sections apply to the
-     * entire Item in the SIP.
+     * on a list of JDOM elements.The elements become the contents of the
+ dmdSec in the METS document.Note that all DMD sections apply to the
+ entire Item in the SIP.
      *
      * @param type METS metadata type name (e.g. "MODS")
      * @param md list of JDOM elements containing the DMD
+     * @param label etiqueta del mdWrap
+     * @throws edu.harvard.hul.ois.mets.helper.MetsException
      */
-    public void addDescriptiveMD(String type, List<Element> md)
+    public void addDescriptiveMD(String type, List<Element> md, String label)
             throws MetsException {
         Element first = md.get(0);
-        XmlData xd = addDescriptiveMDInternal(type, outputter.outputString(first), first.getNamespace());
+        XmlData xd = addDescriptiveMDInternal(type, outputter.outputString(first), first.getNamespace(), label);
         for (Element e : md.subList(1, md.size())) {
             //addToXmlData(xd, outputter.outputString(e), e.getNamespace());
             addToXmlData(xd, outputter.outputString(e)+type, e.getNamespace());
@@ -310,30 +315,34 @@ public class SIPControler {
 
     /**
      * Adds a section of descriptive metadata (DMD) to the METS document, based
-     * on a JDOM element. The element will be the contents of the dmdSec in the
-     * METS document. Note that all DMD sections apply to the entire Item in the
-     * SIP.
+     * on a JDOM element.The element will be the contents of the dmdSec in the
+ METS document.Note that all DMD sections apply to the entire Item in the
+ SIP.
      *
      * @param type METS metadata type name (e.g. "MODS")
      * @param md JDOM element containing the DMD
+     * @param label etiqueta del mdWrap
+     * @throws edu.harvard.hul.ois.mets.helper.MetsException
      */
-    public void addDescriptiveMD(String type, Element md)
+    public void addDescriptiveMD(String type, Element md, String label)
             throws MetsException {
-        addDescriptiveMDInternal(type, outputter.outputString(md), md.getNamespace());
+        addDescriptiveMDInternal(type, outputter.outputString(md), md.getNamespace(), label);
     }
 
     /**
      * Adds a section of descriptive metadata (DMD) to the METS document, based
-     * on String containing serialized XML. The string is expected to contain
-     * one element, which becomes the contents of the dmdSec in the METS
-     * document. Note that all DMD sections apply to the entire Item in the SIP.
+     * on String containing serialized XML.The string is expected to contain
+ one element, which becomes the contents of the dmdSec in the METS
+ document.Note that all DMD sections apply to the entire Item in the SIP.
      *
      * @param type METS metadata type name (e.g. "MODS")
      * @param md serialized XML metadata
+     * @param label etiqueta del mdWrap
+     * @throws edu.harvard.hul.ois.mets.helper.MetsException
      */
-    public void addDescriptiveMD(String type, String md)
+    public void addDescriptiveMD(String type, String md, String label)
             throws MetsException {
-        addDescriptiveMDInternal(type, md, null);
+        addDescriptiveMDInternal(type, md, null, label);
     }
 
     /**
@@ -354,10 +363,11 @@ public class SIPControler {
      * Adds a dmdSec to the METS manifest containing serialized XML metadata.
      * Returns the xmlData element within that dmdSec.
      */
-    private XmlData addDescriptiveMDInternal(String type, String md, Namespace ns)
+    private XmlData addDescriptiveMDInternal(String type, String md, Namespace ns, String label)
             throws MetsException {
         XmlData xmlData = new XmlData();
-
+        
+        
         // XXX FIXME? should add schemaLocation here too if available
         if (ns != null) {
             xmlData.setSchema(ns.getPrefix(), ns.getURI());
@@ -373,6 +383,7 @@ public class SIPControler {
         dmdSec.setGROUPID(dmdGroupID);
         MdWrap mdWrap = new MdWrap();
         setMdType(mdWrap, type);
+        mdWrap.setLABEL(label);        
         mdWrap.getContent().add(xmlData);
         dmdSec.getContent().add(mdWrap);
         manifest.getContent().add(dmdSec);

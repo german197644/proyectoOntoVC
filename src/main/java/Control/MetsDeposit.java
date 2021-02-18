@@ -65,8 +65,9 @@ public class MetsDeposit {
             deposit.setInProgress(false);
             deposit.setMetadataRelevant(false);
             deposit.setFile(new FileInputStream(this.file));
-            deposit.setMimeType("application/zip");
+            deposit.setMimeType("application/zip");            
             deposit.setFilename("example.zip");
+            //deposit.setFilename("example.zip");
             deposit.setPackaging(this.METS);
             deposit.setMd5(this.fileMd5);
             

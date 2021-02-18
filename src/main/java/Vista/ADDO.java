@@ -19,16 +19,15 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 
 /**
  *
  * @author germa
  */
-public class DOS extends javax.swing.JFrame {
+public class ADDO extends javax.swing.JFrame {
 
     
-    public DOS() {                        
+    public ADDO() {                        
         initComponents();
         this.setTitle("Depósito Ontológico Simple.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -54,7 +53,7 @@ public class DOS extends javax.swing.JFrame {
             // end                                
 
         } catch (Exception ex) {
-            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -450,7 +449,7 @@ public class DOS extends javax.swing.JFrame {
             fichero.getFileChooser(this);
             listaRecursos.setModel(fichero.getListaFicheros());
         } catch (IOException ex) {
-            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAddFicheroActionPerformed
 
@@ -461,23 +460,22 @@ public class DOS extends javax.swing.JFrame {
                 fichero.quitarFichero(listaRecursos.getSelectedIndex());
             }    
         } catch (Exception ex) {
-            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
-        StardogControler stardog = null;
         try {
+            StardogControler stardog = StardogControler.getInstancia();
             Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
             DefaultListModel datos2 = stardog.getMetadatos_v1(dato);
-            listaMetadato.setModel(datos2);
-            
+            listaMetadato.setModel(datos2);            
             //preseteamos el panel de captura con los metadatos obligatorios.
             final JPanel aJp = stardog.preSeteoPanelCaptura();
             captura.getViewport().setView(aJp);
             captura.updateUI();
         } catch (Exception ex) {
-            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_listaOAMouseClicked
 
@@ -487,43 +485,43 @@ public class DOS extends javax.swing.JFrame {
 
     private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
         try {            
-            SwingWorker<SwordControler, Void> mySwingWorker = new SwingWorker<SwordControler, Void>() {
+            //SwingWorker<SwordControler, Void> mySwingWorker = new SwingWorker<SwordControler, Void>() {
 
-                @Override
-                protected SwordControler doInBackground() throws Exception {
+            //    @Override
+            //    protected SwordControler doInBackground() throws Exception {
                     // Sword
-                     SwordControler repositorio = SwordControler.getInstancia();
+            //         SwordControler repositorio = SwordControler.getInstancia();
                     //wait.close();
-                    return repositorio;
-                }
-            };
-            mySwingWorker.execute();
+            //        return repositorio;
+            //    }
+            //};
+            //mySwingWorker.execute();
             //SwordControler repositorio = mySwingWorker.get();
             //---------------------------------------------------------
-            taConsola.append("********************************"); taConsola.append(System.getProperty("line.separator"));
+            SwordControler repositorio = SwordControler.getInstancia();
+            taConsola.append("********************************\n");
             taConsola.append("Iniciando depósito.");taConsola.append(System.getProperty("line.separator"));
             taConsola.append("Generando METS.");taConsola.append(System.getProperty("line.separator"));
             taConsola.append("********************************");taConsola.append(System.getProperty("line.separator"));
-            taConsola.updateUI();
-            //espera a que termine.
-            //SwordControler repositorio = mySwingWorker.get();
+            taConsola.updateUI();                        
                 //fichero = FicheroControler.getInstancia();                     
-            //MetsControler xmlMets = MetsControler.getInstancia();
+            MetsControler xmlMets = MetsControler.getInstancia();
+            
             /*generamos el zip con el mets*/
-            //xmlMets.newMETS();
+            xmlMets.newMETS();
             taConsola.append("METS generado");taConsola.append(System.getProperty("line.separator"));
             taConsola.append("Depositando... Por Favor espere...");
-            //taConsola.append(System.getProperty("line.separator"));
-            //this.viewMsjSeguimiento("Archivo Mets generado.");
+            taConsola.append(System.getProperty("line.separator"));
+            
             /* depositado en el repositorio, en la coleccion... */
-            //Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
+            Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
             //----------------------------------------------------------------
-            //repositorio.myDepositoMets(col.getColeccion());
+            repositorio.myDepositoMets(col.getColeccion());
             //----------------------------------------------------------------
             taConsola.append("Deposito finalizado.");
-            //taConsola.append(System.getProperty("line.separator"));
+            taConsola.append(System.getProperty("line.separator"));
         } catch (Exception ex) {
-            Logger.getLogger(DOS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
         }
        
@@ -565,20 +563,21 @@ public class DOS extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DOS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DOS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DOS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DOS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DOS().setVisible(true);
+                new ADDO().setVisible(true);
             }
         });
     }
