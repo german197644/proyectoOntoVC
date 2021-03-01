@@ -6,33 +6,48 @@
 package Vista;
 
 import Control.MetsDeposit;
+import Control.RestControler;
 import Control.SIPControler;
+import Modelo.Coleccion;
+import Modelo.ComunidadRest;
+import Modelo.ColeccionRest;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.io.File;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.jdom.Element;
 
 import au.edu.apsr.mtk.base.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import edu.harvard.hul.ois.mets.helper.MetsException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.zip.Deflater;
-import org.jdom.Namespace;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
 
-import org.xml.sax.SAXException;
-
-
-
-
+import org.json.simple.JSONArray;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -43,11 +58,11 @@ public class prueba extends javax.swing.JFrame {
     /**
      * Creates new form prueba
      */
-    
-    MetsDeposit deposito; 
-    
+    MetsDeposit deposito;
+    DefaultTreeModel modelo;
+
     private static METS mets = null;
-    
+
     public prueba() {
         initComponents();
     }
@@ -64,6 +79,21 @@ public class prueba extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        txtComand = new javax.swing.JTextField();
+        btnJson = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tree = new javax.swing.JTree();
+        btnProcessBuilder = new javax.swing.JButton();
+        txtSeleccionName = new javax.swing.JTextField();
+        txtSeleccionLink = new javax.swing.JTextField();
+        txtHost = new javax.swing.JTextField();
+        btnDepositarBitStream = new javax.swing.JButton();
+        btnNewItem = new javax.swing.JButton();
+        btnSendMetadatos = new javax.swing.JButton();
+        btnAutenticar = new javax.swing.JButton();
+        btnAutenticar1 = new javax.swing.JButton();
+        txtItem = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,31 +118,167 @@ public class prueba extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setText("Command_EXEC");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        btnJson.setText("Json Archivo");
+        btnJson.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnJsonActionPerformed(evt);
+            }
+        });
+
+        tree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                treeMousePressed(evt);
+            }
+        });
+        tree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                treeValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tree);
+
+        btnProcessBuilder.setText("ProcessBuilder");
+        btnProcessBuilder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcessBuilderActionPerformed(evt);
+            }
+        });
+
+        txtHost.setText("http://localhost:8080");
+        txtHost.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtHostActionPerformed(evt);
+            }
+        });
+
+        btnDepositarBitStream.setText("Enviar bitStreams");
+        btnDepositarBitStream.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDepositarBitStreamActionPerformed(evt);
+            }
+        });
+
+        btnNewItem.setText("Crear New Item");
+        btnNewItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewItemActionPerformed(evt);
+            }
+        });
+
+        btnSendMetadatos.setText("Enviar Metadatos");
+
+        btnAutenticar.setText("Login");
+        btnAutenticar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAutenticarActionPerformed(evt);
+            }
+        });
+
+        btnAutenticar1.setText("Logout");
+        btnAutenticar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAutenticar1ActionPerformed(evt);
+            }
+        });
+
+        txtItem.setText("/rest/items/5edb8150-b967-4431-a379-b9a4d12441c1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(38, 38, 38))
             .addGroup(layout.createSequentialGroup()
-                .addGap(71, 71, 71)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2))
-                .addContainerGap(271, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtSeleccionName)
+                            .addComponent(txtSeleccionLink)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnNewItem)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnDepositarBitStream)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnSendMetadatos))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAutenticar)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnAutenticar1)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(txtItem)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3)
+                            .addComponent(jButton2)
+                            .addComponent(btnJson))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton4)
+                                .addGap(45, 45, 45)
+                                .addComponent(btnProcessBuilder))
+                            .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(64, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addGap(41, 41, 41)
-                .addComponent(jButton1)
-                .addGap(30, 30, 30)
-                .addComponent(jButton3)
-                .addGap(49, 49, 49))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnJson))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton4)
+                            .addComponent(btnProcessBuilder))))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtSeleccionName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtSeleccionLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAutenticar)
+                            .addComponent(btnAutenticar1))
+                        .addGap(13, 13, 13)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnDepositarBitStream)
+                            .addComponent(btnSendMetadatos)
+                            .addComponent(btnNewItem))
+                        .addGap(55, 55, 55))))
         );
 
         pack();
@@ -121,7 +287,7 @@ public class prueba extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             // TODO add your handling code here:
-            deposito = new MetsDeposit(); 
+            deposito = new MetsDeposit();
             deposito.depositNew();
         } catch (Exception ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
@@ -129,7 +295,7 @@ public class prueba extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -137,48 +303,222 @@ public class prueba extends javax.swing.JFrame {
         final String ns = "http://purl.org/dc/elements/1.1/";
         try {
             // Create SIP; validate = false, ZIP compression = BEST_SPEED
-            SIPControler sip = new SIPControler(false, Deflater.BEST_SPEED);              
+            SIPControler sip = new SIPControler(false, Deflater.BEST_SPEED);
             // Optional: Set the METS OBJID
             sip.setOBJID(myObjID);
-                        
-            
+
             // Optional: Set the METS creator
             sip.addAgent("CREATOR", "ORGANIZATION", "MyUniversity Libraries");
-            
+
             // add content objects - last arg is "is Primary Bitstream"
             String dir = System.getProperty("java.io.tmpdir");
-            sip.addBitstream(new File(dir+"/pdf1.pdf"), "pdf1.pdf", "ORIGINAL", false);
-           
+            sip.addBitstream(new File(dir + "/pdf1.pdf"), "pdf1.pdf", "ORIGINAL", false);
+
             //sip.addBitstream(new File("thesis102.doc"), "content/thesis.doc", "ORIGINAL", false);
-            
             // add the descriptive metadata as JDOM Element; the package also
             // accepts a String of serialized XML or a file of any format.
             //Element modsElt = myMakeMetadata();
-            
-            List <Element> listE = new ArrayList<>();
-            
+            List<Element> listE = new ArrayList<>();
+
             //Namespace nsProj = Namespace.getNamespace("dc", ns);                                   
-            
             Element t = new Element("title", "dc", ns + "title");
             t.setText("Dia nublado para celebrar.");
             listE.add(t);
             Element ti = new Element("creator", "dc", ns + "creator");
-            
+
             ti.setText("Pogliani, German Dario");
             listE.add(ti);
             sip.addDescriptiveMD("DC", listE, "Metadatos Dublin Core");
-            
-            
+
             // Write SIP to a file
-            File outfile = File.createTempFile(myObjID,".zip");
+            File outfile = File.createTempFile(myObjID, ".zip");
             sip.write(outfile);
         } catch (MetsException | IOException ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
-   
-    
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        try {
+            // TODO add your handling code here:
+            RestControler myRest = new RestControler();
+            myRest.comandoEXEC(txtComand.getText().trim());
+        } catch (JSONException ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void btnJsonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJsonActionPerformed
+
+        FileWriter file = null;
+        try {
+            JSONArray list = new JSONArray();
+            JSONObject obj = new JSONObject();
+            JSONObject data = new JSONObject();
+            obj.put("key", "dc.title");
+            obj.put("value", "Espero que salga");
+            list.add(obj);
+            data.put("metadata", list);
+            //----------------------------------------------------------
+            file = new FileWriter(new File("e:\\data2.txt"));
+            file.write(data.toJSONString());
+            file.flush();
+            file.close();
+        } catch (IOException ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                file.close();
+            } catch (IOException ex) {
+                Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+
+    }//GEN-LAST:event_btnJsonActionPerformed
+
+    private void btnProcessBuilderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessBuilderActionPerformed
+        RestControler rest = new RestControler();
+        modelo = rest.estructRepositorio(txtComand.getText().trim(), txtHost.getText().trim());
+        tree.setModel(modelo);
+        tree.updateUI();
+        //String command = txtComand.getText();
+        //Process process = Runtime.getRuntime().exec(command);
+        //InputStream is = process.getInputStream();
+        //InputStreamReader isr = new InputStreamReader(is);
+        //BufferedReader br = new BufferedReader(isr);
+        //String result = br.lines().collect(Collectors.joining("\n"));
+        //System.out.println("Linea: "+ result);
+
+        //JsonParser parser = new JsonParser();
+        //JsonElement datos = parser.parse(result);
+        //DefaultMutableTreeNode nodo = new DefaultMutableTreeNode("Repositorio");
+        //modelo = new DefaultTreeModel(nodo);
+        //modelo = dumpJSONElement2("", datos, "", modelo, nodo, 0);
+    }//GEN-LAST:event_btnProcessBuilderActionPerformed
+
+    private void treeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeValueChanged
+        TreePath path = evt.getPath();
+        Object[] nodos = path.getPath();
+        System.out.println("");
+        System.out.println("----------------------------------------------");
+        System.out.println("Path seleccionado: " + Arrays.toString(nodos));
+        for (Object nodo : nodos) {
+            System.out.print(nodo.toString() + " | ");
+        }
+
+        // Mirando el ultimo nodo del path, sabemos qué nodo en concreto
+        // se ha seleccionado.
+        DefaultMutableTreeNode ultimoNodo
+                = (DefaultMutableTreeNode) nodos[nodos.length - 1];
+
+        System.out.println("ultimo Nodo: " + ultimoNodo);
+        if (ultimoNodo.isRoot()) {
+            return;
+        }
+
+        System.out.println("ultimo Nodo: " + ultimoNodo.isLeaf());
+
+        if (ultimoNodo.isLeaf() && ultimoNodo.getUserObject() instanceof ColeccionRest) {
+            ColeccionRest col = (ColeccionRest) ultimoNodo.getUserObject();
+            txtSeleccionName.setText(col.getNombre());
+            txtSeleccionLink.setText(col.getLink());
+        }
+    }//GEN-LAST:event_treeValueChanged
+
+    private void treeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMousePressed
+        // Se obtiene el path para esa fila. Con el path podemos obtener
+        // los nodos.
+        int selRow = tree.getRowForLocation(evt.getX(), evt.getY());
+        System.out.println("Row: " + selRow);
+        if (selRow < 0) {
+            return;
+        }
+
+        TreePath selPath = tree.getPathForLocation(evt.getX(), evt.getY());
+
+        System.out.println("Path: " + selPath.toString());
+
+        DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+        if (nodo.isLeaf())
+            System.out.println("Es hoja: " + nodo.isLeaf());
+    }//GEN-LAST:event_treeMousePressed
+
+    private void btnAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticarActionPerformed
+        try {
+            RestControler rest = new RestControler();
+            String result = rest.Login();
+            System.out.println(result);
+        } catch (Exception ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_btnAutenticarActionPerformed
+
+    private void txtHostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHostActionPerformed
+
+    }//GEN-LAST:event_txtHostActionPerformed
+
+    private void btnAutenticar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticar1ActionPerformed
+        try {
+            RestControler rest = new RestControler();
+            String result = rest.Logout();
+            System.out.println(result);
+        } catch (Exception ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnAutenticar1ActionPerformed
+
+    private void btnNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewItemActionPerformed
+        RestControler rest = new RestControler();
+        //reemplazar por la que se selecciona en pantalla.
+        String result = rest.newItem("/rest/collections/34368f6d-3a1b-4698-b064-1cf6e8e85df1");
+        System.out.println(result);
+    }//GEN-LAST:event_btnNewItemActionPerformed
+
+    private void btnDepositarBitStreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarBitStreamActionPerformed
+        RestControler rest = new RestControler();
+        String result = rest.sendBitstreams(txtItem.getText().trim(), "");
+        System.out.println(result);                
+    }//GEN-LAST:event_btnDepositarBitStreamActionPerformed
+
+    public static void dumpJSONElement(JsonElement elemento) {
+        if (elemento.isJsonObject()) {
+            System.out.println("Es objeto");
+            JsonObject obj = elemento.getAsJsonObject();
+            java.util.Set<java.util.Map.Entry<String, JsonElement>> entradas = obj.entrySet();
+            java.util.Iterator<java.util.Map.Entry<String, JsonElement>> iter = entradas.iterator();
+            while (iter.hasNext()) {
+                java.util.Map.Entry<String, JsonElement> entrada = iter.next();
+                System.out.println("Clave: " + entrada.getKey());
+                System.out.println("Valor:");
+                dumpJSONElement(entrada.getValue());
+            }
+        } else if (elemento.isJsonArray()) {
+            JsonArray array = elemento.getAsJsonArray();
+            System.out.println("Es array. Numero de elementos: " + array.size());
+            java.util.Iterator<JsonElement> iter = array.iterator();
+            while (iter.hasNext()) {
+                JsonElement entrada = iter.next();
+                dumpJSONElement(entrada);
+            }
+        } else if (elemento.isJsonPrimitive()) {
+            System.out.println("Es primitiva");
+            JsonPrimitive valor = elemento.getAsJsonPrimitive();
+            if (valor.isBoolean()) {
+                System.out.println("Es booleano: " + valor.getAsBoolean());
+            } else if (valor.isNumber()) {
+                System.out.println("Es numero: " + valor.getAsNumber());
+            } else if (valor.isString()) {
+                System.out.println("Es texto: " + valor.getAsString());
+            }
+        } else if (elemento.isJsonNull()) {
+            System.out.println("Es NULL");
+        } else {
+            System.out.println("Es otra cosa");
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -215,8 +555,23 @@ public class prueba extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAutenticar;
+    private javax.swing.JButton btnAutenticar1;
+    private javax.swing.JButton btnDepositarBitStream;
+    private javax.swing.JButton btnJson;
+    private javax.swing.JButton btnNewItem;
+    private javax.swing.JButton btnProcessBuilder;
+    private javax.swing.JButton btnSendMetadatos;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTree tree;
+    private javax.swing.JTextField txtComand;
+    private javax.swing.JTextField txtHost;
+    private javax.swing.JTextField txtItem;
+    private javax.swing.JTextField txtSeleccionLink;
+    private javax.swing.JTextField txtSeleccionName;
     // End of variables declaration//GEN-END:variables
 }
