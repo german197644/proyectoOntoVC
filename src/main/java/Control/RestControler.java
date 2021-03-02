@@ -209,6 +209,48 @@ public class RestControler {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public DefaultTreeModel getTreeCominudad(String url, String comando) {
+        DefaultTreeModel modelo = null;
+        try {
+            Process process = Runtime.getRuntime().exec(comando);
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            JsonParser parser = new JsonParser();
+            String result = br.lines().collect(Collectors.joining("\n"));
+            //System.out.println("Linea: " + result);
+            JsonElement datos = parser.parse(result);
+            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+            modelo = new DefaultTreeModel(padre);            
+            if (((JsonElement) datos).isJsonArray()) {
+                int level = 0;
+                JsonArray array = (JsonArray) datos;
+                System.out.println("Es array. Numero de elementos: " + array.size());
+                Iterator<JsonElement> iter = array.iterator();
+                
+                System.out.println(padre.getRoot().toString());
+                while (iter.hasNext()) {
+                    JsonObject jsonComunidad = (JsonObject) iter.next();
+                    JsonElement linkComunidad = jsonComunidad.get("link");
+                    JsonElement nameComunidad = jsonComunidad.get("name");
+                    //creamos la comunidad
+                    ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
+                    DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
+
+                    modelo.insertNodeInto(nodoComunidad, padre, level);
+
+                    System.out.println(" -- " + comunidad.toString());
+                    level += level;
+                }
+                return modelo;
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return modelo;
+    }
 
     public DefaultTreeModel estructRepositorio(String comando, String url) {
         DefaultTreeModel modelo = null;
@@ -235,7 +277,7 @@ public class RestControler {
     /**
      *
      * @param elemento JsonElement
-     * @param miTree Jerarquia para mostrar
+     * @param miTree Jerarquia para mostrar en la salida
      * @param modelo modelo del arbol
      * @param padre nodo inmediato superior
      * @param jerarquia el orden que ocupa en la estructura.

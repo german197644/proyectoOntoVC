@@ -8,7 +8,6 @@ package Vista;
 import Control.MetsDeposit;
 import Control.RestControler;
 import Control.SIPControler;
-import Modelo.Coleccion;
 import Modelo.ComunidadRest;
 import Modelo.ColeccionRest;
 import java.io.IOException;
@@ -20,29 +19,17 @@ import au.edu.apsr.mtk.base.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import edu.harvard.hul.ois.mets.helper.MetsException;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.BufferedReader;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.zip.Deflater;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 
 import org.json.simple.JSONArray;
@@ -94,6 +81,12 @@ public class prueba extends javax.swing.JFrame {
         btnAutenticar = new javax.swing.JButton();
         btnAutenticar1 = new javax.swing.JButton();
         txtItem = new javax.swing.JTextField();
+        btnComunidades = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -190,6 +183,23 @@ public class prueba extends javax.swing.JFrame {
 
         txtItem.setText("/rest/items/5edb8150-b967-4431-a379-b9a4d12441c1");
 
+        btnComunidades.setText("Comunidades");
+        btnComunidades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnComunidadesActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Nodo");
+
+        jLabel2.setText("Link");
+
+        jButton5.setText("Add Collecion");
+
+        jLabel3.setText("URL");
+
+        jLabel4.setText("Comando");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -201,8 +211,15 @@ public class prueba extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtSeleccionName)
-                            .addComponent(txtSeleccionLink)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtSeleccionName))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtSeleccionLink))
+                            .addComponent(txtItem)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
@@ -214,15 +231,12 @@ public class prueba extends javax.swing.JFrame {
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(btnAutenticar)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnAutenticar1)))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(txtItem)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(btnAutenticar1))
+                                    .addComponent(jButton5))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
                             .addComponent(jButton3)
                             .addComponent(jButton2)
                             .addComponent(btnJson))
@@ -231,9 +245,19 @@ public class prueba extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton4)
                                 .addGap(45, 45, 45)
-                                .addComponent(btnProcessBuilder))
-                            .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(btnProcessBuilder)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnComunidades)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -251,25 +275,31 @@ public class prueba extends javax.swing.JFrame {
                         .addComponent(btnJson))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jLabel3)
+                            .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jLabel4)
+                            .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton4)
-                            .addComponent(btnProcessBuilder))))
+                            .addComponent(btnProcessBuilder)
+                            .addComponent(btnComunidades))))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtSeleccionName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jLabel1)
+                            .addComponent(txtSeleccionName, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(txtSeleccionLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jLabel2)
+                            .addComponent(txtSeleccionLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(txtItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAutenticar)
                             .addComponent(btnAutenticar1))
@@ -278,7 +308,11 @@ public class prueba extends javax.swing.JFrame {
                             .addComponent(btnDepositarBitStream)
                             .addComponent(btnSendMetadatos)
                             .addComponent(btnNewItem))
-                        .addGap(55, 55, 55))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -442,6 +476,14 @@ public class prueba extends javax.swing.JFrame {
         DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) selPath.getLastPathComponent();
         if (nodo.isLeaf())
             System.out.println("Es hoja: " + nodo.isLeaf());
+        
+        if (nodo.getUserObject() instanceof ComunidadRest){    
+            txtSeleccionName.setText(((ComunidadRest) nodo.getUserObject()).getNombre());
+            txtSeleccionLink.setText(((ComunidadRest) nodo.getUserObject()).getLink());
+            DefaultMutableTreeNode nuevaHoja = new DefaultMutableTreeNode("Hoja nueva");                        
+            nodo.add(nuevaHoja);            
+            tree.updateUI();
+        }
     }//GEN-LAST:event_treeMousePressed
 
     private void btnAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticarActionPerformed
@@ -481,6 +523,12 @@ public class prueba extends javax.swing.JFrame {
         String result = rest.sendBitstreams(txtItem.getText().trim(), "");
         System.out.println(result);                
     }//GEN-LAST:event_btnDepositarBitStreamActionPerformed
+
+    private void btnComunidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComunidadesActionPerformed
+        RestControler rest = new RestControler();
+        tree.setModel(rest.getTreeCominudad(txtHost.getText(), txtComand.getText()));
+        tree.updateUI();
+    }//GEN-LAST:event_btnComunidadesActionPerformed
 
     public static void dumpJSONElement(JsonElement elemento) {
         if (elemento.isJsonObject()) {
@@ -557,6 +605,7 @@ public class prueba extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAutenticar;
     private javax.swing.JButton btnAutenticar1;
+    private javax.swing.JButton btnComunidades;
     private javax.swing.JButton btnDepositarBitStream;
     private javax.swing.JButton btnJson;
     private javax.swing.JButton btnNewItem;
@@ -566,6 +615,11 @@ public class prueba extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTree tree;
     private javax.swing.JTextField txtComand;
