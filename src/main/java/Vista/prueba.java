@@ -5,6 +5,7 @@
  */
 package Vista;
 
+import Control.DialogWaitControler;
 import Control.MetsDeposit;
 import Control.RestControler;
 import Control.SIPControler;
@@ -21,6 +22,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.harvard.hul.ois.mets.helper.MetsException;
+import java.awt.Dialog;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +32,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.json.simple.JSONArray;
@@ -52,6 +59,11 @@ public class prueba extends javax.swing.JFrame {
 
     public prueba() {
         initComponents();
+        setLocationRelativeTo(null);
+        //this.setVisible(true);
+        //login start
+        Login3 login = new Login3(this, true);
+        login.setVisible(true);
     }
 
     /**
@@ -63,6 +75,16 @@ public class prueba extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        MenuRepositorio = new javax.swing.JPopupMenu();
+        mnuActualizar = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        mnuNewComunidad = new javax.swing.JMenuItem();
+        mnuDeleteComunidad = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        mnuNewColeccion = new javax.swing.JMenuItem();
+        mnuDeleteColeccion = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        mnuNewItem = new javax.swing.JMenuItem();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -87,6 +109,43 @@ public class prueba extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        btnComunidades2 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+
+        mnuActualizar.setText("Actualizar Repositorio");
+        mnuActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mnuActualizarMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                mnuActualizarMousePressed(evt);
+            }
+        });
+        MenuRepositorio.add(mnuActualizar);
+        MenuRepositorio.add(jSeparator2);
+
+        mnuNewComunidad.setText("Crear Comunidad");
+        MenuRepositorio.add(mnuNewComunidad);
+
+        mnuDeleteComunidad.setText("Eliminar Comunidad");
+        MenuRepositorio.add(mnuDeleteComunidad);
+        MenuRepositorio.add(jSeparator1);
+
+        mnuNewColeccion.setText("Crear Colección");
+        MenuRepositorio.add(mnuNewColeccion);
+
+        mnuDeleteColeccion.setText("Eliminar Colección");
+        mnuDeleteColeccion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuDeleteColeccionActionPerformed(evt);
+            }
+        });
+        MenuRepositorio.add(mnuDeleteColeccion);
+        MenuRepositorio.add(jSeparator3);
+
+        mnuNewItem.setText("Exportar Item(s)");
+        MenuRepositorio.add(mnuNewItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -125,6 +184,8 @@ public class prueba extends javax.swing.JFrame {
             }
         });
 
+        tree.setComponentPopupMenu(MenuRepositorio);
+        tree.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 treeMousePressed(evt);
@@ -200,6 +261,17 @@ public class prueba extends javax.swing.JFrame {
 
         jLabel4.setText("Comando");
 
+        btnComunidades2.setText("Comunidades2");
+        btnComunidades2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnComunidades2ActionPerformed(evt);
+            }
+        });
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane2.setViewportView(jTextArea1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -207,33 +279,7 @@ public class prueba extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtSeleccionName))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtSeleccionLink))
-                            .addComponent(txtItem)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnNewItem)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnDepositarBitStream)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnSendMetadatos))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnAutenticar)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnAutenticar1))
-                                    .addComponent(jButton5))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane2)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton1)
@@ -248,6 +294,8 @@ public class prueba extends javax.swing.JFrame {
                                 .addComponent(btnProcessBuilder)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnComunidades)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnComunidades2)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -257,7 +305,37 @@ public class prueba extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtComand, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtSeleccionLink))
+                                    .addComponent(txtItem)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(btnNewItem)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(btnDepositarBitStream)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(btnSendMetadatos))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(btnAutenticar)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(btnAutenticar1))
+                                            .addComponent(jButton5))
+                                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(19, 19, 19)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtSeleccionName)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -286,15 +364,16 @@ public class prueba extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton4)
                             .addComponent(btnProcessBuilder)
-                            .addComponent(btnComunidades))))
+                            .addComponent(btnComunidades)
+                            .addComponent(btnComunidades2))))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(txtSeleccionName, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(txtSeleccionName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(txtSeleccionLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
@@ -309,9 +388,10 @@ public class prueba extends javax.swing.JFrame {
                             .addComponent(btnSendMetadatos)
                             .addComponent(btnNewItem))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE))
+                        .addComponent(jButton5))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -461,7 +541,7 @@ public class prueba extends javax.swing.JFrame {
     }//GEN-LAST:event_treeValueChanged
 
     private void treeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMousePressed
-        // Se obtiene el path para esa fila. Con el path podemos obtener
+       // Se obtiene el path para esa fila. Con el path podemos obtener
         // los nodos.
         int selRow = tree.getRowForLocation(evt.getX(), evt.getY());
         System.out.println("Row: " + selRow);
@@ -469,21 +549,40 @@ public class prueba extends javax.swing.JFrame {
             return;
         }
 
-        TreePath selPath = tree.getPathForLocation(evt.getX(), evt.getY());
-
-        System.out.println("Path: " + selPath.toString());
-
-        DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-        if (nodo.isLeaf())
+        //System.out.println("Path: " + selPath.toString());
+        DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) tree.
+                getPathForLocation(evt.getX(), evt.getY()).getLastPathComponent();
+        if (nodo.isLeaf()) {
             System.out.println("Es hoja: " + nodo.isLeaf());
-        
-        if (nodo.getUserObject() instanceof ComunidadRest){    
+        }
+
+        if (nodo.getChildCount() > 0) {
+            return;
+        }
+
+        /*if (nodo.getUserObject() instanceof ComunidadRest) {
             txtSeleccionName.setText(((ComunidadRest) nodo.getUserObject()).getNombre());
             txtSeleccionLink.setText(((ComunidadRest) nodo.getUserObject()).getLink());
-            DefaultMutableTreeNode nuevaHoja = new DefaultMutableTreeNode("Hoja nueva");                        
-            nodo.add(nuevaHoja);            
+            DefaultMutableTreeNode nuevaHoja = new DefaultMutableTreeNode(
+                    "Hoja nueva" + nodo.getChildCount());
+            nodo.add(nuevaHoja);
             tree.updateUI();
+        }*/
+        if (nodo.getUserObject() instanceof ComunidadRest) {
+            txtSeleccionName.setText(((ComunidadRest) nodo.getUserObject()).getNombre());
+            txtSeleccionLink.setText(((ComunidadRest) nodo.getUserObject()).getLink());
+            ComunidadRest comunidad = (ComunidadRest) nodo.getUserObject();
+            //nodo = comunidad.getComunidad(txtHost.getText(), nodo);
+            //nodo = comunidad.getColeccion(txtHost.getText(), nodo);
+
+            //tree.updateUI();
         }
+
+        if (nodo.getUserObject() instanceof ColeccionRest) {
+            txtSeleccionName.setText(((ColeccionRest) nodo.getUserObject()).getNombre());
+            txtSeleccionLink.setText(((ColeccionRest) nodo.getUserObject()).getLink());
+            // hacer algo
+        } 
     }//GEN-LAST:event_treeMousePressed
 
     private void btnAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticarActionPerformed
@@ -521,14 +620,83 @@ public class prueba extends javax.swing.JFrame {
     private void btnDepositarBitStreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarBitStreamActionPerformed
         RestControler rest = new RestControler();
         String result = rest.sendBitstreams(txtItem.getText().trim(), "");
-        System.out.println(result);                
+        System.out.println(result);
     }//GEN-LAST:event_btnDepositarBitStreamActionPerformed
 
     private void btnComunidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComunidadesActionPerformed
-        RestControler rest = new RestControler();
-        tree.setModel(rest.getTreeCominudad(txtHost.getText(), txtComand.getText()));
-        tree.updateUI();
+        DialogWaitControler wait = new DialogWaitControler(10);
+
+        SwingWorker<Void, Integer> mySwingWorker = new SwingWorker<Void, Integer>() {            
+            @Override
+            protected Void doInBackground() throws Exception {
+
+                //Here you put your long-running process...
+                RestControler rest = new RestControler();
+                tree.setModel(rest.getComunidades(txtHost.getText(), txtComand.getText()));
+                //tree.updateUI();  
+                for (int i=1;i<11;i++){
+                    publish(i);
+                    Thread.sleep(1000);
+                }
+                wait.close();
+                return null;
+            }
+
+            @Override
+            protected void process(List<Integer> chunks) {
+                wait.incrementarProBar(chunks.get(0));
+            }
+        };     
+                               
+        mySwingWorker.execute();
+        wait.makeWait("Consultando las comunidades...", evt, 100);
+        //---------------------------------------
     }//GEN-LAST:event_btnComunidadesActionPerformed
+
+    private void mnuActualizarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mnuActualizarMousePressed
+        int row = this.tree.getRowForLocation(evt.getX(), evt.getY());
+        //tree.setSelectionRow(row);
+        System.out.println("Mouse Pressed: " + row);
+        TreePath path = tree.getSelectionPath();
+        if (path != null){            
+            DefaultMutableTreeNode obj = (DefaultMutableTreeNode) path.getLastPathComponent();
+            System.out.println(path.toString());
+            System.out.println("Clase: " + obj.getClass());            
+            //System.out.println("Nodo Anterior: " + obj.getChildBefore(obj).toString());
+            System.out.println("Objeto: " + obj.toString());
+            if (obj.getUserObject() instanceof ComunidadRest){
+                System.out.println("--- Es un obj comunidad."+ obj.getChildCount());
+            }else if (obj.getUserObject() instanceof ColeccionRest){
+                    System.out.println("--- Es un obj coleccion." + obj.getChildCount());
+            } else{
+                    System.out.println("--- Numero de filas."+ tree.getRowCount());
+                    System.out.println("--- nro de filas del path."+ tree.getRowForPath(path));
+                    System.out.println("--- fila en que estoy."+ tree.getRowForLocation(evt.getX(), evt.getY()));
+                    DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode("nuevoNodo");
+                    obj.add(nuevoNodo);
+                    ((DefaultTreeModel)tree.getModel()).nodeStructureChanged((TreeNode) obj);
+            }
+                    
+        }
+        
+    }//GEN-LAST:event_mnuActualizarMousePressed
+
+    private void mnuActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mnuActualizarMouseClicked
+        int row = tree.getRowForLocation(evt.getX(), evt.getY());
+        System.out.println("Mouse clicked: " + row);
+    }//GEN-LAST:event_mnuActualizarMouseClicked
+
+    private void btnComunidades2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComunidades2ActionPerformed
+        RestControler rest = new RestControler();
+        //rest.prueba(evt, jTextArea1);
+        //DefaultTreeModel model = rest.obtenerComunidades(jTextArea1);
+        DefaultTreeModel model = rest.estructRepositorio2(jTextArea1);
+        tree.setModel(model);
+    }//GEN-LAST:event_btnComunidades2ActionPerformed
+
+    private void mnuDeleteColeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuDeleteColeccionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mnuDeleteColeccionActionPerformed
 
     public static void dumpJSONElement(JsonElement elemento) {
         if (elemento.isJsonObject()) {
@@ -603,9 +771,11 @@ public class prueba extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPopupMenu MenuRepositorio;
     private javax.swing.JButton btnAutenticar;
     private javax.swing.JButton btnAutenticar1;
     private javax.swing.JButton btnComunidades;
+    private javax.swing.JButton btnComunidades2;
     private javax.swing.JButton btnDepositarBitStream;
     private javax.swing.JButton btnJson;
     private javax.swing.JButton btnNewItem;
@@ -621,6 +791,17 @@ public class prueba extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JMenuItem mnuActualizar;
+    private javax.swing.JMenuItem mnuDeleteColeccion;
+    private javax.swing.JMenuItem mnuDeleteComunidad;
+    private javax.swing.JMenuItem mnuNewColeccion;
+    private javax.swing.JMenuItem mnuNewComunidad;
+    private javax.swing.JMenuItem mnuNewItem;
     private javax.swing.JTree tree;
     private javax.swing.JTextField txtComand;
     private javax.swing.JTextField txtHost;

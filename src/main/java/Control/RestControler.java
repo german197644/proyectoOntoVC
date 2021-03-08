@@ -7,6 +7,7 @@ package Control;
 
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
+import Control.LoginControler;
 import Vista.prueba;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,9 +18,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -31,12 +36,11 @@ import org.json.JSONException;
  * @author germa
  */
 public class RestControler {
-    
-    private String newItem = null;
-    
-    public RestControler() {        
-    }
 
+    private String newItem = null;
+
+    public RestControler() {
+    }
 
     public String Login() throws Exception {
         String result = null;
@@ -110,7 +114,7 @@ public class RestControler {
             BufferedReader br = new BufferedReader(isr);
 
             result = br.lines().collect(Collectors.joining("\n"));
-            JsonParser parser = new JsonParser();            
+            JsonParser parser = new JsonParser();
             JsonElement valor = ((JsonObject) parser.parse(result)).get("authenticated");
             if (valor.getAsBoolean() != true) {
                 return "No estas logueado";
@@ -130,7 +134,7 @@ public class RestControler {
             //retornamos la salida.
             result = br.lines().collect(Collectors.joining("\n"));
             JsonElement link = ((JsonObject) parser.parse(result)).get("link");
-            if (!link.getAsString().isEmpty()){
+            if (!link.getAsString().isEmpty()) {
                 this.newItem = link.getAsString();
             }
         } catch (IOException | InterruptedException ex) {
@@ -138,7 +142,7 @@ public class RestControler {
         }
         return result + " -- " + this.newItem;
     }
-    
+
     public String sendBitstreams(String item, String dirFile) {
         String result = null;
         String command = null;
@@ -157,7 +161,7 @@ public class RestControler {
             BufferedReader br = new BufferedReader(isr);
 
             result = br.lines().collect(Collectors.joining("\n"));
-            JsonParser parser = new JsonParser();            
+            JsonParser parser = new JsonParser();
             JsonElement valor = ((JsonObject) parser.parse(result)).get("authenticated");
             if (valor.getAsBoolean() != true) {
                 return "No estas logueado";
@@ -186,7 +190,7 @@ public class RestControler {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result + " -- " + this.newItem;
-    }    
+    }
 
     public void comandoEXEC(String command) throws JSONException {
         try {
@@ -209,8 +213,96 @@ public class RestControler {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public DefaultTreeModel getTreeCominudad(String url, String comando) {
+
+    /**
+     *
+     * @param url dle host donde se aloja DSpace
+     * @param comunidad comunidad a filtrar
+     * @return
+     */
+    public DefaultTreeModel getColeciones(String url, String comunidad) {
+        DefaultTreeModel modelo = null;
+        String comando = null;
+        try {
+            comando = "curl -X GET -H \"accept: application/json\" "
+                    + url + comunidad + "/collections";
+            Process process = Runtime.getRuntime().exec(comando);
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            JsonParser parser = new JsonParser();
+            String result = br.lines().collect(Collectors.joining("\n"));
+            //System.out.println("Linea: " + result);
+            JsonElement datos = parser.parse(result);
+            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+            modelo = new DefaultTreeModel(padre);
+            if (((JsonElement) datos).isJsonArray()) {
+                int level = 0;
+                JsonArray array = (JsonArray) datos;
+                System.out.println("Es array. Numero de elementos: " + array.size());
+                Iterator<JsonElement> iter = array.iterator();
+
+                System.out.println(padre.getRoot().toString());
+                while (iter.hasNext()) {
+                    JsonObject jsonComunidad = (JsonObject) iter.next();
+                    JsonElement linkComunidad = jsonComunidad.get("link");
+                    JsonElement nameComunidad = jsonComunidad.get("name");
+                    //creamos la comunidad
+                    ComunidadRest comunidadRest
+                            = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
+                    DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidadRest);
+
+                    modelo.insertNodeInto(nodoComunidad, padre, level);
+
+                    System.out.println(" -- " + comunidadRest.toString());
+                    level += level;
+                }
+                return modelo;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return modelo;
+    }
+
+    public void prueba(java.awt.event.ActionEvent evt, JTextArea ta) {
+        DialogWaitControler wait = new DialogWaitControler(10);
+
+        SwingWorker<Void, Integer> mySwingWorker = new SwingWorker<Void, Integer>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+
+                //Here you put your long-running process...
+                //RestControler rest = new RestControler();
+                //tree.setModel(rest.getComunidades(txtHost.getText(), txtComand.getText()));
+                //tree.updateUI();  
+                for (int i = 1; i < 11; i++) {
+                    publish(i);
+                    Thread.sleep(1000);
+                }
+                wait.close();
+                return null;
+            }
+
+            @Override
+            protected void process(List<Integer> chunks) {
+                wait.incrementarProBar(chunks.get(0));
+                ta.append(chunks.get(0).toString());
+            }
+        };
+
+        mySwingWorker.execute();
+        wait.makeWait("Consultando las comunidades...", evt, 100);
+        //---------------------------------------
+    }
+
+    /**
+     *
+     * @param url
+     * @param comando
+     * @return
+     */
+    public DefaultTreeModel getComunidades(String url, String comando) {
         DefaultTreeModel modelo = null;
         try {
             Process process = Runtime.getRuntime().exec(comando);
@@ -222,13 +314,13 @@ public class RestControler {
             //System.out.println("Linea: " + result);
             JsonElement datos = parser.parse(result);
             DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-            modelo = new DefaultTreeModel(padre);            
+            modelo = new DefaultTreeModel(padre);
             if (((JsonElement) datos).isJsonArray()) {
-                int level = 0;
+                //int level = 0;
                 JsonArray array = (JsonArray) datos;
-                System.out.println("Es array. Numero de elementos: " + array.size());
+                // System.out.println("Es array. Numero de elementos: " + array.size());
                 Iterator<JsonElement> iter = array.iterator();
-                
+
                 System.out.println(padre.getRoot().toString());
                 while (iter.hasNext()) {
                     JsonObject jsonComunidad = (JsonObject) iter.next();
@@ -238,20 +330,96 @@ public class RestControler {
                     ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
                     DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
 
-                    modelo.insertNodeInto(nodoComunidad, padre, level);
+                    //modelo.insertNodeInto(nodoComunidad, padre, level);
+                    padre.add(nodoComunidad);
+                    //System.out.println(" -- " + comunidad.toString());
+                    //level += level;
+                }
+                //return modelo;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-                    System.out.println(" -- " + comunidad.toString());
-                    level += level;
+        return modelo;
+    }
+
+    /**
+     *
+     * @param ta muestra la salida en este compenente.
+     * @return DefaultTreeModel
+     */
+    public DefaultTreeModel obtenerComunidades(JTextArea ta) {        
+        //DefaultTreeModel modelo = null;
+        SwingWorker<DefaultTreeModel, Integer> mySwingWorker = new SwingWorker<DefaultTreeModel, Integer>() {
+            @Override
+            protected DefaultTreeModel doInBackground() throws Exception {
+                DefaultTreeModel modelo =  null;
+                try {
+                    LoginControler conn = LoginControler.getInstancia();
+                    String comando = "curl -X GET -H \"accept: application/json\" "
+                            + conn.getUri().trim() + "/rest/communities";
+                    Process process = Runtime.getRuntime().exec(comando);
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    JsonParser parser = new JsonParser();
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    //System.out.println("Linea: " + result);
+                    JsonElement datos = parser.parse(result);
+                    DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+                    modelo = new DefaultTreeModel(padre);
+                    if (((JsonElement) datos).isJsonArray()) {
+                        //int level = 0;
+                        JsonArray array = (JsonArray) datos;
+                        // System.out.println("Es array. Numero de elementos: " + array.size());                        
+                        Iterator<JsonElement> iter = array.iterator();
+                        publish(array.size());
+                        System.out.println(padre.getRoot().toString());
+                        while (iter.hasNext()) {
+                            JsonObject jsonComunidad = (JsonObject) iter.next();
+                            JsonElement linkComunidad = jsonComunidad.get("link");
+                            JsonElement nameComunidad = jsonComunidad.get("name");
+                            //creamos la comunidad
+                            ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
+                            DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
+
+                            //modelo.insertNodeInto(nodoComunidad, padre, level);
+                            padre.add(nodoComunidad);
+                            //System.out.println(" -- " + comunidad.toString());
+                            //level += level;
+                        }
+                        //return modelo;
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return modelo;
             }
 
-        } catch (IOException ex) {
+            @Override
+            protected void process(List<Integer> chunks) {
+                ta.append("Se encontraron: " + chunks.get(0) + " comunidades" + "\n");
+                ta.append("Extrayendo estructura." + "\n");
+            }
+        };
+        
+        mySwingWorker.execute();
+        DefaultTreeModel model = null;
+        try {
+            model = mySwingWorker.get();
+        } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modelo;
+        }        
+        return model;
     }
 
+    /**
+     *
+     * @param comando l
+     * @param url en que host se encuentra alojado DSpace
+     * @return
+     */
     public DefaultTreeModel estructRepositorio(String comando, String url) {
         DefaultTreeModel modelo = null;
         try {
@@ -353,4 +521,126 @@ public class RestControler {
         }
         return modelo;
     }
+    
+    
+      /**
+     *
+     * @param comando l
+     * @param url en que host se encuentra alojado DSpace
+     * @return
+     */
+    public DefaultTreeModel estructRepositorio2(JTextArea ta) {
+        DefaultTreeModel modelo = null;
+        try {          
+            
+            ta.append("Obteniendo estrucutra del repositorio.\n");
+            
+            LoginControler conn = LoginControler.getInstancia();
+            String comando = "curl -X GET -H \"accept: application/json\" "
+                            + conn.getUri().trim() + "/rest/communities";
+            Process process = Runtime.getRuntime().exec(comando);
+
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            String result = br.lines().collect(Collectors.joining("\n"));
+            System.out.println("Linea: " + result);
+            JsonParser parser = new JsonParser();
+            JsonElement datos = parser.parse(result);
+            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");            
+            padre = dumpJSONElement2(datos, padre);            
+            modelo = new DefaultTreeModel(padre);
+        } catch (IOException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return modelo;
+    }
+
+    /**
+     *
+     * @param elemento JsonElement
+     * @param miTree Jerarquia para mostrar en la salida
+     * @param modelo modelo del arbol
+     * @param padre nodo inmediato superior
+     * @param jerarquia el orden que ocupa en la estructura.
+     * @return Un arbol.
+     */
+    private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {               
+        try {
+            LoginControler conn = LoginControler.getInstancia();
+            if (((JsonElement) elemento).isJsonArray()) {
+                int level = 0;
+                JsonArray array = (JsonArray) elemento;
+                //System.out.println("Es array. Numero de elementos: " + array.size());
+                Iterator<JsonElement> iter = array.iterator();
+                while (iter.hasNext()) {
+                    try {
+                        JsonObject jsonComunidad = (JsonObject) iter.next();
+                        JsonElement linkComunidad = jsonComunidad.get("link");
+                        JsonElement nameComunidad = jsonComunidad.get("name");
+                        //creamos la comunidad
+                        ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
+                        DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
+                        padre.add(nodoComunidad);
+                        //mostramos
+                        //System.out.println(miTree + " " + comunidad.toString());
+                        //nuevo
+                        String command = "curl -X GET -H \"accept: application/json\" "
+                                + conn.getUri()+ linkComunidad.getAsString() + "/communities";
+                        Process process = Runtime.getRuntime().exec(command);
+                        InputStream is = process.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader br = new BufferedReader(isr);
+                        String result = br.lines().collect(Collectors.joining("\n"));
+                        //System.out.println("Linea: "+ result);
+                        JsonParser parser = new JsonParser();
+                        //JsonElement datos = parser.parse(result);
+                        JsonArray datosComunidad = (JsonArray) parser.parse(result);
+                        if (datosComunidad.size() > 0) {
+                            padre = dumpJSONElement2(datosComunidad,nodoComunidad);
+                        } else {
+                            String commandColeccion = "curl -X GET -H \"accept: application/json\" "
+                                    + conn.getUri() + linkComunidad.getAsString() + "/collections";
+                            Process processColeccion = Runtime.getRuntime().exec(commandColeccion);
+                            InputStream is2 = processColeccion.getInputStream();
+                            InputStreamReader isr2 = new InputStreamReader(is2);
+                            BufferedReader br2 = new BufferedReader(isr2);
+                            String result2 = br2.lines().collect(Collectors.joining("\n"));
+                            //System.out.println("Comunidades: "+ result2);
+                            //JsonParser parser2 = new JsonParser();
+                            JsonArray datosColeccion = (JsonArray) parser.parse(result2);
+                            if (datosColeccion.size() > 0) {
+                                JsonArray arrayColeccion = (JsonArray) datosColeccion;
+                                //System.out.println("Es array. Numero de elementos: " + array2.size());
+                                Iterator<JsonElement> iterColeccion = arrayColeccion.iterator();
+                                int n = 0;
+                                while (iterColeccion.hasNext()) {
+                                    JsonObject jsonColeccion = (JsonObject) iterColeccion.next();
+                                    JsonElement nameColeccion = jsonColeccion.get("name");
+                                    JsonElement linkColeccion = jsonColeccion.get("link");
+                                    ColeccionRest coleccion
+                                            = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString());
+                                    //mostramos la coleccion
+                                    //ystem.out.println(miTree + "-- " + coleccion.toString());
+                                    //generamos un nodo hoja y la agregamos al arbol.
+                                    DefaultMutableTreeNode nodoColeccion = new DefaultMutableTreeNode(coleccion);
+                                    nodoComunidad.add(nodoColeccion);
+                                    n += n;
+                                }
+                            }
+                        }
+                        level += level;
+                    } catch (IOException ex) {
+                        Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+           
+        } catch (IOException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return padre;
+    }
+    
 }

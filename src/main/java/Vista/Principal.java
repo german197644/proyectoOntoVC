@@ -52,7 +52,7 @@ public class Principal extends javax.swing.JFrame {
                 }
             };
             mySwingWorker.execute();
-            wait.makeWait("Conectando...", this);
+            //wait.makeWait("Conectando...", this);
             //end            
             
             //sword           

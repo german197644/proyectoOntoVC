@@ -6,11 +6,13 @@
 package Vista;
 
 import Control.FicheroControler;
+import Control.LoginControler;
 import Control.MetsControler;
 import Control.StardogControler;
 import Control.SwordControler;
 import Modelo.Coleccion;
 import Modelo.Metadato;
+import java.awt.Dialog;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,15 +26,18 @@ import javax.swing.JPanel;
  *
  * @author germa
  */
-public class ADDO extends javax.swing.JFrame {
+public class DosENE extends javax.swing.JFrame {
 
     
-    public ADDO() {                        
+    public DosENE() {                        
         initComponents();
         this.setTitle("Depósito Ontológico Simple.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setVisible(true);                       
 
+        Login win = new Login(this, true);
+        win.setVisible(true);
+        /*
         try {
             StardogControler stardog = StardogControler.getInstancia();
             SwordControler sword = SwordControler.getInstancia();
@@ -53,9 +58,9 @@ public class ADDO extends javax.swing.JFrame {
             // end                                
 
         } catch (Exception ex) {
-            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        */
     }
 
     /**
@@ -67,6 +72,14 @@ public class ADDO extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        mnuRefrescar = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        mnuNewComunidad = new javax.swing.JMenuItem();
+        mnuDeleteComunidad = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        mnuNewColeccion = new javax.swing.JMenuItem();
+        mnuDeleteColeccion = new javax.swing.JMenuItem();
         panel_superior = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -130,6 +143,23 @@ public class ADDO extends javax.swing.JFrame {
         mnuConectar = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mnuSalir = new javax.swing.JMenuItem();
+
+        mnuRefrescar.setText("Refrescar");
+        jPopupMenu1.add(mnuRefrescar);
+        jPopupMenu1.add(jSeparator2);
+
+        mnuNewComunidad.setText("Crear Comunidad");
+        jPopupMenu1.add(mnuNewComunidad);
+
+        mnuDeleteComunidad.setText("Eliminar Comunidad");
+        jPopupMenu1.add(mnuDeleteComunidad);
+        jPopupMenu1.add(jSeparator3);
+
+        mnuNewColeccion.setText("Crear Colección");
+        jPopupMenu1.add(mnuNewColeccion);
+
+        mnuDeleteColeccion.setText("Eliminar Colección");
+        jPopupMenu1.add(mnuDeleteColeccion);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -344,7 +374,7 @@ public class ADDO extends javax.swing.JFrame {
 
         jPanel11.setLayout(new java.awt.GridLayout(0, 4, 5, 0));
 
-        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder("Colección"));
+        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder("Estructura Repositorio"));
 
         listaColecciones.setBackground(new java.awt.Color(240, 240, 240));
         listaColecciones.setVisibleRowCount(5);
@@ -449,7 +479,7 @@ public class ADDO extends javax.swing.JFrame {
             fichero.getFileChooser(this);
             listaRecursos.setModel(fichero.getListaFicheros());
         } catch (IOException ex) {
-            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAddFicheroActionPerformed
 
@@ -460,7 +490,7 @@ public class ADDO extends javax.swing.JFrame {
                 fichero.quitarFichero(listaRecursos.getSelectedIndex());
             }    
         } catch (Exception ex) {
-            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
@@ -475,7 +505,7 @@ public class ADDO extends javax.swing.JFrame {
             captura.getViewport().setView(aJp);
             captura.updateUI();
         } catch (Exception ex) {
-            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_listaOAMouseClicked
 
@@ -521,7 +551,7 @@ public class ADDO extends javax.swing.JFrame {
             taConsola.append("Deposito finalizado.");
             taConsola.append(System.getProperty("line.separator"));
         } catch (Exception ex) {
-            Logger.getLogger(ADDO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
         }
        
@@ -563,21 +593,23 @@ public class ADDO extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ADDO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ADDO().setVisible(true);
+                new DosENE().setVisible(true);
             }
         });
     }
@@ -628,17 +660,25 @@ public class ADDO extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JList<String> listaColecciones;
     private javax.swing.JList<String> listaMetadato;
     private javax.swing.JList<String> listaOA;
     private javax.swing.JList<String> listaRecursos;
     private javax.swing.JMenuItem mnuConectar;
+    private javax.swing.JMenuItem mnuDeleteColeccion;
+    private javax.swing.JMenuItem mnuDeleteComunidad;
+    private javax.swing.JMenuItem mnuNewColeccion;
+    private javax.swing.JMenuItem mnuNewComunidad;
+    private javax.swing.JMenuItem mnuRefrescar;
     private javax.swing.JMenuItem mnuSalir;
     private javax.swing.JMenu mnuTool;
     private javax.swing.JPanel panelSur;
