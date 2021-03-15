@@ -1,7 +1,7 @@
 /**
  *
  * @author Pogliani, German
- * 
+ *
  */
 package Control;
 
@@ -10,24 +10,28 @@ import Modelo.Metadato;
 import edu.harvard.hul.ois.mets.helper.MetsException;
 import java.awt.Component;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import javax.swing.DefaultListModel;
 import org.jdom.Element;
 import org.jdom.Namespace;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class MetsControler {
 
     private SIPControler mets; //clase que genera el mets.xml
     private FicheroControler ficheros;
     private File rutaFileZIP; //archivo donde depositar el zip con el mets.
-    private String nomFileZip; 
+    private String nomFileZip;
     private Component aParent;
 
     private static MetsControler instancia = null;
@@ -68,7 +72,7 @@ public class MetsControler {
         DublinCoreControler dublincore = DublinCoreControler.getInstancia();
         DefaultListModel<Metadato> aListMetadatos = ontologia.getCapturaMetadados();
         final String uri = "http://purl.org/dc/elements/1.1/";
-        
+
         for (int i = 0; i < aListMetadatos.size(); ++i) {
             Metadato m = aListMetadatos.get(i);
             //System.out.println("pase por aca!. metadato: " + m.getTipo());
@@ -85,7 +89,7 @@ public class MetsControler {
                         //final String uri = "http://purl.org/dc/terms/" + aux.nextToken().trim().toLowerCase();
                         //final String uri = "http://purl.org/dc/elements/1.1/";
                         //Element t = new Element(aux.nextToken(), "dcterms", uri);
-                        Element t = new Element(aux.nextToken(), "dc", uri+aux.nextToken());
+                        Element t = new Element(aux.nextToken(), "dc", uri + aux.nextToken());
                         //t.setText(m.getDataContenedor());
                         //System.out.println("entre al WHILE: " + aux.nextToken());
                         t.setText(result[i]);
@@ -99,7 +103,7 @@ public class MetsControler {
                     //System.out.println("entre al else " + auxDC);
                     //final String uri = "http://purl.org/dc/terms/" + auxDC;
                     //final String uri = "http://purl.org/dc/elements/1.1/";
-                    Element t = new Element(auxDC, "dc", uri+auxDC);
+                    Element t = new Element(auxDC, "dc", uri + auxDC);
                     t.setText(m.getContenidoMetadato());
 
                     //t.setText(m.getContenidoMetadato());
@@ -152,15 +156,13 @@ public class MetsControler {
         // aggregamos la descripcion de los metadatos como JDOM element        
         List<Element> dcElt = myMakeMetadata();
 
-
         mets.addDescriptiveMD("DC", dcElt, "Metadatos Dublin Core");
         //sip.addDescriptiveMD("DC", myMakeMetadata2());
 
         // escribimos el SIPControler a un fichero de salida
-        
         //fileZIP = ficheros.getCarpeta(this.aParent);
         //System.getProperty("java.io.tmpdir");
-        outfile = java.io.File.createTempFile("ficheroMETS_", ".zip" );
+        outfile = java.io.File.createTempFile("ficheroMETS_", ".zip");
 
         //guardamos la ruta al zip para su posterior envio.
         File afileZIP = new File(outfile.getAbsolutePath());
@@ -175,8 +177,6 @@ public class MetsControler {
         return nomFileZip;
     }
 
-    
-    
     public void crearMets_v2() throws MetsException, IOException, Exception {
         // Creamos un mets; validate = false, ZIP compression = BEST_SPEED
         mets = new SIPControler(false, Deflater.BEST_SPEED);
@@ -197,9 +197,9 @@ public class MetsControler {
                 mets.addBitstream(unArchivo, aAbsoluto, "ORIGINAL", false);
             }
         }
-        /* aggregamos la descripcion de los metadatos como JDOM element  */      
-        List<Element> dcElt = myMakeMetadata();        
-        mets.addDescriptiveMD("DC", dcElt, "Metadatos Dublin Core");       
+        /* aggregamos la descripcion de los metadatos como JDOM element  */
+        List<Element> dcElt = myMakeMetadata();
+        mets.addDescriptiveMD("DC", dcElt, "Metadatos Dublin Core");
         /* Write SIPControler to an output file} */
         rutaFileZIP = ficheros.getCarpeta(this.aParent);
         outfile = java.io.File.createTempFile("fichero", ".zip", rutaFileZIP);
@@ -207,7 +207,7 @@ public class MetsControler {
         File afileZIP = new File(outfile.getAbsolutePath());
         if (afileZIP.exists()) {
             rutaFileZIP = afileZIP;
-        }       
+        }
         mets.write(outfile);
     }
 

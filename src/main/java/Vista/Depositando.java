@@ -5,14 +5,11 @@
  */
 package Vista;
 
+import Control.DialogWaitControler;
 import Control.FicheroControler;
-import Control.LoginControler;
-import Control.MetsControler;
+import Control.RestControler;
 import Control.StardogControler;
-import Control.SwordControler;
-import Modelo.Coleccion;
 import Modelo.Metadato;
-import java.awt.Dialog;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,46 +18,39 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
- * @author germa
+ * @author Pogliani, German.
  */
-public class DosENE extends javax.swing.JFrame {
+public class Depositando extends javax.swing.JFrame {
 
-    
-    public DosENE() {                        
+    public Depositando() {
         initComponents();
-        this.setTitle("Depósito Ontológico Simple.");
+        this.setTitle("Depósito y búsqueda de ítems. ;)");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.setVisible(true);                       
-
-        Login win = new Login(this, true);
+        this.setVisible(true);
+        //
+        Login3 win = new Login3(this, rootPaneCheckingEnabled);
         win.setVisible(true);
-        /*
-        try {
-            StardogControler stardog = StardogControler.getInstancia();
-            SwordControler sword = SwordControler.getInstancia();
+        System.out.println("Se pidio conectar: " + win.conn);
+        if (win.conn) { // realizamos la conexion
+            try {
+                // rest api                
+                RestControler rest = RestControler.getInstancia();
+                rest.estructuraRepositorio(taConsola, jTree1);
 
-            // sword                
-            DefaultListModel colecciones = new DefaultListModel();
-            colecciones = sword.getColecciones();
-            listaColecciones.removeAll();
-            listaColecciones.setModel(colecciones);
-            listaColecciones.updateUI();
-            // end
-
-            // stardog
-            DefaultListModel aList = stardog.getTiposOA();
-            System.out.println(aList );
-            listaOA.setModel(aList);
-            listaOA.updateUI();                
-            // end                                
-
-        } catch (Exception ex) {
-            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
+                // stardog
+                StardogControler baseGrafica = StardogControler.getInstancia();
+                baseGrafica.getTiposOA(taConsola, listaOA);
+            } catch (Exception ex) {
+                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        */
+
     }
 
     /**
@@ -82,9 +72,7 @@ public class DosENE extends javax.swing.JFrame {
         mnuDeleteColeccion = new javax.swing.JMenuItem();
         panel_superior = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         panel_inferior = new javax.swing.JPanel();
@@ -108,10 +96,8 @@ public class DosENE extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listaOA = new javax.swing.JList<>();
-        jLabel19 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         listaMetadato = new javax.swing.JList<>();
         jPanel14 = new javax.swing.JPanel();
@@ -127,8 +113,8 @@ public class DosENE extends javax.swing.JFrame {
         jPanel10 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        listaColecciones = new javax.swing.JList<>();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
         jScrollPane3 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
         jPanel13 = new javax.swing.JPanel();
@@ -169,24 +155,14 @@ public class DosENE extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 153, 204));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("    ");
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel1.add(jLabel1, java.awt.BorderLayout.PAGE_START);
-
         jLabel2.setText("          ");
         jPanel1.add(jLabel2, java.awt.BorderLayout.WEST);
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("       ");
-        jPanel1.add(jLabel3, java.awt.BorderLayout.PAGE_END);
 
         jLabel4.setText("       ");
         jPanel1.add(jLabel4, java.awt.BorderLayout.LINE_END);
 
-        jLabel14.setFont(new java.awt.Font("Verdana", 0, 24)); // NOI18N
-        jLabel14.setText("Envío de ítems.");
+        jLabel14.setFont(new java.awt.Font("Verdana", 1, 16)); // NOI18N
+        jLabel14.setText(">> Envío de ítems.");
         jPanel1.add(jLabel14, java.awt.BorderLayout.CENTER);
 
         panel_superior.add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -281,10 +257,6 @@ public class DosENE extends javax.swing.JFrame {
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.Y_AXIS));
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
-        jLabel13.setText("                                                                        ");
-        jPanel7.add(jLabel13);
-
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Objetos de Aprendizajes"));
 
         listaOA.setBackground(new java.awt.Color(240, 240, 240));
@@ -297,9 +269,6 @@ public class DosENE extends javax.swing.JFrame {
         jScrollPane1.setViewportView(listaOA);
 
         jPanel7.add(jScrollPane1);
-
-        jLabel19.setText("          ");
-        jPanel7.add(jLabel19);
 
         jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
 
@@ -335,7 +304,7 @@ public class DosENE extends javax.swing.JFrame {
         jPanel8.add(jLabel20, java.awt.BorderLayout.WEST);
 
         captura.setBackground(new java.awt.Color(204, 204, 255));
-        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Describir el ítem"));
+        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Describir el Ítem"));
         captura.setToolTipText("");
         captura.setMaximumSize(new java.awt.Dimension(33, 44));
         jPanel8.add(captura, java.awt.BorderLayout.CENTER);
@@ -374,13 +343,12 @@ public class DosENE extends javax.swing.JFrame {
 
         jPanel11.setLayout(new java.awt.GridLayout(0, 4, 5, 0));
 
-        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder("Estructura Repositorio"));
+        jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder("Estructura del Repositorio"));
 
-        listaColecciones.setBackground(new java.awt.Color(240, 240, 240));
-        listaColecciones.setVisibleRowCount(5);
-        jScrollPane4.setViewportView(listaColecciones);
+        jTree1.setVisibleRowCount(7);
+        jScrollPane5.setViewportView(jTree1);
 
-        jPanel11.add(jScrollPane4);
+        jPanel11.add(jScrollPane5);
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos"));
 
@@ -464,8 +432,37 @@ public class DosENE extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
-        Login login = new Login(this, rootPaneCheckingEnabled);
-        login.setVisible(true);
+        Login3 win = new Login3(this, rootPaneCheckingEnabled);
+        win.setVisible(true);
+        System.out.println("Conectar?: " + win.conn);
+        if (win.conn) {
+            try {
+                // rest api
+                //limpiamos
+                listaRecursos.setModel(new DefaultListModel<>());
+                listaRecursos.updateUI();
+                jTree1.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Repositorio")));
+                jTree1.updateUI();
+                //
+                RestControler rest = RestControler.getInstancia();
+                rest.estructuraRepositorio(taConsola, jTree1);
+                //
+                // stardog
+                //limpiamos                 
+                listaOA.setModel(new DefaultListModel<>());
+                listaOA.updateUI();
+                listaMetadato.setModel(new DefaultListModel<>());
+                listaMetadato.updateUI();
+                captura.getViewport().removeAll();
+                captura.updateUI();
+                //
+                StardogControler baseGrafica = StardogControler.getInstancia();
+                baseGrafica.getTiposOA(taConsola, listaOA);
+                //    
+            } catch (Exception ex) {
+                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_mnuConectarActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
@@ -475,11 +472,11 @@ public class DosENE extends javax.swing.JFrame {
 
     private void btnAddFicheroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddFicheroActionPerformed
         try {
-            FicheroControler fichero = FicheroControler.getInstancia();        
+            FicheroControler fichero = FicheroControler.getInstancia();
             fichero.getFileChooser(this);
             listaRecursos.setModel(fichero.getListaFicheros());
         } catch (IOException ex) {
-            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAddFicheroActionPerformed
 
@@ -488,25 +485,54 @@ public class DosENE extends javax.swing.JFrame {
             FicheroControler fichero = FicheroControler.getInstancia();
             if (fichero.getListaFicheros().size() > 0) {
                 fichero.quitarFichero(listaRecursos.getSelectedIndex());
-            }    
+            }
         } catch (Exception ex) {
-            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+        DialogWaitControler wait = new DialogWaitControler();
         try {
-            StardogControler stardog = StardogControler.getInstancia();
-            Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
-            DefaultListModel datos2 = stardog.getMetadatos_v1(dato);
-            listaMetadato.setModel(datos2);            
-            //preseteamos el panel de captura con los metadatos obligatorios.
-            final JPanel aJp = stardog.preSeteoPanelCaptura();
-            captura.getViewport().setView(aJp);
-            captura.updateUI();
+            StardogControler baseGrafica = StardogControler.getInstancia();
+            JPanel unPanel = null;
+            if (!baseGrafica.estatus()) {
+                return;
+            }
+
+            SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
+                @Override
+                protected JPanel doInBackground() throws Exception {
+                    publish("Procesando los metadatos... por favor espere.\n");
+                    wait.setMensaje("Procesando los metadatos... por favor espere.");
+                    Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
+                    DefaultListModel datos2 = baseGrafica.getMetadatos_v1(dato);
+                    listaMetadato.setModel(datos2);
+                    //preseteamos el panel de captura con los metadatos obligatorios.
+                    publish("Seteando Panel de carga... por favor espere.\n");
+                    wait.setMensaje("Seteando Panel de carga... por favor espere.");
+                    JPanel unPanel = baseGrafica.preSeteoPanelCaptura();
+                    wait.close();
+                    return unPanel;
+                }
+
+                @Override
+                protected void process(List<String> chunks) {
+                    taConsola.append(chunks.get(0));
+                }
+
+                @Override
+                protected void done() {
+                    captura.getViewport().setView(unPanel);
+                    captura.updateUI();
+                }
+
+            };
+        mySwingWorker.execute();  
+        wait.makeWait("test", evt);
         } catch (Exception ex) {
-            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+        }        
     }//GEN-LAST:event_listaOAMouseClicked
 
     private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
@@ -514,64 +540,36 @@ public class DosENE extends javax.swing.JFrame {
     }//GEN-LAST:event_listaMetadatoMouseClicked
 
     private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
-        try {            
-            //SwingWorker<SwordControler, Void> mySwingWorker = new SwingWorker<SwordControler, Void>() {
+        try {
+            StardogControler base = StardogControler.getInstancia();
 
-            //    @Override
-            //    protected SwordControler doInBackground() throws Exception {
-                    // Sword
-            //         SwordControler repositorio = SwordControler.getInstancia();
-                    //wait.close();
-            //        return repositorio;
-            //    }
-            //};
-            //mySwingWorker.execute();
-            //SwordControler repositorio = mySwingWorker.get();
-            //---------------------------------------------------------
-            SwordControler repositorio = SwordControler.getInstancia();
-            taConsola.append("********************************\n");
-            taConsola.append("Iniciando depósito.");taConsola.append(System.getProperty("line.separator"));
-            taConsola.append("Generando METS.");taConsola.append(System.getProperty("line.separator"));
-            taConsola.append("********************************");taConsola.append(System.getProperty("line.separator"));
-            taConsola.updateUI();                        
-                //fichero = FicheroControler.getInstancia();                     
-            MetsControler xmlMets = MetsControler.getInstancia();
-            
-            /*generamos el zip con el mets*/
-            xmlMets.newMETS();
-            taConsola.append("METS generado");taConsola.append(System.getProperty("line.separator"));
-            taConsola.append("Depositando... Por Favor espere...");
-            taConsola.append(System.getProperty("line.separator"));
-            
-            /* depositado en el repositorio, en la coleccion... */
-            Coleccion col = (Coleccion) ((Object) listaColecciones.getSelectedValue());
-            //----------------------------------------------------------------
-            repositorio.myDepositoMets(col.getColeccion());
-            //----------------------------------------------------------------
-            taConsola.append("Deposito finalizado.");
-            taConsola.append(System.getProperty("line.separator"));
+            // creamos el json
+            base.misMetadatos();
+
+            // depositamos
+            RestControler repositorio = RestControler.getInstancia();
+
         } catch (Exception ex) {
-            Logger.getLogger(DosENE.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
         }
-       
+
     }//GEN-LAST:event_btnDepositarActionPerformed
 
     private void btnAgregarMetadatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMetadatoActionPerformed
-        StardogControler stardog = null;   
+        StardogControler stardog = null;
         try {
             List objeto = listaMetadato.getSelectedValuesList();
             final JPanel aJp = stardog.setPanelCaptura(objeto);
             captura.getViewport().setView(aJp);
             captura.updateUI();
             //eliminamos los metadatos afectados si estos no se repiten.
-            
+
             //if (ListMetadatos.getSelectedIndices().length > 0) {
             //    stardog.removerItemSeleccionados(ListMetadatos.getSelectedIndices());
             //}
             //this.viewMsjTextArea("Operación finalizada.\nSe agregaron " + objeto.size() + " metadatos para su registro.");
-
-        } catch (Exception ex) {            
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error", "Informe", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
@@ -593,23 +591,19 @@ public class DosENE extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DosENE.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DosENE().setVisible(true);
+                new Depositando().setVisible(true);
             }
         });
     }
@@ -621,22 +615,18 @@ public class DosENE extends javax.swing.JFrame {
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -664,12 +654,12 @@ public class DosENE extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
-    private javax.swing.JList<String> listaColecciones;
+    private javax.swing.JTree jTree1;
     private javax.swing.JList<String> listaMetadato;
     private javax.swing.JList<String> listaOA;
     private javax.swing.JList<String> listaRecursos;

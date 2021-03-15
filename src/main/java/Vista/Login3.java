@@ -6,10 +6,14 @@
 package Vista;
 
 import Control.LoginControler;
+import Control.RestControler;
+import Control.StardogControler;
+import com.complexible.stardog.StardogException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,36 +23,58 @@ public class Login3 extends javax.swing.JDialog {
 
     private LoginControler login = null;
 
+    // rest api dspace
+    RestControler rest = null;
+
+    // conectar a Stardog
+    StardogControler stardog = null;
+
+    // saber si se hizo alguna modificacion
+    boolean conn = false;
+
+    boolean restlogin, stardoglogin = false;
+
     /**
      * Creates new form Login3
      *
      * @param parent
+     * @param modal
      */
     public Login3(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
-        this.setLocationRelativeTo(null);
 
         try {
+            initComponents();
+            this.setLocationRelativeTo(null);
+
+            restlogin = false;
+            stardoglogin = false;
+
             login = LoginControler.getInstancia();
+
+            // STARDOG
+            this.st_url.removeAllItems();
+            this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
+            this.st_bd.setText(login.getBase());
+            this.st_usuario.setText(login.getUserst());
+            this.st_pass.setText(login.getPassst());
+            stardog = StardogControler.getInstancia();
+            // fin coneccion stardog
+
+            // DSpace
+            this.sw_url.removeAllItems();
+            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
+            this.sw_usuario.setText(login.getUsesw());
+            this.sw_pass.setText(login.getPassw());
+            //this.sw_obo.setText(login.getObo()); // ya no aplica.
+            rest = RestControler.getInstancia();
+            // fin coneccion DSpace
         } catch (IOException ex) {
+            Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        //STARDOG                        
-        this.st_url.removeAllItems();
-        this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
-        this.st_bd.setText(login.getBase());
-        this.st_usuario.setText(login.getUserst());
-        this.st_pass.setText(login.getPassst());
-
-        //SWORD            
-        this.sw_url.removeAllItems();
-        this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
-        this.sw_usuario.setText(login.getUsesw());
-        this.sw_pass.setText(login.getPassw());
-        this.sw_obo.setText(login.getObo());
-        //...        
     }
 
     /**
@@ -93,9 +119,6 @@ public class Login3 extends javax.swing.JDialog {
         sw_usuario = new javax.swing.JTextField();
         userStardogLabel1 = new javax.swing.JLabel();
         sw_pass = new javax.swing.JPasswordField();
-        jPanel6 = new javax.swing.JPanel();
-        passStardogLabel1 = new javax.swing.JLabel();
-        sw_obo = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -228,7 +251,7 @@ public class Login3 extends javax.swing.JDialog {
         panel_Superior.add(cont_stardog);
 
         cont_sword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Repositorio DSpace", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
-        cont_sword.setLayout(new java.awt.GridLayout(4, 1, 5, 5));
+        cont_sword.setLayout(new java.awt.GridLayout(3, 1, 5, 5));
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -307,18 +330,6 @@ public class Login3 extends javax.swing.JDialog {
 
         cont_sword.add(jPanel5);
 
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        passStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        passStardogLabel1.setText("Mediador (On Behalf of)");
-        passStardogLabel1.setName(""); // NOI18N
-        jPanel6.add(passStardogLabel1);
-
-        sw_obo.setColumns(30);
-        jPanel6.add(sw_obo);
-
-        cont_sword.add(jPanel6);
-
         panel_Superior.add(cont_sword);
 
         getContentPane().add(panel_Superior, java.awt.BorderLayout.PAGE_START);
@@ -327,15 +338,42 @@ public class Login3 extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // conectar a Stardog
-        
-        // conectar a DSpace
+        try { 
+            this.conn = false;
+            //conectar a DSpace a traves de rest api
+            // seteamos las variables primero
+            login.setUri((String) this.sw_url.getSelectedItem());    //private String uri = "";
+            login.setUsesw(this.sw_usuario.getText());    //private String usesw = "";
+            login.setPassw(new String(this.sw_pass.getPassword()));    //private String passw = "";
+            // conectamos
+            restlogin = rest.conectar();
+            System.out.println("-------------1");
+            // -----------------------------------------------------------------
+            //conectar a DSpace a traves de Stardog api
+            // seteamos las variables primero
+            login.setUrl_st((String) this.st_url.getSelectedItem());    //private String url = "";           
+            login.setUserst(this.st_usuario.getText());    //private String userst = "";
+            login.setPassst(new String(this.st_pass.getPassword()));    //private String passst = "";
+            login.setBase(this.st_bd.getText());    //private String base = "";
+            // conectar a Stardog                       
+            stardog.conectar();
+            System.out.println("-------------2");
+            stardoglogin = stardog.estatus();
+            System.out.println("-------------3");
 
+            if (!restlogin && !stardoglogin) {
+                JOptionPane.showMessageDialog(this, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
+            }else{
+                this.conn = true;
+            }
+            this.setVisible(false);
+        } catch (StardogException ex) {
+            Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
         this.setVisible(false);
-        this.dispose();
     }//GEN-LAST:event_btn_cancelarActionPerformed
 
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
@@ -347,7 +385,8 @@ public class Login3 extends javax.swing.JDialog {
             login.grabarUrlSt(this.st_otro.getText());
             login.setup_stardog();
             this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
-            this.st_url.updateUI();
+            //this.st_url.updateUI();
+            this.st_otro.setText("");
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -380,9 +419,10 @@ public class Login3 extends javax.swing.JDialog {
     private void btn_agregar_swActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_swActionPerformed
         try {
             login.grabarUriSw(this.sw_otro.getText());
-            login.setup_sword();
+            login.setup_dspace();
             this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
-            this.sw_url.updateUI();
+            //this.sw_url.updateUI();
+            this.sw_otro.setText("");
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -458,7 +498,6 @@ public class Login3 extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JLabel nombreBDStardogLabel;
@@ -470,13 +509,11 @@ public class Login3 extends javax.swing.JDialog {
     private javax.swing.JPanel panel_Superior;
     private javax.swing.JPanel panel_inferior;
     private javax.swing.JLabel passStardogLabel;
-    private javax.swing.JLabel passStardogLabel1;
     private javax.swing.JTextField st_bd;
     private javax.swing.JTextField st_otro;
     private javax.swing.JPasswordField st_pass;
     private javax.swing.JComboBox<String> st_url;
     private javax.swing.JTextField st_usuario;
-    private javax.swing.JTextField sw_obo;
     private javax.swing.JTextField sw_otro;
     private javax.swing.JPasswordField sw_pass;
     private javax.swing.JComboBox<String> sw_url;

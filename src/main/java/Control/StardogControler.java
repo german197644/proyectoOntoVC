@@ -19,6 +19,7 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQueryResult;
 
 import Modelo.Metadato;
+import com.complexible.stardog.api.ConnectionConfiguration;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,6 +27,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,14 +38,25 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.SwingWorker;
+import org.jdom.Element;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -64,20 +79,23 @@ public final class StardogControler {
 
     //Variable de conexion a stardog
     //private static ConexionStardogControl connOnto = null;
-
     //archivo de configuracion configMetadatas.properties
     Properties properties = new Properties();
     InputStream propertiesStream;
 
     //mensajes de validacion
     String retornoValidacion = null;
-    
-    private LoginControler login = null; 
 
-    protected StardogControler() throws Exception {
-        login = LoginControler.getInstancia(); 
-        login.conectarStardog();
-        conexionStardog = login.getConexionStardog();
+    private LoginControler login = null;
+
+    private StardogControler() {
+        try {
+            login = LoginControler.getInstancia();
+            //login.conectarStardog();
+            //conexionStardog = login.getConexionStardog();
+        } catch (IOException ex) {
+            Logger.getLogger(StardogControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static StardogControler getInstancia() throws Exception {
@@ -86,44 +104,90 @@ public final class StardogControler {
         }
         return instancia;
     }
-    
-    
-    /**
-     * metodo usado para devolver los OAs SNRD existentes en la ontología.
-     *
-     * @return lista los tipos de SNRD existentes en la BDatos
-     * @throws StardogException
-     */
-    public DefaultListModel getTiposOA() throws StardogException {
-        DefaultListModel<Metadato> resultado = new DefaultListModel<>();
-        BindingSet fila;
-        TupleQueryResult aResult;
 
-        IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasSnrdType");
-        IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#snrd");
-        SelectQuery aQuery = conexionStardog.select(
-                "SELECT DISTINCT ?tipoSnrd WHERE { "
-                + " ?sujeto ?typeSV ?objeto."
-                + " ?objeto ?typeON ?tipoSnrd."
-                + "}"
-        );
-        aQuery.parameter("typeSV", sv);
-        aQuery.parameter("typeON", on);
-        aResult = aQuery.execute();
-        //System.out.println("ejecutado ....:" );
-        while (aResult.hasNext()) {
-            fila = aResult.next();
-            final String aValue = fila.getValue("tipoSnrd").stringValue();
-            //System.out.println("tipo snrd ....:" + aValue);
-            Metadato m;
-            m = new Metadato(aValue, aValue);
-            resultado.addElement(m);
+    public void conectar() {
+        try {
+            conexionStardog = ConnectionConfiguration
+                    .to(login.getBase().trim())
+                    .credentials(login.getUserst().trim(), login.getPassst().trim())
+                    .server(login.getUrl_st().trim())
+                    .reasoning(true)
+                    .connect()
+                    .as(ReasoningConnection.class);
+        } catch (StardogException ex) {
+            System.out.println("Error en Control.StardogControler.conectar()" + ex.getMessage());
         }
-        //System.out.println("dejando SNRD" );
-
-        return resultado;
     }
 
+    protected void desconectar() {
+        conexionStardog.close();
+    }
+
+    public boolean estatus() {
+        if (conexionStardog != null) {
+            return conexionStardog.isOpen();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * metodo usado para devolver los OAs SNRD existentes en la ontología.
+     *      
+     * @param ta Objeto donde se imprime la accion realizada
+     * @param lista Lista devuelta con los Obj. de Aprendiazaje presentes en la base gráfica.
+     */
+    public void getTiposOA(JTextArea ta, JList lista) {
+        SwingWorker<DefaultListModel, String> mySwingWorker = new SwingWorker<DefaultListModel, String>() {
+            @Override
+            protected DefaultListModel doInBackground() throws Exception {               
+                DefaultListModel<Metadato> resultado = new DefaultListModel<>();
+                BindingSet fila;
+                TupleQueryResult aResult;
+                
+                IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasSnrdType");
+                IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#snrd");
+                SelectQuery aQuery = conexionStardog.select(
+                        "SELECT DISTINCT ?tipoSnrd WHERE { "
+                        + " ?sujeto ?typeSV ?objeto."
+                        + " ?objeto ?typeON ?tipoSnrd."
+                        + "}"
+                );
+                aQuery.parameter("typeSV", sv);
+                aQuery.parameter("typeON", on);
+                aResult = aQuery.execute();
+                //System.out.println("ejecutado ....:" );
+                publish("Obteniendo la lista de Obj. de Aprendizaje presente en la BD gráfica.\n");                
+                while (aResult.hasNext()) {
+                    fila = aResult.next();
+                    final String aValue = fila.getValue("tipoSnrd").stringValue();                    
+                    Metadato m;
+                    m = new Metadato(aValue, aValue);
+                    resultado.addElement(m);
+                }
+                //System.out.println("dejando SNRD" );
+
+                return resultado;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    lista.setModel(this.get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(StardogControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }                        
+        };
+
+        if (this.estatus())
+            mySwingWorker.execute();        
+    }
 
     public DefaultListModel<Metadato> getCapturaMetadados() {
         return capturaMetadados;
@@ -329,7 +393,7 @@ public final class StardogControler {
     public JPanel preSeteoPanelCaptura() throws Exception {
         JPanel jp = new JPanel();
         DefaultListModel<Metadato> eliminar = new DefaultListModel<>();
-
+        
         //seteamos las variables contenedoras a cero.
         this.capturaMetadados.clear();
 
@@ -351,52 +415,16 @@ public final class StardogControler {
                 }
             }
         }
-
-        //System.out.println("generacion de componentes");
+        
         //quitamos los metadatos que se agregaron pero no se repiten.
-        for (int i = 0; i < eliminar.size(); ++i) {
-            listaMetadados.removeElement(eliminar.get(i));
-        }
+        //for (int i = 0; i < eliminar.size(); ++i) {
+        //    listaMetadados.removeElement(eliminar.get(i));
+        //}
 
-        //System.out.println("eliminacion de componentes");
         //ordenamos capturaMetadatos -----------------------------------                       
-        this.ordenar(); // mejorar
+        //this.ordenar(); // mejorar
         //--------------------------------------------------------------
 
-        //System.out.println("ordenacion de componentes");
-
-        /*
-        jp.setLayout(new GridBagLayout());
-        //seteamos el grid
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        c.insets = new Insets(10, 0, 0, 0);
-        //cargamos el panel con los colectores                
-        for (int i = 0; i < capturaMetadados.size(); ++i) {
-            c.gridx = 0;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getEtiqueta(), c);
-            c.gridx = 1;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getColector(), c);
-        }
-
-        //mejoramos la visual si tiene pocos componentes la lista capturada.           
-        if (capturaMetadados.size() < 10) {
-            for (int i = capturaMetadados.size() + 1; i < 10; ++i) {
-                JLabel aux = new JLabel("-");
-                c.gridx = 0;
-                c.gridy = i;
-                jp.add(aux, c);
-                c.gridx = 1;
-                c.gridy = i;
-                jp.add(aux, c);
-            }
-        }
-         */
         jp = rellenarJPanel(jp);
         return jp;
     }
@@ -765,7 +793,7 @@ public final class StardogControler {
         IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "domain");
         IRI iri4 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "range");
         IRI iri5 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
+                
         SelectQuery aQuery = conexionStardog.select(
                 "SELECT DISTINCT ?dominio ?rango ?subClase "
                 + "WHERE { "
@@ -1289,4 +1317,52 @@ public final class StardogControler {
         return resultado;
     }
 
+    public void misMetadatos() {
+        FileWriter file = null;
+        JSONObject data = new JSONObject();
+        JSONArray list = new JSONArray();
+        JSONObject obj = new JSONObject();
+        try {
+            //List<Element> aListEle = new ArrayList<>();
+            //StardogControler ontologia = StardogControler.getInstancia();
+            DublinCoreControler dublincore = DublinCoreControler.getInstancia();
+            //DefaultListModel<Metadato> aListMetadatos = ontologia.getCapturaMetadados();
+            //final String uri = "http://purl.org/dc/elements/1.1/";
+
+            for (int i = 0; i < capturaMetadados.size(); ++i) {
+                Metadato m = capturaMetadados.get(i);
+                //System.out.println("pase por aca!. metadato: " + m.getTipo());
+                Object aDC = dublincore.getEquivalenciaDC(m.getTipo().toLowerCase().trim());
+                if (aDC != null) {
+                    if (aDC instanceof StringTokenizer) {
+                        StringTokenizer aux = (StringTokenizer) aDC;
+                        //String[] result = "this is a test".split("\\s");
+                        //dividimos la cadena de los periodos
+                        String[] result = m.getContenidoMetadato().split("-"); //mejorar la entrega del valor
+                        i = 0;
+                        while (aux.hasMoreTokens()) {
+                            //String dato = result[i];aux.nextToken()
+                            obj.put("key", aux.nextToken().trim());
+                            obj.put("value", result[i].trim());
+                            list.add(obj); // [{},{},...]
+                            i++;
+                        }
+                    } else {
+                        final String myDC = ((String) aDC);
+                        // ...
+                        obj.put("key", myDC);
+                        obj.put("value", m.getContenidoMetadato());
+                        list.add(obj); // [{},{},...]
+                    }
+                }
+            }
+            data.put("metadata", list); // {"metadata":[{},{},...]}
+            file = new FileWriter(new File("E:\\metadatosJson.json"));
+            file.write(data.toJSONString());
+            file.flush();
+            file.close();
+        } catch (Exception ex) {
+            Logger.getLogger(MetsControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

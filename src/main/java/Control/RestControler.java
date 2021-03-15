@@ -7,7 +7,6 @@ package Control;
 
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
-import Control.LoginControler;
 import Vista.prueba;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,27 +23,41 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.JTextArea;
+import javax.swing.JTree;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 
 /**
  *
  * @author germa
  */
-public class RestControler {
+public final class RestControler {
 
     private String newItem = null;
 
-    public RestControler() {
+    private static RestControler instancia = null;
+
+    private RestControler() {
     }
 
-    public String Login() throws Exception {
+    /**
+     *
+     * @return
+     */
+    public static RestControler getInstancia() {
+        if (instancia == null) {
+            instancia = new RestControler();
+        }
+        return instancia;
+    }
+
+    public boolean conectar() {
         String result = null;
+        boolean result2 = false;
         try {
+
             // traerlo de loginControler despues
             String url = "http://localhost:8080";
             String email = "gerdarpog@gmail.com";
@@ -64,19 +77,29 @@ public class RestControler {
             BufferedReader br = new BufferedReader(isr);
 
             result = br.lines().collect(Collectors.joining("\n"));
-
+            //
+            JsonParser parse = new JsonParser();
+            if (!parse.parse(result).isJsonNull()) {
+                JsonElement estado = ((JsonObject) parse.parse(result)).get("authenticated");
+                result2 = estado.getAsBoolean();
+            }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return result;
+        return result2;
     }
 
-    public String Logout() throws Exception {
+    /**
+     *
+     * @return
+     */
+    public boolean desconectar() {
         String result = null;
+        boolean result2 = false;
         try {
             // traerlo de loginControler despues
             String url = "http://localhost:8080";
-            String command = "curl -v -X POST " + url + "/rest/login --cookie \"E:/cookies.txt\"";
+            String command = "curl -v -X POST " + url + "/rest/logout --cookie \"E:/cookies.txt\"";
             Process process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
 
@@ -90,10 +113,46 @@ public class RestControler {
             BufferedReader br = new BufferedReader(isr);
 
             result = br.lines().collect(Collectors.joining("\n"));
+
+            JsonParser parse = new JsonParser();
+            JsonElement estado = ((JsonObject) parse.parse(result)).get("authenticated");
+            result2 = estado.getAsBoolean();
+
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return result;
+        return result2;
+    }
+
+    public boolean estatus() {
+        String result = null;
+        boolean result2 = false;
+        String command = null;
+        Process process;
+        try {
+            // traerlo de loginControler despues
+            LoginControler login = LoginControler.getInstancia();
+            String url = login.getUri().trim();
+            //
+            command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
+                    + "--cookie \"E:/cookies.txt\"";
+            process = Runtime.getRuntime().exec(command);
+            int waitFor = process.waitFor();
+            //
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            //
+            result = br.lines().collect(Collectors.joining("\n"));
+            //
+            JsonParser parse = new JsonParser();
+            JsonElement estado = ((JsonObject) parse.parse(result)).get("authenticated");
+            result2 = estado.getAsBoolean();
+            //
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result2;
     }
 
     public String newItem(String coleccion) {
@@ -349,12 +408,11 @@ public class RestControler {
      * @param ta muestra la salida en este compenente.
      * @return DefaultTreeModel
      */
-    public DefaultTreeModel obtenerComunidades(JTextArea ta) {        
-        //DefaultTreeModel modelo = null;
+    public DefaultTreeModel obtenerComunidades(JTextArea ta) {
         SwingWorker<DefaultTreeModel, Integer> mySwingWorker = new SwingWorker<DefaultTreeModel, Integer>() {
             @Override
             protected DefaultTreeModel doInBackground() throws Exception {
-                DefaultTreeModel modelo =  null;
+                DefaultTreeModel modelo = null;
                 try {
                     LoginControler conn = LoginControler.getInstancia();
                     String comando = "curl -X GET -H \"accept: application/json\" "
@@ -403,14 +461,14 @@ public class RestControler {
                 ta.append("Extrayendo estructura." + "\n");
             }
         };
-        
+
         mySwingWorker.execute();
         DefaultTreeModel model = null;
         try {
             model = mySwingWorker.get();
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
         return model;
     }
 
@@ -521,52 +579,73 @@ public class RestControler {
         }
         return modelo;
     }
-    
-    
-      /**
+
+    /**
      *
-     * @param comando l
-     * @param url en que host se encuentra alojado DSpace
-     * @return
+     * @param ta JTextArea donde se informa los avances.
+     * @param tree
      */
-    public DefaultTreeModel estructRepositorio2(JTextArea ta) {
-        DefaultTreeModel modelo = null;
-        try {          
-            
-            ta.append("Obteniendo estrucutra del repositorio.\n");
-            
-            LoginControler conn = LoginControler.getInstancia();
-            String comando = "curl -X GET -H \"accept: application/json\" "
+    public void estructuraRepositorio(JTextArea ta, JTree tree) {
+        SwingWorker<DefaultTreeModel, String> mySwingWorker = new SwingWorker<DefaultTreeModel, String>() {
+            @Override
+            protected DefaultTreeModel doInBackground() {
+                DefaultTreeModel modelo = null;
+                try {
+
+                    //ta.append("Obteniendo estrucutra del repositorio.\n");
+                    publish("Obteniendo estructura del repositorio.\n");
+                    
+                    LoginControler conn = LoginControler.getInstancia();
+                    String comando = "curl -X GET -H \"accept: application/json\" "
                             + conn.getUri().trim() + "/rest/communities";
-            Process process = Runtime.getRuntime().exec(comando);
+                    Process process = Runtime.getRuntime().exec(comando);
 
-            InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
 
-            String result = br.lines().collect(Collectors.joining("\n"));
-            System.out.println("Linea: " + result);
-            JsonParser parser = new JsonParser();
-            JsonElement datos = parser.parse(result);
-            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");            
-            padre = dumpJSONElement2(datos, padre);            
-            modelo = new DefaultTreeModel(padre);
-        } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modelo;
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    System.out.println("Linea: " + result);
+                    JsonParser parser = new JsonParser();
+                    JsonElement datos = parser.parse(result);
+                    DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+                    padre = dumpJSONElement2(datos, padre);
+                    modelo = new DefaultTreeModel(padre);
+                    publish("Estructura de repositorio obtenida satisfactoriamente.\n");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    publish("No se pudo obtener la estructura del repositorio satisfactoriamente.\n");
+                }
+                return modelo;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    tree.setModel(this.get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }
+                        
+        };
+
+        mySwingWorker.execute();
     }
 
     /**
      *
      * @param elemento JsonElement
-     * @param miTree Jerarquia para mostrar en la salida
-     * @param modelo modelo del arbol
      * @param padre nodo inmediato superior
-     * @param jerarquia el orden que ocupa en la estructura.
      * @return Un arbol.
      */
-    private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {               
+    private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {
+
         try {
             LoginControler conn = LoginControler.getInstancia();
             if (((JsonElement) elemento).isJsonArray()) {
@@ -587,7 +666,7 @@ public class RestControler {
                         //System.out.println(miTree + " " + comunidad.toString());
                         //nuevo
                         String command = "curl -X GET -H \"accept: application/json\" "
-                                + conn.getUri()+ linkComunidad.getAsString() + "/communities";
+                                + conn.getUri() + linkComunidad.getAsString() + "/communities";
                         Process process = Runtime.getRuntime().exec(command);
                         InputStream is = process.getInputStream();
                         InputStreamReader isr = new InputStreamReader(is);
@@ -598,7 +677,7 @@ public class RestControler {
                         //JsonElement datos = parser.parse(result);
                         JsonArray datosComunidad = (JsonArray) parser.parse(result);
                         if (datosComunidad.size() > 0) {
-                            padre = dumpJSONElement2(datosComunidad,nodoComunidad);
+                            padre = dumpJSONElement2(datosComunidad, nodoComunidad);
                         } else {
                             String commandColeccion = "curl -X GET -H \"accept: application/json\" "
                                     + conn.getUri() + linkComunidad.getAsString() + "/collections";
@@ -636,11 +715,10 @@ public class RestControler {
                     }
                 }
             }
-           
         } catch (IOException ex) {
             Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
         }
-         return padre;
+        return padre;
     }
-    
+
 }

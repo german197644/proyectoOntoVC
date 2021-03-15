@@ -22,9 +22,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import edu.harvard.hul.ois.mets.helper.MetsException;
-import java.awt.Dialog;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +29,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -58,12 +54,16 @@ public class prueba extends javax.swing.JFrame {
     private static METS mets = null;
 
     public prueba() {
-        initComponents();
-        setLocationRelativeTo(null);
-        //this.setVisible(true);
-        //login start
-        Login3 login = new Login3(this, true);
-        login.setVisible(true);
+        try {
+            initComponents();
+            setLocationRelativeTo(null);
+            //this.setVisible(true);
+            //login start
+            Login3 login = new Login3(this, true);
+            login.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -455,7 +455,7 @@ public class prueba extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
             // TODO add your handling code here:
-            RestControler myRest = new RestControler();
+            RestControler myRest = RestControler.getInstancia();
             myRest.comandoEXEC(txtComand.getText().trim());
         } catch (JSONException ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
@@ -492,7 +492,7 @@ public class prueba extends javax.swing.JFrame {
     }//GEN-LAST:event_btnJsonActionPerformed
 
     private void btnProcessBuilderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessBuilderActionPerformed
-        RestControler rest = new RestControler();
+        RestControler rest = RestControler.getInstancia();                ;
         modelo = rest.estructRepositorio(txtComand.getText().trim(), txtHost.getText().trim());
         tree.setModel(modelo);
         tree.updateUI();
@@ -587,9 +587,9 @@ public class prueba extends javax.swing.JFrame {
 
     private void btnAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticarActionPerformed
         try {
-            RestControler rest = new RestControler();
-            String result = rest.Login();
-            System.out.println(result);
+            RestControler rest = RestControler.getInstancia();
+            boolean result = rest.conectar();
+            System.out.println("conexion Rest: " + result);
         } catch (Exception ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -602,23 +602,23 @@ public class prueba extends javax.swing.JFrame {
 
     private void btnAutenticar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutenticar1ActionPerformed
         try {
-            RestControler rest = new RestControler();
-            String result = rest.Logout();
-            System.out.println(result);
+            RestControler rest = RestControler.getInstancia();
+            boolean result = rest.desconectar();
+            System.out.println("DesConexion rest: " + result);
         } catch (Exception ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAutenticar1ActionPerformed
 
     private void btnNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewItemActionPerformed
-        RestControler rest = new RestControler();
+        RestControler rest = RestControler.getInstancia();
         //reemplazar por la que se selecciona en pantalla.
         String result = rest.newItem("/rest/collections/34368f6d-3a1b-4698-b064-1cf6e8e85df1");
         System.out.println(result);
     }//GEN-LAST:event_btnNewItemActionPerformed
 
     private void btnDepositarBitStreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarBitStreamActionPerformed
-        RestControler rest = new RestControler();
+        RestControler rest = RestControler.getInstancia();
         String result = rest.sendBitstreams(txtItem.getText().trim(), "");
         System.out.println(result);
     }//GEN-LAST:event_btnDepositarBitStreamActionPerformed
@@ -631,7 +631,7 @@ public class prueba extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
 
                 //Here you put your long-running process...
-                RestControler rest = new RestControler();
+                RestControler rest = RestControler.getInstancia();
                 tree.setModel(rest.getComunidades(txtHost.getText(), txtComand.getText()));
                 //tree.updateUI();  
                 for (int i=1;i<11;i++){
@@ -687,11 +687,11 @@ public class prueba extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuActualizarMouseClicked
 
     private void btnComunidades2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComunidades2ActionPerformed
-        RestControler rest = new RestControler();
+        RestControler rest = RestControler.getInstancia();
         //rest.prueba(evt, jTextArea1);
         //DefaultTreeModel model = rest.obtenerComunidades(jTextArea1);
-        DefaultTreeModel model = rest.estructRepositorio2(jTextArea1);
-        tree.setModel(model);
+        rest.estructuraRepositorio(jTextArea1, tree);
+        //tree.setModel(model);
     }//GEN-LAST:event_btnComunidades2ActionPerformed
 
     private void mnuDeleteColeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuDeleteColeccionActionPerformed

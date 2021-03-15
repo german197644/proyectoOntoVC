@@ -209,7 +209,8 @@ public class PanelOntologico extends javax.swing.JPanel {
             stardog = StardogControler.getInstancia();
             if (stardog != null) {
 
-                DefaultListModel aList = stardog.getTiposOA();
+                //DefaultListModel aList = stardog.getTiposOA();
+                DefaultListModel aList = null;
 
                 if (aList != null) {
                     listaOA.setModel(aList);

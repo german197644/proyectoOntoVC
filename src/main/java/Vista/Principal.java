@@ -64,7 +64,8 @@ public class Principal extends javax.swing.JFrame {
             //end
             
             //stardog            
-            DefaultListModel aList = stardog.getTiposOA();
+            //DefaultListModel aList = stardog.getTiposOA();
+            DefaultListModel aList = null;
             System.out.println(aList );                
             listaOA.setModel(aList);
             listaOA.updateUI();                                     

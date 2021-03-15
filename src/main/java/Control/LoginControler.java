@@ -27,13 +27,13 @@ import org.swordapp.client.ClientConfiguration;
 import org.swordapp.client.SWORDClient;
 import org.swordapp.client.ServiceDocument;
 
-public class LoginControler {
+public final class LoginControler {
     
     Properties properties = null;
     InputStream propertiesStream = null;
     OutputStream output = null;
     
-    // Sword - variables de seteo
+    // Rest - variables de seteo
     private int nrouri = 0;
     private String uri = "";
     private String usesw = "";
@@ -55,6 +55,8 @@ public class LoginControler {
     //Variables de coneccion de Sword
     ServiceDocument sd; 
     private SWORDClient client = null;              
+    
+    private RestControler rest = null;
 
     private static LoginControler instancia = null;
     
@@ -62,7 +64,7 @@ public class LoginControler {
         try {
             getProperty();
             setup_stardog();
-            setup_sword();
+            setup_dspace();
         } catch (IOException ex) {
             Logger.getLogger(LoginControler.class.getName()).log(Level.SEVERE, null, ex);            
         } catch (Exception ex) {
@@ -94,8 +96,10 @@ public class LoginControler {
 
     
     
+    
+    
     protected void desconectarServidor()  {
-        conexionStardog.close();
+        conexionStardog.close();        
     }
     
     /**
@@ -129,7 +133,7 @@ public class LoginControler {
     }
  
     
-    public void setup_sword() throws IOException {
+    public void setup_dspace() throws IOException {
         this.servidores_sw.removeAllElements();
         this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
         for(int i=1;i<=this.nrouri;i++){

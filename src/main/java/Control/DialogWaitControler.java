@@ -10,6 +10,7 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -26,6 +27,7 @@ public class DialogWaitControler {
     private JDialog dialog;
     
     JProgressBar progressBar;
+    JLabel label = new JLabel();
 
     public DialogWaitControler() {
         this.progressBar = new JProgressBar();
@@ -50,13 +52,27 @@ public class DialogWaitControler {
         dialog.setPreferredSize(new Dimension(300,100));   
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(progressBar, BorderLayout.CENTER);
-        panel.add(new JLabel(msg), BorderLayout.PAGE_START);
+        panel.add(label, BorderLayout.PAGE_START);
         dialog.add(panel);
         dialog.pack();
         dialog.setLocationRelativeTo(win);  
         dialog.setVisible(true);
    }
         
+   public void makeWait(String msg, MouseEvent evt) {    
+        
+        Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());        
+        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);        
+        dialog.setPreferredSize(new Dimension(300,100));   
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(progressBar, BorderLayout.CENTER);
+        panel.add(new JLabel(msg), BorderLayout.PAGE_START);
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(win);  
+        dialog.setVisible(true);
+   } 
+    
     
    public void close() {
        dialog.dispose();
@@ -65,4 +81,9 @@ public class DialogWaitControler {
    public void incrementarProBar(int valor){
        progressBar.setValue(valor);
    }
+
+    public void setMensaje(String msg) {
+        this.label.setText(msg);
+        this.label.updateUI();
+    }      
 }

@@ -395,7 +395,7 @@ public class Login extends javax.swing.JDialog {
     private void btn_agregar_swActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_swActionPerformed
         try {
             login.grabarUriSw(this.sw_otro.getText());
-            login.setup_sword();
+            login.setup_dspace();
             this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw())); 
             this.sw_url.updateUI();
         } catch (Exception ex) {
