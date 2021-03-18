@@ -9,9 +9,13 @@ import Control.DialogWaitControler;
 import Control.FicheroControler;
 import Control.RestControler;
 import Control.StardogControler;
+import Modelo.ColeccionRest;
+import Modelo.ComunidadRest;
 import Modelo.Metadato;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -21,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -28,27 +33,35 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class Depositando extends javax.swing.JFrame {
 
+    ComunidadRest comunidad = null;
+    ColeccionRest coleccion = null;
+    
     public Depositando() {
         initComponents();
         this.setTitle("Depósito y búsqueda de ítems. ;)");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setVisible(true);
         //
+        captura.getVerticalScrollBar().setUnitIncrement(15);
+        //
         Login3 win = new Login3(this, rootPaneCheckingEnabled);
+        win.setTa(taConsola);
         win.setVisible(true);
         System.out.println("Se pidio conectar: " + win.conn);
-        if (win.conn) { // realizamos la conexion
-            try {
-                // rest api                
-                RestControler rest = RestControler.getInstancia();
+        try {
+            // rest api                
+            RestControler rest = RestControler.getInstancia();
+            if (rest.estatus()) {
                 rest.estructuraRepositorio(taConsola, jTree1);
-
-                // stardog
-                StardogControler baseGrafica = StardogControler.getInstancia();
-                baseGrafica.getTiposOA(taConsola, listaOA);
-            } catch (Exception ex) {
-                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            // stardog
+            StardogControler baseGrafica = StardogControler.getInstancia();
+            if (baseGrafica.estatus()) {
+                baseGrafica.getTiposOA(taConsola, listaOA);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -127,6 +140,7 @@ public class Depositando extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTool = new javax.swing.JMenu();
         mnuConectar = new javax.swing.JMenuItem();
+        mnuFiltrar = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mnuSalir = new javax.swing.JMenuItem();
 
@@ -231,13 +245,15 @@ public class Depositando extends javax.swing.JFrame {
 
         panelSur.add(jPanel16, java.awt.BorderLayout.LINE_END);
 
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
+
         taConsola.setBackground(new java.awt.Color(255, 204, 153));
         taConsola.setColumns(20);
         taConsola.setLineWrap(true);
         taConsola.setRows(5);
         taConsola.setToolTipText("");
         taConsola.setWrapStyleWord(true);
-        taConsola.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
+        taConsola.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         taConsola.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
         jScrollPane2.setViewportView(taConsola);
 
@@ -264,6 +280,9 @@ public class Depositando extends javax.swing.JFrame {
         listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaOAMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                listaOAMousePressed(evt);
             }
         });
         jScrollPane1.setViewportView(listaOA);
@@ -346,6 +365,11 @@ public class Depositando extends javax.swing.JFrame {
         jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder("Estructura del Repositorio"));
 
         jTree1.setVisibleRowCount(7);
+        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                jTree1ValueChanged(evt);
+            }
+        });
         jScrollPane5.setViewportView(jTree1);
 
         jPanel11.add(jScrollPane5);
@@ -407,6 +431,10 @@ public class Depositando extends javax.swing.JFrame {
             }
         });
         mnuTool.add(mnuConectar);
+
+        mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        mnuFiltrar.setText("Filtrar");
+        mnuTool.add(mnuFiltrar);
         mnuTool.add(jSeparator1);
 
         mnuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
@@ -492,6 +520,49 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+
+    }//GEN-LAST:event_listaOAMouseClicked
+
+    private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
+
+    }//GEN-LAST:event_listaMetadatoMouseClicked
+
+    private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
+        try {
+            StardogControler base = StardogControler.getInstancia();
+            // creamos el archivo json con los metadatos
+            base.misMetadatos();
+            //
+            // depositamos
+            RestControler repositorio = RestControler.getInstancia();
+            repositorio.enviarBitstreams(coleccion, evt, taConsola);
+            //
+        } catch (Exception ex) {
+            //Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_btnDepositarActionPerformed
+
+    private void btnAgregarMetadatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMetadatoActionPerformed
+        StardogControler stardog = null;
+        try {
+            List objeto = listaMetadato.getSelectedValuesList();
+            final JPanel aJp = stardog.setPanelCaptura(objeto);
+            captura.getViewport().setView(aJp);
+            captura.updateUI();
+            //eliminamos los metadatos afectados si estos no se repiten.
+
+            //if (ListMetadatos.getSelectedIndices().length > 0) {
+            //    stardog.removerItemSeleccionados(ListMetadatos.getSelectedIndices());
+            //}
+            //this.viewMsjTextArea("Operación finalizada.\nSe agregaron " + objeto.size() + " metadatos para su registro.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error", "Informe", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
+
+    private void listaOAMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMousePressed
         DialogWaitControler wait = new DialogWaitControler();
         try {
             StardogControler baseGrafica = StardogControler.getInstancia();
@@ -523,56 +594,50 @@ public class Depositando extends javax.swing.JFrame {
 
                 @Override
                 protected void done() {
-                    captura.getViewport().setView(unPanel);
-                    captura.updateUI();
+                    try {
+                        captura.getViewport().setView(this.get());
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
             };
-        mySwingWorker.execute();  
-        wait.makeWait("test", evt);
+            mySwingWorker.execute();
+            wait.makeWait("Obteniendo datos", this);            
+            //wait.setearProgressBar(0);
         } catch (Exception ex) {
             Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-    }//GEN-LAST:event_listaOAMouseClicked
-
-    private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
-
-    }//GEN-LAST:event_listaMetadatoMouseClicked
-
-    private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
-        try {
-            StardogControler base = StardogControler.getInstancia();
-
-            // creamos el json
-            base.misMetadatos();
-
-            // depositamos
-            RestControler repositorio = RestControler.getInstancia();
-
-        } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
         }
+    }//GEN-LAST:event_listaOAMousePressed
 
-    }//GEN-LAST:event_btnDepositarActionPerformed
+    private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
+        TreePath path = evt.getPath();
+        Object[] nodos = path.getPath();
+        System.out.println("");
+        //System.out.println("----------------------------------------------");
+        //System.out.println("Path seleccionado: " + Arrays.toString(nodos));
+        //for (Object nodo : nodos) {
+        //    System.out.print(nodo.toString() + " | ");
+        //}
 
-    private void btnAgregarMetadatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMetadatoActionPerformed
-        StardogControler stardog = null;
-        try {
-            List objeto = listaMetadato.getSelectedValuesList();
-            final JPanel aJp = stardog.setPanelCaptura(objeto);
-            captura.getViewport().setView(aJp);
-            captura.updateUI();
-            //eliminamos los metadatos afectados si estos no se repiten.
+        // Mirando el ultimo nodo del path, sabemos qué nodo en concreto
+        // se ha seleccionado.
+        DefaultMutableTreeNode ultimoNodo
+                = (DefaultMutableTreeNode) nodos[nodos.length - 1];
 
-            //if (ListMetadatos.getSelectedIndices().length > 0) {
-            //    stardog.removerItemSeleccionados(ListMetadatos.getSelectedIndices());
-            //}
-            //this.viewMsjTextArea("Operación finalizada.\nSe agregaron " + objeto.size() + " metadatos para su registro.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error", "Informe", JOptionPane.ERROR_MESSAGE);
+        //System.out.println("ultimo Nodo: " + ultimoNodo);
+        //if (ultimoNodo.isRoot()) {
+        //    return;
+        //}
+
+        //System.out.println("ultimo Nodo: " + ultimoNodo.isLeaf());
+
+        if (ultimoNodo.isLeaf() && ultimoNodo.getUserObject() instanceof ColeccionRest) {
+            this.coleccion = (ColeccionRest) ultimoNodo.getUserObject();
+        }else{
+            this.coleccion = null;
         }
-    }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
+    }//GEN-LAST:event_jTree1ValueChanged
 
     /**
      * @param args the command line arguments
@@ -666,6 +731,7 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuConectar;
     private javax.swing.JMenuItem mnuDeleteColeccion;
     private javax.swing.JMenuItem mnuDeleteComunidad;
+    private javax.swing.JMenuItem mnuFiltrar;
     private javax.swing.JMenuItem mnuNewColeccion;
     private javax.swing.JMenuItem mnuNewComunidad;
     private javax.swing.JMenuItem mnuRefrescar;

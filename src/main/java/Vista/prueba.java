@@ -469,8 +469,8 @@ public class prueba extends javax.swing.JFrame {
             JSONArray list = new JSONArray();
             JSONObject obj = new JSONObject();
             JSONObject data = new JSONObject();
-            obj.put("key", "dc.title");
             obj.put("value", "Espero que salga");
+            obj.put("key", "dc.title");
             list.add(obj);
             data.put("metadata", list);
             //----------------------------------------------------------

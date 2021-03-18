@@ -22,11 +22,14 @@ public class FicheroControler {
 
     //Creamos el objeto JFileChooser
     JFileChooser fileChooser = new JFileChooser(".");
+ 
     //Contenedor de los ficheros seleccionados
     DefaultListModel<Fichero> listaFicheros = new DefaultListModel<>();
+    
     //instancia unica de FicheroControler
     private static FicheroControler instancia = null;
-
+    
+    // Carpeta de salida zip - en desuso
     private String folderZip = null;
 
     protected FicheroControler() {
@@ -53,7 +56,7 @@ public class FicheroControler {
 
     
     /**
-     * Metodo que permite seleccionar recursos(ficheros).
+     * Metodo que permite seleccionar archivos.
      *
      * @param parent
      * @throws java.io.IOException
@@ -78,7 +81,7 @@ public class FicheroControler {
                 Fichero f = new Fichero(fichero);
                 listaFicheros.addElement(f);                
             } else {
-                //Si el usuario pulsa en cancelar o ocurre un error
+                // Si el usuario pulsa en cancelar o ocurre un error
             }
         } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Infomación", JOptionPane.PLAIN_MESSAGE);
@@ -117,23 +120,17 @@ public class FicheroControler {
     }
 
     /**
-     * Solo se pueden seleccionar ficheros.
+     * Devuelve la carpeta del directorio.
      *
-     * @param parent
-     * @return
-     * @throws IOException
+     * @param parent LLamador
+     * @return Una carpeta
+     * 
      */
-    public File getCarpeta(Component parent) throws IOException {
+    public File getCarpeta(Component parent){
         File fichero = null;
 
         //seteamos el nombre de la ventana
         fileChooser.setDialogTitle("Seleccione la carpeta");
-
-        //Creamos el filtro
-        //fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Documents", "pdf"));
-        //fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("MS Office Documents", "docx", "xlsx", "pptx"));
-        //fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp"));
-        //fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("ZIP Documents", "zip"));
 
         //Indicamos lo que podemos seleccionar.
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -147,7 +144,7 @@ public class FicheroControler {
         return fichero;
     }
 
-    public void quitarFichero(int aPosi) throws Exception {
+    public void quitarFichero(int aPosi){
         if ((aPosi >= 0) && (aPosi < listaFicheros.size())) {
             this.listaFicheros.remove(aPosi);
         }

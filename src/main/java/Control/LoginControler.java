@@ -93,10 +93,6 @@ public final class LoginControler {
                 .connect()
                 .as(ReasoningConnection.class);        
     }
-
-    
-    
-    
     
     protected void desconectarServidor()  {
         conexionStardog.close();        

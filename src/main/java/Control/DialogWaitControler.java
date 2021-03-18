@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.AbstractButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -23,9 +24,9 @@ import javax.swing.SwingUtilities;
  * @author germa
  */
 public class DialogWaitControler {
-    
+
     private JDialog dialog;
-    
+
     JProgressBar progressBar;
     JLabel label = new JLabel();
 
@@ -35,55 +36,77 @@ public class DialogWaitControler {
     }
 
     public DialogWaitControler(int max) {
-        if (max > 0){
-            this.progressBar = new JProgressBar(0, max);            
-        }else {
+        if (max > 0) {
             this.progressBar = new JProgressBar(0, max);
-            this.progressBar.setIndeterminate(true);            
+        } else {
+            this.progressBar = new JProgressBar();
+            this.progressBar.setIndeterminate(true);
         }
     }
-    
+
     public void makeWait(String msg, ActionEvent evt, int max) {
-    //public void makeWait(String msg, JFrame evt) {
-        
+        //public void makeWait(String msg, JFrame evt) {
+
         Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
         //Window win = SwingUtilities.getWindowAncestor(evt);
-        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);        
-        dialog.setPreferredSize(new Dimension(300,100));   
+        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setPreferredSize(new Dimension(300, 100));
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(progressBar, BorderLayout.CENTER);
+        label.setText(msg);
         panel.add(label, BorderLayout.PAGE_START);
         dialog.add(panel);
         dialog.pack();
-        dialog.setLocationRelativeTo(win);  
+        dialog.setLocationRelativeTo(win);
         dialog.setVisible(true);
-   }
-        
-   public void makeWait(String msg, MouseEvent evt) {    
-        
-        Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());        
-        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);        
-        dialog.setPreferredSize(new Dimension(300,100));   
+    }
+
+    public void makeWait(String msg, MouseEvent evt) {
+
+        Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setPreferredSize(new Dimension(300, 100));
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(progressBar, BorderLayout.CENTER);
         panel.add(new JLabel(msg), BorderLayout.PAGE_START);
         dialog.add(panel);
         dialog.pack();
-        dialog.setLocationRelativeTo(win);  
+        dialog.setLocationRelativeTo(win);
         dialog.setVisible(true);
-   } 
-    
-    
-   public void close() {
-       dialog.dispose();
-   }
-   
-   public void incrementarProBar(int valor){
-       progressBar.setValue(valor);
-   }
+    }
+
+    public void makeWait(String msg, JFrame evt) {
+
+        Window win = SwingUtilities.getWindowAncestor(evt);
+        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setPreferredSize(new Dimension(300, 100));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(progressBar, BorderLayout.CENTER);
+        panel.add(new JLabel(msg), BorderLayout.PAGE_START);
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(win);
+        dialog.setVisible(true);
+    }
+
+    public void close() {
+        dialog.dispose();
+    }
+
+    public void incrementarProBar(int valor) {
+        progressBar.setValue(valor);
+    }
 
     public void setMensaje(String msg) {
         this.label.setText(msg);
         this.label.updateUI();
-    }      
+    }
+
+    public void setearProgressBar(int max) {
+        if (max > 0) {
+            this.progressBar.setMinimum(0);
+            this.progressBar.setMaximum(max);            
+            this.progressBar.setIndeterminate(false);        
+        }
+    }
 }

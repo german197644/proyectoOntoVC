@@ -5,15 +5,19 @@
  */
 package Vista;
 
+import Control.DialogWaitControler;
 import Control.LoginControler;
 import Control.RestControler;
 import Control.StardogControler;
 import com.complexible.stardog.StardogException;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -34,14 +38,17 @@ public class Login3 extends javax.swing.JDialog {
 
     boolean restlogin, stardoglogin = false;
 
+    JTextArea ta;
+
     /**
      * Creates new form Login3
      *
      * @param parent
      * @param modal
+     * @param unTextArea
      */
     public Login3(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+        super(parent, modal);        
 
         try {
             initComponents();
@@ -77,6 +84,15 @@ public class Login3 extends javax.swing.JDialog {
 
     }
 
+    /**
+     *
+     * @param ta
+     */
+    public void setTa(JTextArea ta) {
+        this.ta = ta;
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -338,38 +354,61 @@ public class Login3 extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try { 
-            this.conn = false;
-            //conectar a DSpace a traves de rest api
-            // seteamos las variables primero
-            login.setUri((String) this.sw_url.getSelectedItem());    //private String uri = "";
-            login.setUsesw(this.sw_usuario.getText());    //private String usesw = "";
-            login.setPassw(new String(this.sw_pass.getPassword()));    //private String passw = "";
-            // conectamos
-            restlogin = rest.conectar();
-            System.out.println("-------------1");
-            // -----------------------------------------------------------------
-            //conectar a DSpace a traves de Stardog api
-            // seteamos las variables primero
-            login.setUrl_st((String) this.st_url.getSelectedItem());    //private String url = "";           
-            login.setUserst(this.st_usuario.getText());    //private String userst = "";
-            login.setPassst(new String(this.st_pass.getPassword()));    //private String passst = "";
-            login.setBase(this.st_bd.getText());    //private String base = "";
-            // conectar a Stardog                       
-            stardog.conectar();
-            System.out.println("-------------2");
-            stardoglogin = stardog.estatus();
-            System.out.println("-------------3");
-
-            if (!restlogin && !stardoglogin) {
-                JOptionPane.showMessageDialog(this, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
-            }else{
-                this.conn = true;
+        DialogWaitControler wait = new DialogWaitControler(2);
+        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    conn = false;
+                    //conectar a DSpace a traves de rest api
+                    // seteamos las variables primero
+                    publish(">> Conectando a DSpace...\n","0");
+                    login.setUri((String) sw_url.getSelectedItem());    //private String uri = "";
+                    login.setUsesw(sw_usuario.getText());    //private String usesw = "";
+                    login.setPassw(new String(sw_pass.getPassword()));    //private String passw = "";
+                    // conectamos
+                    restlogin = rest.conectar();
+                    System.out.println("-------------1");                    
+                    // -----------------------------------------------------------------
+                    //conectar a DSpace a traves de Stardog api
+                    // seteamos las variables primero
+                    login.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";           
+                    login.setUserst(st_usuario.getText());    //private String userst = "";
+                    login.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
+                    login.setBase(st_bd.getText());    //private String base = "";
+                    // conectar a Stardog 
+                    
+                    publish(">> Conectando a Stardog...\n","1");
+                    stardog.conectar();
+                    System.out.println("-------------2");
+                    stardoglogin = stardog.estatus();
+                    System.out.println("-------------3");
+                    publish(">> Autenticación finalizada.\n","2");
+                    System.out.println("restLogin : " + restlogin);
+                    System.out.println("Stardog Login : " + stardoglogin);
+                    if (restlogin && stardoglogin) {
+                        conn = true;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
+                    }
+                    setVisible(false);
+                } catch (StardogException ex) {
+                    Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                wait.close();
+                return null;
             }
-            this.setVisible(false);
-        } catch (StardogException ex) {
-            Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+            @Override
+            protected void process(List<String> chunks) {
+                wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
+                ta.append(chunks.get(0));                
+            }
+
+        };
+
+        mySwingWorker.execute();
+        wait.makeWait("Conectando...", evt, 0);        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
