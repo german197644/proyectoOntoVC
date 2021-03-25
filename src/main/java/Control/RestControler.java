@@ -8,6 +8,8 @@ package Control;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Fichero;
+import Modelo.JLabelLink;
+import Modelo.TextAreaRenderer;
 import Vista.prueba;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -18,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,12 +30,16 @@ import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import org.json.JSONException;
 
 /**
@@ -495,7 +502,7 @@ public final class RestControler {
             BufferedReader br = new BufferedReader(isr);
 
             String result = br.lines().collect(Collectors.joining("\n"));
-            System.out.println("Linea: " + result);
+            //System.out.println("Linea: " + result);
             JsonParser parser = new JsonParser();
             JsonElement datos = parser.parse(result);
             DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
@@ -757,7 +764,7 @@ public final class RestControler {
                     int cantFile = 0;
                     Process process = null;
                     wait.setearProgressBar(lista.size());
-                    publish("Iniciando Envio.\n",String.valueOf(0));                    
+                    publish("Iniciando Envio.\n", String.valueOf(0));
                     // Creo el item en la coleccion ...
                     String comando = "curl -d \"@E:/metadatos.json\" -H \"Content-Type: application/json\" -H \"accept: application/json\" --cookie \"E:/cookies.txt\" -X POST "
                             + login.getUri().trim() + miColeccion.getLink() + "/items";
@@ -769,7 +776,7 @@ public final class RestControler {
                     JsonParser parser = new JsonParser();
                     String result = br.lines().collect(Collectors.joining("\n"));
                     //System.out.println("Linea: " + result);
-                    publish(result,"0");
+                    publish(result, "0");
                     JsonElement datos = parser.parse(result);
                     if (datos.isJsonObject()) {
                         JsonObject obj = (JsonObject) datos;
@@ -777,7 +784,7 @@ public final class RestControler {
                     } else {
                         wait.close();
                         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
-                                "Error al crear el ítem.", "Informe", JOptionPane.ERROR_MESSAGE);                        
+                                "Error al crear el ítem.", "Informe", JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
                     // --------------------------------------------------------------
@@ -826,6 +833,134 @@ public final class RestControler {
         };
         mySwingWorker.execute();
         wait.makeWait("Verificando Credenciales.", evt, 0);
+    }
+
+    public void unFiltro(ColeccionRest miColeccion, ActionEvent evt, JTable tabla, JTable filtros) {
+        DialogWaitControler wait = new DialogWaitControler();
+
+        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+
+                LoginControler login = LoginControler.getInstancia();
+                int cantItem = 0;
+                Process process = null;
+                String comandQueryField = "query_field%5B%5D=";
+                String comandValField = "query_val%5B%5D=";
+                //String comandOpeField = "query_op%5B%5D=";
+                String comandShowField = "show_fields%5B%5D=";
+                String queryFields = "";
+                String queryVals = "";
+                String queryOpes = "";
+                String queryShows = ""; // que metadatos mostrar ademas del titulo.
+                // Seteo los filtros   
+                if (filtros.getRowCount() == 0) {
+                    queryFields = "&" + comandQueryField + "*";
+                    queryVals = "&" + comandValField + "*";
+                    queryOpes = "&query_op%5B%5D=exists";
+                } else {
+                    for (int i = 0; i < filtros.getRowCount(); i++) {
+                        // query_field%5B%5D=dc.creator o &query_field%5B%5D=dc.creator
+                        queryFields = queryFields + ((i == 0) ? comandQueryField + filtros.getValueAt(i, 0)
+                                : "&" + comandQueryField + filtros.getValueAt(i, 0));
+                        queryVals = queryVals + "&" + comandValField + filtros.getValueAt(i, 1);
+                        queryOpes = queryOpes + "&query_op%5B%5D=contains";
+                        //System.out.println("indice :::  " + i);
+                    }
+                }
+                // Seteo los datos (metadatos) adicionales
+                publish("Iniciando Envio.\n", String.valueOf(0));
+                // Creamos el comando del filtro.
+                String miCole = (miColeccion == null) ? "" : miColeccion.getNombre();
+
+                System.out.println("URI" + login.getUri().trim());
+
+                String comando = "curl -g -H \"Accept: application/json\"  "
+                        + "\"" + login.getUri().trim() + "/rest/filtered-items?"
+                        + queryFields + queryOpes + queryVals
+                        + "&limit=100&offset=0"
+                        + "&expand=parentCollection&collSel%5B%5D=" + miCole.trim() + "\"";
+                //                
+                process = Runtime.getRuntime().exec(comando);
+                InputStream is = process.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                JsonParser parser = new JsonParser();
+                String result = br.lines().collect(Collectors.joining("\n"));
+                System.out.println("resuldato del filtro: " + result);
+                JsonElement datos = parser.parse(result);
+                if (datos.isJsonObject()) {
+                    JsonObject obj = (JsonObject) datos;
+                    cantItem = obj.get("item-count").getAsInt();
+                    //wait.setearProgressBar(cantItem);
+                    publish("Items encontrados: " + cantItem);
+                    System.out.println("cantidad de items: " + cantItem);
+                    if (cantItem == 0) {
+                        ((DefaultTableModel) tabla.getModel()).setRowCount(0);
+                        wait.close();
+                        return null;
+                    } else {
+                        ((DefaultTableModel) tabla.getModel()).setRowCount(cantItem);
+                    }
+                } else {
+                    wait.close();
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                            "No hubo resultados en el filtrado.", "Informe", JOptionPane.INFORMATION_MESSAGE);
+                    return null;
+                }
+                JsonObject obj = (JsonObject) datos;
+                JsonArray misItems = (JsonArray) obj.get("items");
+                Iterator<JsonElement> iter = misItems.iterator();
+                int i = 0;
+
+                while (iter.hasNext()) {
+                    JsonObject miFiltro = (JsonObject) iter.next();
+                    //System.out.println(">> Filtro " + i + " : " + miFiltro.getAsString());
+                    Object arreglo[] = new Object[5];
+                    //arreglo[0] = i + 1; // nro de items en la busqueda
+                    tabla.getModel().setValueAt(i + 1, i, 0);
+                    //arreglo[1] = miFiltro.get("uuid").getAsString(); // id
+                    tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    //arreglo[4] = miFiltro.get("name").getAsString(); // titulo
+                    tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
+                    // obtengo los datos de la coleccion que alverga al item.
+                    JsonElement objColl = (JsonObject) miFiltro.get("parentCollection");
+                    if (objColl.isJsonObject()) {
+                        if (objColl.isJsonObject()) {
+                            //arreglo[2] = miFiltro.get("name").getAsString(); // coleccion
+                            tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 2);
+                        } else {
+                            //arreglo[2] = ""; // coleccion
+                            tabla.getModel().setValueAt("", i, 2);
+                        }
+                        //arreglo[3] = miFiltro.get("handle").getAsString(); // handle http:://localost:8080/xmlui/handle/nro.                        
+                        String miHandle = miFiltro.get("handle").getAsString();
+                        //JLabelLink link = new JLabelLink();
+                        //link.setText("Click para ver el item. " + miHandle);
+                        //link.setSize(link.getText().length(), 20);
+                        //link.setLink(login.getUri().trim() + "/rest/handle/" + miHandle);
+                        //link.setTextLink(miHandle);
+                        tabla.getModel().setValueAt(miHandle, i, 3);
+                    }
+                    i = i + 1;                   
+                    publish("item: " + i+1 + " de " + cantItem);
+                }
+                //
+                wait.close();
+                return null;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                //ta.append(chunks.get(0) + "\n");
+                wait.setMensaje(chunks.get(0));
+                //wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
+            }
+
+        };
+        mySwingWorker.execute();
+        wait.makeWait("Filtrando...", evt, 0);
     }
 
 }

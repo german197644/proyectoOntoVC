@@ -45,8 +45,7 @@ public class DialogWaitControler {
     }
 
     public void makeWait(String msg, ActionEvent evt, int max) {
-        //public void makeWait(String msg, JFrame evt) {
-
+        //public void makeWait(String msg, JFrame evt) {        
         Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
         //Window win = SwingUtilities.getWindowAncestor(evt);
         dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);
@@ -105,8 +104,8 @@ public class DialogWaitControler {
     public void setearProgressBar(int max) {
         if (max > 0) {
             this.progressBar.setMinimum(0);
-            this.progressBar.setMaximum(max);            
-            this.progressBar.setIndeterminate(false);        
+            this.progressBar.setMaximum(max);
+            this.progressBar.setIndeterminate(false);
         }
     }
 }

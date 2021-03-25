@@ -13,7 +13,6 @@ import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Metadato;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -35,7 +34,8 @@ public class Depositando extends javax.swing.JFrame {
 
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
-    
+    DefaultListModel misMetadatos = null;
+
     public Depositando() {
         initComponents();
         this.setTitle("Depósito y búsqueda de ítems. ;)");
@@ -434,6 +434,11 @@ public class Depositando extends javax.swing.JFrame {
 
         mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuFiltrar.setText("Filtrar");
+        mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFiltrarActionPerformed(evt);
+            }
+        });
         mnuTool.add(mnuFiltrar);
         mnuTool.add(jSeparator1);
 
@@ -566,7 +571,7 @@ public class Depositando extends javax.swing.JFrame {
         DialogWaitControler wait = new DialogWaitControler();
         try {
             StardogControler baseGrafica = StardogControler.getInstancia();
-            JPanel unPanel = null;
+            //JPanel unPanel = null;
             if (!baseGrafica.estatus()) {
                 return;
             }
@@ -577,11 +582,11 @@ public class Depositando extends javax.swing.JFrame {
                     publish("Procesando los metadatos... por favor espere.\n");
                     wait.setMensaje("Procesando los metadatos... por favor espere.");
                     Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
-                    DefaultListModel datos2 = baseGrafica.getMetadatos_v1(dato);
-                    listaMetadato.setModel(datos2);
+                    misMetadatos = baseGrafica.getMetadatos_v1(dato);
+                    listaMetadato.setModel(misMetadatos);
                     //preseteamos el panel de captura con los metadatos obligatorios.
                     publish("Seteando Panel de carga... por favor espere.\n");
-                    wait.setMensaje("Seteando Panel de carga... por favor espere.");
+                    //wait.setMensaje("Seteando Panel de carga... por favor espere.");
                     JPanel unPanel = baseGrafica.preSeteoPanelCaptura();
                     wait.close();
                     return unPanel;
@@ -603,7 +608,7 @@ public class Depositando extends javax.swing.JFrame {
 
             };
             mySwingWorker.execute();
-            wait.makeWait("Obteniendo datos", this);            
+            wait.makeWait("Obteniendo datos", this);
             //wait.setearProgressBar(0);
         } catch (Exception ex) {
             Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
@@ -613,7 +618,7 @@ public class Depositando extends javax.swing.JFrame {
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
         TreePath path = evt.getPath();
         Object[] nodos = path.getPath();
-        System.out.println("");
+        //System.out.println("");
         //System.out.println("----------------------------------------------");
         //System.out.println("Path seleccionado: " + Arrays.toString(nodos));
         //for (Object nodo : nodos) {
@@ -629,15 +634,24 @@ public class Depositando extends javax.swing.JFrame {
         //if (ultimoNodo.isRoot()) {
         //    return;
         //}
-
         //System.out.println("ultimo Nodo: " + ultimoNodo.isLeaf());
-
         if (ultimoNodo.isLeaf() && ultimoNodo.getUserObject() instanceof ColeccionRest) {
             this.coleccion = (ColeccionRest) ultimoNodo.getUserObject();
-        }else{
+        } else {
             this.coleccion = null;
         }
     }//GEN-LAST:event_jTree1ValueChanged
+
+    private void mnuFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFiltrarActionPerformed
+        Filtro filtro = new Filtro(this, rootPaneCheckingEnabled);
+        filtro.setTree(jTree1.getModel());
+        if (misMetadatos != null) {
+            filtro.setMetadatos(misMetadatos);
+        } else {
+            filtro.setMetadatos(new DefaultListModel());
+        }
+        filtro.setVisible(true);
+    }//GEN-LAST:event_mnuFiltrarActionPerformed
 
     /**
      * @param args the command line arguments

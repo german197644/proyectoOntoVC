@@ -421,6 +421,9 @@ public class Login3 extends javax.swing.JDialog {
 
     private void btn_agregar_stActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_stActionPerformed
         try {
+            if (st_otro.getText().isEmpty()){
+                return;
+            }
             login.grabarUrlSt(this.st_otro.getText());
             login.setup_stardog();
             this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
@@ -457,6 +460,9 @@ public class Login3 extends javax.swing.JDialog {
 
     private void btn_agregar_swActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_swActionPerformed
         try {
+            if (sw_otro.getText().isEmpty()){
+                return;
+            }
             login.grabarUriSw(this.sw_otro.getText());
             login.setup_dspace();
             this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
