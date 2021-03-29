@@ -59,7 +59,7 @@ public class prueba extends javax.swing.JFrame {
             setLocationRelativeTo(null);
             //this.setVisible(true);
             //login start
-            Login3 login = new Login3(this, true);
+            Config login = new Config(this, true);
             login.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);

@@ -6,7 +6,7 @@
 package Vista;
 
 import Control.DialogWaitControler;
-import Control.LoginControler;
+import Control.ConfigControler;
 import Control.RestControler;
 import Control.StardogControler;
 import com.complexible.stardog.StardogException;
@@ -23,9 +23,9 @@ import javax.swing.SwingWorker;
  *
  * @author germa
  */
-public class Login3 extends javax.swing.JDialog {
+public class Config extends javax.swing.JDialog {
 
-    private LoginControler login = null;
+    private ConfigControler login = null;
 
     // rest api dspace
     RestControler rest = null;
@@ -38,17 +38,16 @@ public class Login3 extends javax.swing.JDialog {
 
     boolean restlogin, stardoglogin = false;
 
-    JTextArea ta;
+    JTextArea consola;
 
     /**
      * Creates new form Login3
      *
      * @param parent
      * @param modal
-     * @param unTextArea
      */
-    public Login3(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);        
+    public Config(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
 
         try {
             initComponents();
@@ -57,7 +56,7 @@ public class Login3 extends javax.swing.JDialog {
             restlogin = false;
             stardoglogin = false;
 
-            login = LoginControler.getInstancia();
+            login = ConfigControler.getInstancia();
 
             // STARDOG
             this.st_url.removeAllItems();
@@ -76,23 +75,27 @@ public class Login3 extends javax.swing.JDialog {
             //this.sw_obo.setText(login.getObo()); // ya no aplica.
             rest = RestControler.getInstancia();
             // fin coneccion DSpace
+
+            // General
+            this.txtWorkFolder.setText(login.getFolderWork());
+            this.txtHandle.setText(login.getHandle());
+            // fin General                        
         } catch (IOException ex) {
-            Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     /**
      *
-     * @param ta
+     * @param consola
      */
-    public void setTa(JTextArea ta) {
-        this.ta = ta;
+    public void setConsola(JTextArea consola) {
+        this.consola = consola;
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -102,9 +105,8 @@ public class Login3 extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panel_inferior = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        btn_cancelar = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        loginPanel = new javax.swing.JPanel();
         panel_Superior = new javax.swing.JPanel();
         cont_stardog = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -122,6 +124,7 @@ public class Login3 extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         nombreBDStardogLabel1 = new javax.swing.JLabel();
         st_bd = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
         cont_sword = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         nombreBDStardogLabel2 = new javax.swing.JLabel();
@@ -135,28 +138,28 @@ public class Login3 extends javax.swing.JDialog {
         sw_usuario = new javax.swing.JTextField();
         userStardogLabel1 = new javax.swing.JLabel();
         sw_pass = new javax.swing.JPasswordField();
+        panel_inferior = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        btn_cancelar = new javax.swing.JButton();
+        generalPanel = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel17 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        txtWorkFolder = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jPanel14 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txtHandle = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
-
-        jButton2.setText("Conectar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(jButton2);
-
-        btn_cancelar.setText("Cancelar");
-        btn_cancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_cancelarActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(btn_cancelar);
-
-        getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+        loginPanel.setLayout(new java.awt.BorderLayout());
 
         panel_Superior.setLayout(new javax.swing.BoxLayout(panel_Superior, javax.swing.BoxLayout.Y_AXIS));
 
@@ -182,7 +185,7 @@ public class Login3 extends javax.swing.JDialog {
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel4.setText("Otro");
+        nombreBDStardogLabel4.setText("Otra URL");
         nombreBDStardogLabel4.setName(""); // NOI18N
         jPanel7.add(nombreBDStardogLabel4);
 
@@ -262,6 +265,14 @@ public class Login3 extends javax.swing.JDialog {
         });
         jPanel3.add(st_bd);
 
+        jButton4.setText("Guardar cambios");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton4);
+
         cont_stardog.add(jPanel3);
 
         panel_Superior.add(cont_stardog);
@@ -284,7 +295,7 @@ public class Login3 extends javax.swing.JDialog {
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel5.setText("Otro");
+        nombreBDStardogLabel5.setText("Otra URL");
         nombreBDStardogLabel5.setName(""); // NOI18N
         jPanel8.add(nombreBDStardogLabel5);
 
@@ -348,7 +359,94 @@ public class Login3 extends javax.swing.JDialog {
 
         panel_Superior.add(cont_sword);
 
-        getContentPane().add(panel_Superior, java.awt.BorderLayout.PAGE_START);
+        loginPanel.add(panel_Superior, java.awt.BorderLayout.PAGE_START);
+
+        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
+
+        jButton2.setText("Conectar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        panel_inferior.add(jButton2);
+
+        btn_cancelar.setText("Cancelar");
+        btn_cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancelarActionPerformed(evt);
+            }
+        });
+        panel_inferior.add(btn_cancelar);
+
+        loginPanel.add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+
+        jTabbedPane1.addTab("Conexión", loginPanel);
+
+        generalPanel.setLayout(new java.awt.BorderLayout());
+
+        jLabel6.setText("     ");
+        generalPanel.add(jLabel6, java.awt.BorderLayout.LINE_START);
+
+        jLabel8.setText("      ");
+        generalPanel.add(jLabel8, java.awt.BorderLayout.LINE_END);
+
+        jLabel7.setText("     ");
+        generalPanel.add(jLabel7, java.awt.BorderLayout.PAGE_END);
+
+        jLabel5.setText("    ");
+        generalPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);
+
+        jPanel17.setLayout(new java.awt.GridLayout(10, 1));
+
+        jPanel13.setMinimumSize(new java.awt.Dimension(193, 20));
+        jPanel13.setPreferredSize(new java.awt.Dimension(100, 20));
+        jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+        jLabel2.setText("Lugar de Trabajo:");
+        jPanel13.add(jLabel2);
+
+        txtWorkFolder.setColumns(25);
+        txtWorkFolder.setText("E:/");
+        jPanel13.add(txtWorkFolder);
+
+        jButton1.setText("Guardar cambios");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel13.add(jButton1);
+
+        jPanel17.add(jPanel13);
+
+        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+        jLabel1.setText("Web Browse - Handle:");
+        jPanel14.add(jLabel1);
+
+        txtHandle.setColumns(25);
+        txtHandle.setText("http://localhot:8080/xmlui");
+        jPanel14.add(txtHandle);
+
+        jButton3.setText("Guardar cambios");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel14.add(jButton3);
+
+        jLabel3.setText("ej:  (http://localhot:8080/xmlui)");
+        jPanel14.add(jLabel3);
+
+        jPanel17.add(jPanel14);
+
+        generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("General", generalPanel);
+
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -362,13 +460,13 @@ public class Login3 extends javax.swing.JDialog {
                     conn = false;
                     //conectar a DSpace a traves de rest api
                     // seteamos las variables primero
-                    publish(">> Conectando a DSpace...\n","0");
+                    publish(">> Conectando a DSpace...\n", "0");
                     login.setUri((String) sw_url.getSelectedItem());    //private String uri = "";
                     login.setUsesw(sw_usuario.getText());    //private String usesw = "";
                     login.setPassw(new String(sw_pass.getPassword()));    //private String passw = "";
                     // conectamos
                     restlogin = rest.conectar();
-                    System.out.println("-------------1");                    
+
                     // -----------------------------------------------------------------
                     //conectar a DSpace a traves de Stardog api
                     // seteamos las variables primero
@@ -377,13 +475,13 @@ public class Login3 extends javax.swing.JDialog {
                     login.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
                     login.setBase(st_bd.getText());    //private String base = "";
                     // conectar a Stardog 
-                    
-                    publish(">> Conectando a Stardog...\n","1");
+
+                    publish(">> Conectando a Stardog...\n", "1");
                     stardog.conectar();
-                    System.out.println("-------------2");
+
                     stardoglogin = stardog.estatus();
-                    System.out.println("-------------3");
-                    publish(">> Autenticación finalizada.\n","2");
+
+                    publish(">> Autenticación finalizada.\n", "2");
                     System.out.println("restLogin : " + restlogin);
                     System.out.println("Stardog Login : " + stardoglogin);
                     if (restlogin && stardoglogin) {
@@ -393,7 +491,7 @@ public class Login3 extends javax.swing.JDialog {
                     }
                     setVisible(false);
                 } catch (StardogException ex) {
-                    Logger.getLogger(Login3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
                 return null;
@@ -402,17 +500,18 @@ public class Login3 extends javax.swing.JDialog {
             @Override
             protected void process(List<String> chunks) {
                 wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
-                ta.append(chunks.get(0));                
+                consola.append(chunks.get(0));
             }
 
         };
 
         mySwingWorker.execute();
-        wait.makeWait("Conectando...", evt, 0);        
+        wait.makeWait("Conectando...", evt, 0);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
         this.setVisible(false);
+        this.consola.append("Operación de conexión cancelada.");
     }//GEN-LAST:event_btn_cancelarActionPerformed
 
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
@@ -421,7 +520,7 @@ public class Login3 extends javax.swing.JDialog {
 
     private void btn_agregar_stActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_stActionPerformed
         try {
-            if (st_otro.getText().isEmpty()){
+            if (st_otro.getText().isEmpty()) {
                 return;
             }
             login.grabarUrlSt(this.st_otro.getText());
@@ -460,7 +559,7 @@ public class Login3 extends javax.swing.JDialog {
 
     private void btn_agregar_swActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregar_swActionPerformed
         try {
-            if (sw_otro.getText().isEmpty()){
+            if (sw_otro.getText().isEmpty()) {
                 return;
             }
             login.grabarUriSw(this.sw_otro.getText());
@@ -489,6 +588,28 @@ public class Login3 extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_sw_passActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (!txtWorkFolder.getText().isEmpty()) {
+            login.grabarFolder(txtWorkFolder.getText());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (!txtHandle.getText().isEmpty()) {
+            login.grabarHandle(txtHandle.getText());
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if (!st_bd.getText().isEmpty()) {
+            try {
+                login.grabarBase(st_bd.getText());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al guardar cambios del nombre de la BD.", "Informe", JOptionPane.INFORMATION_MESSAGE);            
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -506,20 +627,21 @@ public class Login3 extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Login3 dialog = new Login3(new javax.swing.JFrame(), true);
+                Config dialog = new Config(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -537,14 +659,30 @@ public class Login3 extends javax.swing.JDialog {
     private javax.swing.JButton btn_cancelar;
     private javax.swing.JPanel cont_stardog;
     private javax.swing.JPanel cont_sword;
+    private javax.swing.JPanel generalPanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JPanel loginPanel;
     private javax.swing.JLabel nombreBDStardogLabel;
     private javax.swing.JLabel nombreBDStardogLabel1;
     private javax.swing.JLabel nombreBDStardogLabel2;
@@ -563,6 +701,8 @@ public class Login3 extends javax.swing.JDialog {
     private javax.swing.JPasswordField sw_pass;
     private javax.swing.JComboBox<String> sw_url;
     private javax.swing.JTextField sw_usuario;
+    private javax.swing.JTextField txtHandle;
+    private javax.swing.JTextField txtWorkFolder;
     private javax.swing.JLabel userStardogLabel;
     private javax.swing.JLabel userStardogLabel1;
     // End of variables declaration//GEN-END:variables

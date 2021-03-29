@@ -5,7 +5,7 @@
  */
 package Vista;
 
-import Control.LoginControler;
+import Control.ConfigControler;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +20,7 @@ public class Login extends javax.swing.JDialog {
     /**
      * Creates new form Login
      */
-    private LoginControler login = null; 
+    private ConfigControler login = null; 
     
     public Login(java.awt.Frame parent, boolean modal) {
         //super(parent, modal);
@@ -32,7 +32,7 @@ public class Login extends javax.swing.JDialog {
             this.setResizable(true);
             this.setTitle("LogIn");
             
-            login = LoginControler.getInstancia();
+            login = ConfigControler.getInstancia();
             
             //STARDOG                        
             this.st_url.removeAllItems();

@@ -6,7 +6,7 @@
 package Vista;
 
 import Control.DublinCoreControler;
-import Control.LoginControler;
+import Control.ConfigControler;
 import Control.RestControler;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
@@ -50,7 +50,7 @@ public class Filtro extends javax.swing.JDialog {
             jTable2.setRowHeight(50); // con 50 anda
 
             //
-            LoginControler login = LoginControler.getInstancia();
+            ConfigControler login = ConfigControler.getInstancia();
             JLabelLink link = new JLabelLink();
             link.setText("Busqueda en el repositorio. Aquí.");
             link.setSize(link.getText().length(), 20);
@@ -110,10 +110,10 @@ public class Filtro extends javax.swing.JDialog {
         jLabel11 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        fTextLimite = new javax.swing.JFormattedTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        txtOffSet = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
@@ -140,7 +140,7 @@ public class Filtro extends javax.swing.JDialog {
         setTitle("Filtrado de Items");
         setPreferredSize(new java.awt.Dimension(900, 630));
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(670, 250));
+        jPanel1.setPreferredSize(new java.awt.Dimension(670, 220));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setMaximumSize(new java.awt.Dimension(492, 122));
@@ -149,6 +149,8 @@ public class Filtro extends javax.swing.JDialog {
         jPanel8.setMaximumSize(new java.awt.Dimension(400, 122));
         jPanel8.setLayout(new java.awt.GridLayout(1, 0));
 
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.setPreferredSize(new java.awt.Dimension(400, 64));
         jTree1.setVisibleRowCount(8);
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -173,7 +175,7 @@ public class Filtro extends javax.swing.JDialog {
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 189, Short.MAX_VALUE)
+            .addGap(0, 159, Short.MAX_VALUE)
         );
 
         jPanel8.add(jPanel11);
@@ -186,7 +188,7 @@ public class Filtro extends javax.swing.JDialog {
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 189, Short.MAX_VALUE)
+            .addGap(0, 159, Short.MAX_VALUE)
         );
 
         jPanel8.add(jPanel13);
@@ -199,7 +201,7 @@ public class Filtro extends javax.swing.JDialog {
         jPanel6.setLayout(new java.awt.GridLayout(1, 0));
 
         jListMetadatos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "Items" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -226,6 +228,7 @@ public class Filtro extends javax.swing.JDialog {
         norte.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         txtMetadato.setColumns(30);
+        txtMetadato.setText("dato");
         norte.add(txtMetadato);
 
         jButton4.setText("+");
@@ -288,9 +291,10 @@ public class Filtro extends javax.swing.JDialog {
         jLabel5.setText("Límite: ");
         jPanel14.add(jLabel5);
 
-        jTextField1.setColumns(10);
-        jTextField1.setText("100");
-        jPanel14.add(jTextField1);
+        fTextLimite.setColumns(10);
+        fTextLimite.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("###"))));
+        fTextLimite.setText("100");
+        jPanel14.add(fTextLimite);
 
         jLabel7.setText("   ");
         jPanel14.add(jLabel7);
@@ -298,9 +302,9 @@ public class Filtro extends javax.swing.JDialog {
         jLabel10.setText("Offset: ");
         jPanel14.add(jLabel10);
 
-        jTextField3.setColumns(10);
-        jTextField3.setText("0");
-        jPanel14.add(jTextField3);
+        txtOffSet.setColumns(10);
+        txtOffSet.setText("0");
+        jPanel14.add(txtOffSet);
 
         jPanel7.add(jPanel14, java.awt.BorderLayout.CENTER);
 
@@ -334,7 +338,7 @@ public class Filtro extends javax.swing.JDialog {
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 161, Short.MAX_VALUE)
+            .addGap(0, 131, Short.MAX_VALUE)
         );
 
         jPanel16.add(jPanel17, java.awt.BorderLayout.CENTER);
@@ -437,7 +441,8 @@ public class Filtro extends javax.swing.JDialog {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         RestControler rest = RestControler.getInstancia();
-        rest.unFiltro(coleccion, evt, jTable2, jTable1);
+        rest.unFiltro(coleccion, evt, jTable2, jTable1, 
+                Integer.parseInt(fTextLimite.getText()), Integer.parseInt(txtOffSet.getText()));
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTree1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MousePressed
@@ -491,7 +496,7 @@ public class Filtro extends javax.swing.JDialog {
 
     private void jTable2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MousePressed
         try {
-            LoginControler login = LoginControler.getInstancia();
+            ConfigControler login = ConfigControler.getInstancia();
             int fila = jTable2.rowAtPoint(evt.getPoint());
             int columna = jTable2.columnAtPoint(evt.getPoint());
             if ((fila > -1) && (columna > -1) && (columna == 3)) {
@@ -548,6 +553,7 @@ public class Filtro extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel center;
+    private javax.swing.JFormattedTextField fTextLimite;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -596,11 +602,10 @@ public class Filtro extends javax.swing.JDialog {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTree jTree1;
     private javax.swing.JPanel norte;
     private javax.swing.JPanel sur;
     private javax.swing.JTextField txtMetadato;
+    private javax.swing.JTextField txtOffSet;
     // End of variables declaration//GEN-END:variables
 }

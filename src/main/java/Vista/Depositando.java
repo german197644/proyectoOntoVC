@@ -44,10 +44,10 @@ public class Depositando extends javax.swing.JFrame {
         //
         captura.getVerticalScrollBar().setUnitIncrement(15);
         //
-        Login3 win = new Login3(this, rootPaneCheckingEnabled);
-        win.setTa(taConsola);
+        Config win = new Config(this, rootPaneCheckingEnabled);
+        win.setConsola(taConsola);
         win.setVisible(true);
-        System.out.println("Se pidio conectar: " + win.conn);
+        //System.out.println("Se pidio conectar: " + win.conn);
         try {
             // rest api                
             RestControler rest = RestControler.getInstancia();
@@ -278,9 +278,6 @@ public class Depositando extends javax.swing.JFrame {
         listaOA.setBackground(new java.awt.Color(240, 240, 240));
         listaOA.setVisibleRowCount(5);
         listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                listaOAMouseClicked(evt);
-            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 listaOAMousePressed(evt);
             }
@@ -294,11 +291,6 @@ public class Depositando extends javax.swing.JFrame {
         listaMetadato.setBackground(new java.awt.Color(240, 240, 240));
         listaMetadato.setOpaque(false);
         listaMetadato.setVisibleRowCount(5);
-        listaMetadato.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                listaMetadatoMouseClicked(evt);
-            }
-        });
         jScrollPane7.setViewportView(listaMetadato);
 
         jPanel7.add(jScrollPane7);
@@ -465,7 +457,7 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
-        Login3 win = new Login3(this, rootPaneCheckingEnabled);
+        Config win = new Config(this, rootPaneCheckingEnabled);
         win.setVisible(true);
         System.out.println("Conectar?: " + win.conn);
         if (win.conn) {
@@ -498,6 +490,19 @@ public class Depositando extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuConectarActionPerformed
 
+    private void ResetarComponentes() {
+        this.coleccion = null;
+        
+        this.listaRecursos.setModel(new DefaultListModel<>());
+        this.listaOA.setModel(new DefaultListModel<>());
+        this.listaMetadato.setModel(new DefaultListModel<>());
+        this.taConsola.setText("");
+
+        //this.listaRecursos.setModel(new DefaultListModel<>());
+        this.listaOA.setEnabled(false);
+        this.listaMetadato.setEnabled(false);
+    }
+
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         this.setVisible(false);
         System.exit(0);
@@ -508,6 +513,11 @@ public class Depositando extends javax.swing.JFrame {
             FicheroControler fichero = FicheroControler.getInstancia();
             fichero.getFileChooser(this);
             listaRecursos.setModel(fichero.getListaFicheros());
+            if (listaRecursos.getModel().getSize() > 0) {
+                listaOA.setEnabled(true);
+            } else {
+                listaOA.setEnabled(false);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -524,23 +534,22 @@ public class Depositando extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
-    private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
-
-    }//GEN-LAST:event_listaOAMouseClicked
-
-    private void listaMetadatoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMetadatoMouseClicked
-
-    }//GEN-LAST:event_listaMetadatoMouseClicked
-
     private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
         try {
+            // falta averiguar si los metadatos no tienen errores.
+            if ((this.coleccion == null) | (listaRecursos.getModel().getSize()==0)) {
+                JOptionPane.showMessageDialog(this, "Faltan definir datos.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
             StardogControler base = StardogControler.getInstancia();
             // creamos el archivo json con los metadatos
             base.misMetadatos();
             //
             // depositamos
             RestControler repositorio = RestControler.getInstancia();
-            repositorio.enviarBitstreams(coleccion, evt, taConsola);
+            if (repositorio.enviarBitstreams(coleccion, evt, taConsola)){
+                this.ResetarComponentes();
+            }
             //
         } catch (Exception ex) {
             //Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
@@ -589,6 +598,13 @@ public class Depositando extends javax.swing.JFrame {
                     //wait.setMensaje("Seteando Panel de carga... por favor espere.");
                     JPanel unPanel = baseGrafica.preSeteoPanelCaptura();
                     wait.close();
+                    //habilitamos la lista de metadatos.
+                    if (listaMetadato.getModel().getSize() > 0) {
+                        listaMetadato.setEnabled(true);
+                    } else {
+                        listaMetadato.setEnabled(false);
+                    }
+
                     return unPanel;
                 }
 

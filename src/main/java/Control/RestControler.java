@@ -11,6 +11,7 @@ import Modelo.Fichero;
 import Modelo.JLabelLink;
 import Modelo.TextAreaRenderer;
 import Vista.prueba;
+import com.clarkparsia.pellet.api.kb.ReasoningTask;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -145,7 +146,7 @@ public final class RestControler {
         Process process;
         try {
             // traerlo de loginControler despues
-            LoginControler login = LoginControler.getInstancia();
+            ConfigControler login = ConfigControler.getInstancia();
             String url = login.getUri().trim();
             //
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
@@ -428,7 +429,7 @@ public final class RestControler {
             protected DefaultTreeModel doInBackground() throws Exception {
                 DefaultTreeModel modelo = null;
                 try {
-                    LoginControler conn = LoginControler.getInstancia();
+                    ConfigControler conn = ConfigControler.getInstancia();
                     String comando = "curl -X GET -H \"accept: application/json\" "
                             + conn.getUri().trim() + "/rest/communities";
                     Process process = Runtime.getRuntime().exec(comando);
@@ -609,7 +610,7 @@ public final class RestControler {
                     //ta.append("Obteniendo estrucutra del repositorio.\n");
                     publish("Obteniendo estructura del repositorio.\n");
 
-                    LoginControler conn = LoginControler.getInstancia();
+                    ConfigControler conn = ConfigControler.getInstancia();
                     String comando = "curl -X GET -H \"accept: application/json\" "
                             + conn.getUri().trim() + "/rest/communities";
                     Process process = Runtime.getRuntime().exec(comando);
@@ -661,7 +662,7 @@ public final class RestControler {
     private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {
 
         try {
-            LoginControler conn = LoginControler.getInstancia();
+            ConfigControler conn = ConfigControler.getInstancia();
             if (((JsonElement) elemento).isJsonArray()) {
                 int level = 0;
                 JsonArray array = (JsonArray) elemento;
@@ -740,102 +741,111 @@ public final class RestControler {
      * @param miColeccion Coleccion a la que se envia dentro del repositorio.
      * @param evt evento que lo llama.
      * @param ta Componente de mensaje de salida.
+     * @return 
+     * @throws java.lang.InterruptedException 
+     * @throws java.util.concurrent.ExecutionException 
      */
-    public void enviarBitstreams(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta) {
-        DialogWaitControler wait = new DialogWaitControler();
-        // reviso si estoy logueado.
-        if (!this.estatus()) {
-            return;
-        }
-        //
-        FicheroControler ficheros = FicheroControler.getInstancia();
-        DefaultListModel lista = ficheros.getListaFicheros();
-        if (lista.size() == 0) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
-                    "No hay recursos para enviar.", "Informe", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    LoginControler login = LoginControler.getInstancia();
-                    String item = null;
-                    int cantFile = 0;
-                    Process process = null;
-                    wait.setearProgressBar(lista.size());
-                    publish("Iniciando Envio.\n", String.valueOf(0));
-                    // Creo el item en la coleccion ...
-                    String comando = "curl -d \"@E:/metadatos.json\" -H \"Content-Type: application/json\" -H \"accept: application/json\" --cookie \"E:/cookies.txt\" -X POST "
-                            + login.getUri().trim() + miColeccion.getLink() + "/items";
-                    process = Runtime.getRuntime().exec(comando);
-                    process = Runtime.getRuntime().exec(comando);
-                    InputStream is = process.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    JsonParser parser = new JsonParser();
-                    String result = br.lines().collect(Collectors.joining("\n"));
-                    //System.out.println("Linea: " + result);
-                    publish(result, "0");
-                    JsonElement datos = parser.parse(result);
-                    if (datos.isJsonObject()) {
-                        JsonObject obj = (JsonObject) datos;
-                        item = obj.get("link").getAsString();
-                    } else {
-                        wait.close();
-                        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
-                                "Error al crear el ítem.", "Informe", JOptionPane.ERROR_MESSAGE);
-                        return null;
-                    }
-                    // --------------------------------------------------------------
-                    // Agregar el bitstream ...
-                    // Leemos la lista de archivos a enviar.            
-                    //                
-                    for (int i = 0; i < lista.size(); i++) {
-                        Fichero archivo = (Fichero) lista.get(i);
-                        cantFile = i + 1;
-                        comando = "curl -k -4 -v  -H \"Content-Type: multipart/form-data\"  "
-                                + "-H \"accept: application/json\" --cookie E:/cookies.txt "
-                                + "-X POST "
-                                + login.getUri().trim() + item.trim() + "/bitstreams?name=" + archivo.getUnFile().getName()
-                                + " -T " + archivo.getUnFile().getAbsolutePath();
-                        process = Runtime.getRuntime().exec(comando);
-                        is = process.getInputStream();
-                        isr = new InputStreamReader(is);
-                        br = new BufferedReader(isr);
-                        parser = new JsonParser();
-                        result = br.lines().collect(Collectors.joining("\n"));
-                        datos = parser.parse(result);
-                        //
-                        if (datos.isJsonObject()) { // devuelve in JsonObject                            
-                            //wait.setMensaje("Archivo " + i + "" + archivo.getUnFile().getName() +  " - Enviado");
-                            publish("Archivo " + i + "" + archivo.getUnFile().getName() + " - Enviado\n", String.valueOf(cantFile));
-                        } else {
-                            // avisar del error
-                            wait.close();
-                            return null;
-                        }
-                    }
-                    publish("Operación Finalizada con exito.");
-                } catch (IOException ex) {
-                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                wait.close();
-                return null;
-            }
+    public boolean enviarBitstreams(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta) 
+            throws InterruptedException, ExecutionException {        
+            DialogWaitControler wait = new DialogWaitControler();
 
-            @Override
-            protected void process(List<String> chunks) {
-                ta.append(chunks.get(0));
-                wait.setMensaje(chunks.get(0));
-                wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
+            // reviso si estoy logueado.
+            if (!this.estatus()) {
+                return false;
             }
-        };
-        mySwingWorker.execute();
-        wait.makeWait("Verificando Credenciales.", evt, 0);
+            //
+            FicheroControler ficheros = FicheroControler.getInstancia();
+            DefaultListModel lista = ficheros.getListaFicheros();
+
+            if (lista.size() == 0) {
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                        "No hay recursos para enviar.", "Informe", JOptionPane.INFORMATION_MESSAGE);
+                return false;
+            }
+            SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        ConfigControler login = ConfigControler.getInstancia();
+                        String item = null;
+                        int cantFile = 0;
+                        Process process = null;
+                        wait.setearProgressBar(lista.size());
+                        publish("Iniciando Envio.\n", String.valueOf(0));
+                        // Creo el item en la coleccion ...
+                        String comando = "curl -d \"@E:/metadatos.json\" -H \"Content-Type: application/json\" -H \"accept: application/json\" --cookie \"E:/cookies.txt\" -X POST "
+                                + login.getUri().trim() + miColeccion.getLink() + "/items";
+                        process = Runtime.getRuntime().exec(comando);
+                        process = Runtime.getRuntime().exec(comando);
+                        InputStream is = process.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader br = new BufferedReader(isr);
+                        JsonParser parser = new JsonParser();
+                        String result = br.lines().collect(Collectors.joining("\n"));
+                        //System.out.println("Linea: " + result);
+                        publish(result, "0");
+                        JsonElement datos = parser.parse(result);
+                        if (datos.isJsonObject()) {
+                            JsonObject obj = (JsonObject) datos;
+                            item = obj.get("link").getAsString();
+                        } else {
+                            wait.close();
+                            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                                    "Error al crear el ítem.", "Informe", JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                        // --------------------------------------------------------------
+                        // Agregar el bitstream ...
+                        // Leemos la lista de archivos a enviar.
+                        //
+                        for (int i = 0; i < lista.size(); i++) {
+                            Fichero archivo = (Fichero) lista.get(i);
+                            cantFile = i + 1;
+                            comando = "curl -k -4 -v  -H \"Content-Type: multipart/form-data\"  "
+                                    + "-H \"accept: application/json\" --cookie E:/cookies.txt "
+                                    + "-X POST "
+                                    + login.getUri().trim() + item.trim() + "/bitstreams?name=" + archivo.getUnFile().getName()
+                                    + " -T " + archivo.getUnFile().getAbsolutePath();
+                            process = Runtime.getRuntime().exec(comando);
+                            is = process.getInputStream();
+                            isr = new InputStreamReader(is);
+                            br = new BufferedReader(isr);
+                            parser = new JsonParser();
+                            result = br.lines().collect(Collectors.joining("\n"));
+                            datos = parser.parse(result);
+                            //
+                            if (datos.isJsonObject()) { // devuelve in JsonObject
+                                //wait.setMensaje("Archivo " + i + "" + archivo.getUnFile().getName() +  " - Enviado");
+                                publish("Archivo " + i + "" + archivo.getUnFile().getName() + " - Enviado\n", String.valueOf(cantFile));
+                            } else {
+                                // avisar del error
+                                wait.close();
+                                return false;
+                            }
+                        }
+                        publish("Operación Finalizada con exito.");
+                    } catch (IOException ex) {
+                        Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    wait.close();
+                    return true;
+                }
+
+                @Override
+                protected void process(List<String> chunks) {
+                    ta.append(chunks.get(0));
+                    wait.setMensaje(chunks.get(0));
+                    wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
+                }
+
+            };
+            mySwingWorker.execute();
+            wait.makeWait("Verificando Credenciales.", evt, 0);
+            return mySwingWorker.get();        
     }
 
-    public void unFiltro(ColeccionRest miColeccion, ActionEvent evt, JTable tabla, JTable filtros) {
+    public void unFiltro(ColeccionRest miColeccion, ActionEvent evt, JTable tabla, JTable filtros,
+            int limite, int offset) {
         DialogWaitControler wait = new DialogWaitControler();
 
         SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
@@ -843,7 +853,7 @@ public final class RestControler {
             @Override
             protected Void doInBackground() throws Exception {
 
-                LoginControler login = LoginControler.getInstancia();
+                ConfigControler login = ConfigControler.getInstancia();
                 int cantItem = 0;
                 Process process = null;
                 String comandQueryField = "query_field%5B%5D=";
@@ -861,12 +871,10 @@ public final class RestControler {
                     queryOpes = "&query_op%5B%5D=exists";
                 } else {
                     for (int i = 0; i < filtros.getRowCount(); i++) {
-                        // query_field%5B%5D=dc.creator o &query_field%5B%5D=dc.creator
                         queryFields = queryFields + ((i == 0) ? comandQueryField + filtros.getValueAt(i, 0)
                                 : "&" + comandQueryField + filtros.getValueAt(i, 0));
                         queryVals = queryVals + "&" + comandValField + filtros.getValueAt(i, 1);
                         queryOpes = queryOpes + "&query_op%5B%5D=contains";
-                        //System.out.println("indice :::  " + i);
                     }
                 }
                 // Seteo los datos (metadatos) adicionales
@@ -879,7 +887,7 @@ public final class RestControler {
                 String comando = "curl -g -H \"Accept: application/json\"  "
                         + "\"" + login.getUri().trim() + "/rest/filtered-items?"
                         + queryFields + queryOpes + queryVals
-                        + "&limit=100&offset=0"
+                        + "&limit=" + String.valueOf(limite).trim() + "&offset=" + String.valueOf(offset).trim()
                         + "&expand=parentCollection&collSel%5B%5D=" + miCole.trim() + "\"";
                 //                
                 process = Runtime.getRuntime().exec(comando);
@@ -893,7 +901,6 @@ public final class RestControler {
                 if (datos.isJsonObject()) {
                     JsonObject obj = (JsonObject) datos;
                     cantItem = obj.get("item-count").getAsInt();
-                    //wait.setearProgressBar(cantItem);
                     publish("Items encontrados: " + cantItem);
                     System.out.println("cantidad de items: " + cantItem);
                     if (cantItem == 0) {
@@ -916,35 +923,21 @@ public final class RestControler {
 
                 while (iter.hasNext()) {
                     JsonObject miFiltro = (JsonObject) iter.next();
-                    //System.out.println(">> Filtro " + i + " : " + miFiltro.getAsString());
-                    Object arreglo[] = new Object[5];
-                    //arreglo[0] = i + 1; // nro de items en la busqueda
                     tabla.getModel().setValueAt(i + 1, i, 0);
-                    //arreglo[1] = miFiltro.get("uuid").getAsString(); // id
                     tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
-                    //arreglo[4] = miFiltro.get("name").getAsString(); // titulo
                     tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
-                    // obtengo los datos de la coleccion que alverga al item.
                     JsonElement objColl = (JsonObject) miFiltro.get("parentCollection");
                     if (objColl.isJsonObject()) {
                         if (objColl.isJsonObject()) {
-                            //arreglo[2] = miFiltro.get("name").getAsString(); // coleccion
                             tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 2);
                         } else {
-                            //arreglo[2] = ""; // coleccion
                             tabla.getModel().setValueAt("", i, 2);
                         }
-                        //arreglo[3] = miFiltro.get("handle").getAsString(); // handle http:://localost:8080/xmlui/handle/nro.                        
                         String miHandle = miFiltro.get("handle").getAsString();
-                        //JLabelLink link = new JLabelLink();
-                        //link.setText("Click para ver el item. " + miHandle);
-                        //link.setSize(link.getText().length(), 20);
-                        //link.setLink(login.getUri().trim() + "/rest/handle/" + miHandle);
-                        //link.setTextLink(miHandle);
                         tabla.getModel().setValueAt(miHandle, i, 3);
                     }
-                    i = i + 1;                   
-                    publish("item: " + i+1 + " de " + cantItem);
+                    i = i + 1;
+                    publish("item: " + i + " de " + cantItem);
                 }
                 //
                 wait.close();
@@ -953,9 +946,7 @@ public final class RestControler {
 
             @Override
             protected void process(List<String> chunks) {
-                //ta.append(chunks.get(0) + "\n");
                 wait.setMensaje(chunks.get(0));
-                //wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
             }
 
         };

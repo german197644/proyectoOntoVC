@@ -14,6 +14,7 @@ import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.reasoning.ReasoningConnection;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,145 +28,213 @@ import org.swordapp.client.ClientConfiguration;
 import org.swordapp.client.SWORDClient;
 import org.swordapp.client.ServiceDocument;
 
-public final class LoginControler {
-    
+public final class ConfigControler {
+
     Properties properties = null;
     InputStream propertiesStream = null;
     OutputStream output = null;
-    
+
     // Rest - variables de seteo
     private int nrouri = 0;
     private String uri = "";
     private String usesw = "";
     private String passw = "";
-    private String obo = "";    
-    private Vector<String> servidores_sw = new Vector<>();    
-    
+    private String obo = "";
+    private Vector<String> servidores_sw = new Vector<>();
+
     // StarDog - variables de seteo
     private String base = "";
     private String userst = "";
     private String passst = "";
     private String url = "";
-    private Integer nrourl = 0;   
+    private Integer nrourl = 0;
     private Vector<String> servidores_st = new Vector<>();
-  
+
+    //Config general
+    private String folderWork = "";
+    private String handle = "";
+
     // Variable de conexion a la base de datos de Stardog
     private static ReasoningConnection conexionStardog;
-    
+
     //Variables de coneccion de Sword
-    ServiceDocument sd; 
-    private SWORDClient client = null;              
-    
+    ServiceDocument sd;
+    private SWORDClient client = null;
+
     private RestControler rest = null;
 
-    private static LoginControler instancia = null;
-    
-    private LoginControler() {
+    private static ConfigControler instancia = null;
+
+    private ConfigControler() {
         try {
             getProperty();
             setup_stardog();
             setup_dspace();
+            setup_general();
         } catch (IOException ex) {
-            Logger.getLogger(LoginControler.class.getName()).log(Level.SEVERE, null, ex);            
+            Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(LoginControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static synchronized LoginControler getInstancia() throws IOException {
+
+    public static synchronized ConfigControler getInstancia() throws IOException {
         if (instancia == null) {
-            instancia = new LoginControler();
+            instancia = new ConfigControler();
         }
         return instancia;
     }
-    
-     /**
+
+    /**
      * Este metodo permite la conexión al servidor de StarDog.
      *
      * @throws StardogException
      */
-    protected void conectarStardog() throws StardogException {        
+    protected void conectarStardog() throws StardogException {
         conexionStardog = ConnectionConfiguration
                 .to(this.base.trim())
                 .credentials(this.userst.trim(), this.passst.trim())
                 .server(this.url.trim())
                 .reasoning(true)
                 .connect()
-                .as(ReasoningConnection.class);        
+                .as(ReasoningConnection.class);
     }
-    
-    protected void desconectarServidor()  {
-        conexionStardog.close();        
+
+    protected void desconectarServidor() {
+        conexionStardog.close();
     }
-    
+
     /**
      *
      * @throws Exception
      */
     protected void ConectarSword() throws Exception {
-        client = null; sd = null;
+        client = null;
+        sd = null;
         client = new SWORDClient(new ClientConfiguration());
         sd = client.getServiceDocument(uri.trim(),
                 new AuthCredentials(usesw.trim(), passw.trim()));
     }
-    
-    
+
     private void getProperty() throws IOException {
         properties = new Properties();
-        propertiesStream = new FileInputStream("src/main/java/propiedades/login.properties");        
+        propertiesStream = new FileInputStream("src/main/java/propiedades/config.properties");
         properties.load(propertiesStream);
     }
-        
-    public void setup_stardog() throws IOException {       
+
+    public void setup_stardog() throws IOException {
         this.servidores_st.removeAllElements();
         this.nrourl = Integer.parseInt(properties.getProperty("nrourl").trim());
-        for(int i=1;i<=this.nrourl;i++){
-            servidores_st.addElement(properties.getProperty("url_"+String.valueOf(i).trim()).trim());
+        for (int i = 1; i <= this.nrourl; i++) {
+            servidores_st.addElement(properties.getProperty("url_" + String.valueOf(i).trim()).trim());
         }
         this.url = properties.getProperty("url").trim();
         this.userst = properties.getProperty("stuser").trim();
         this.passst = properties.getProperty("stpass").trim();
         this.base = properties.getProperty("base").trim();
     }
- 
-    
+
     public void setup_dspace() throws IOException {
         this.servidores_sw.removeAllElements();
         this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
-        for(int i=1;i<=this.nrouri;i++){
-            servidores_sw.addElement(properties.getProperty("uri"+"_"+String.valueOf(i).trim()).trim());
+        for (int i = 1; i <= this.nrouri; i++) {
+            servidores_sw.addElement(properties.getProperty("uri" + "_" + String.valueOf(i).trim()).trim());
         }
         this.uri = properties.getProperty("uri").trim();
         this.usesw = properties.getProperty("swuser").trim();
         this.passw = properties.getProperty("swpass").trim();
         this.obo = properties.getProperty("obo").trim();
     }
-    
-        
+
+    public void setup_general() {
+        this.folderWork = properties.getProperty("folderwork").trim();
+        this.handle = properties.getProperty("handle").trim();
+    }
+
     //public void grabar_url_st(String aSdIRI, String aUser, String aPass, String aObo) 
-    public void grabarUrlSt(String url) 
+    public void grabarUrlSt(String url)
             throws Exception {
-        nrourl = Integer.parseInt(properties.getProperty("nrourl"));        
+        nrourl = Integer.parseInt(properties.getProperty("nrourl"));
         properties.setProperty("nrourl", String.valueOf(nrourl + 1));
-        properties.setProperty("url_"+(nrourl+1), url);
-        File file = new File("src/main/java/propiedades/login.properties");
+        properties.setProperty("url_" + (nrourl + 1), url);
+        File file = new File("src/main/java/propiedades/config.properties");
         if (file.exists()) {
             output = new FileOutputStream(file.getAbsoluteFile());
-            properties.store(output, "datos conexion Sword v2");
+            properties.store(output, "datos login-general v2");
         }
-    }   
-    
+    }
+
     public void grabarUriSw(String uri)
             throws Exception {
         nrouri = Integer.parseInt(properties.getProperty("nrouri"));
         properties.setProperty("nrouri", String.valueOf(nrouri + 1));
-        properties.setProperty("uri_"+(nrourl+1), uri);
-        File file = new File("src/main/java/propiedades/login.properties");
+        properties.setProperty("uri_" + (nrourl + 1), uri);
+        File file = new File("src/main/java/propiedades/config.properties");
         if (file.exists()) {
             output = new FileOutputStream(file.getAbsoluteFile());
-            properties.store(output, "datos conexion Sword v2");
+            properties.store(output, "datos login-general v2");
         }
-    }  
+    }
+
+    public void grabarFolder(String folder) {
+        properties.setProperty("folderwork", folder);
+        File file = new File("src/main/java/propiedades/config.properties");
+        if (file.exists()) {
+            try {
+                output = new FileOutputStream(file.getAbsoluteFile());
+                try {
+                    properties.store(output, "datos login-general v2");
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void grabarHandle(String unHandle) {
+        properties.setProperty("handle", unHandle);
+        File file = new File("src/main/java/propiedades/config.properties");
+        if (file.exists()) {
+            try {
+                output = new FileOutputStream(file.getAbsoluteFile());
+                try {
+                    properties.store(output, "datos login-general v2");
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    
+    public void grabarBase(String miBase) {
+        properties.setProperty("base", miBase);
+        File file = new File("src/main/java/propiedades/config.properties");
+        if (file.exists()) {
+            try {
+                output = new FileOutputStream(file.getAbsoluteFile());
+                try {
+                    properties.store(output, "datos login-general v2");
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public String getFolderWork() {
+        return folderWork;
+    }
+
+    public String getHandle() {
+        return handle;
+    }
 
     public Properties getProperties() {
         return properties;
@@ -276,7 +345,7 @@ public final class LoginControler {
     }
 
     public void setConexionStardog(ReasoningConnection conexionStardog) {
-        LoginControler.conexionStardog = conexionStardog;
+        ConfigControler.conexionStardog = conexionStardog;
     }
 
     public ServiceDocument getSd() {
@@ -293,6 +362,6 @@ public final class LoginControler {
 
     public void setClient(SWORDClient client) {
         this.client = client;
-    }    
-    
+    }
+
 } //fin

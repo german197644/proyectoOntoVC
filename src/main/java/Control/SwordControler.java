@@ -52,10 +52,10 @@ public final class SwordControler {
     
     DepositReceipt receipt = null;
     
-    //private LoginControler login = null; 
+    //private ConfigControler login = null; 
     
     protected SwordControler() throws Exception {
-        LoginControler login = LoginControler.getInstancia();
+        ConfigControler login = ConfigControler.getInstancia();
         login.ConectarSword();
         this.sd = login.getSd();
         this.client = login.getClient();
@@ -68,7 +68,7 @@ public final class SwordControler {
     public void myDepositoMets (SWORDCollection col)  {                
         try {
             MetsControler myMets = MetsControler.getInstancia();     
-            LoginControler login = LoginControler.getInstancia();
+            ConfigControler login = ConfigControler.getInstancia();
             
             //Depositamos el recurso
             Deposit deposit = new Deposit();
@@ -272,7 +272,7 @@ public final class SwordControler {
      */
     public void depositoDeFicheroSimple(SWORDCollection aCol, Component parent)
             throws Exception {
-        LoginControler login = LoginControler.getInstancia();
+        ConfigControler login = ConfigControler.getInstancia();
         File fichero = null;
         String aFormat = null;
 
@@ -347,7 +347,7 @@ public final class SwordControler {
      */
     public void depositoDeFicheroSimple_repetitivo(SWORDCollection aCol, Component parent)
             throws Exception {
-        LoginControler login = LoginControler.getInstancia();
+        ConfigControler login = ConfigControler.getInstancia();
         File fichero = null;
         String aFormat = null;
         DefaultListModel<Fichero> archivos;
@@ -409,7 +409,7 @@ public final class SwordControler {
      */
     public void depositoMetsZip(SWORDCollection aCol, Component parent)
             throws Exception {
-        LoginControler login = LoginControler.getInstancia();    
+        ConfigControler login = ConfigControler.getInstancia();    
         File fzip = null; //ZIP        
 
         fzip = MetsControler.getInstancia().getRutaFileZIP();
@@ -486,7 +486,7 @@ public final class SwordControler {
      */
     public void depositoZipMasMetadatos(SWORDCollection aCol, Component parent)
             throws SWORDClientException, FileNotFoundException, IOException, SWORDError, ProtocolViolationException, Exception {
-        LoginControler login = LoginControler.getInstancia();
+        ConfigControler login = ConfigControler.getInstancia();
         File ficheroZip;
 
         /* 

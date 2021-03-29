@@ -86,13 +86,13 @@ public final class StardogControler {
     //mensajes de validacion
     String retornoValidacion = null;
 
-    private LoginControler login = null;
+    private ConfigControler login = null;
     
     private static final Charset ISO = Charset.forName("ISO-8859-1");
 
     private StardogControler() {
         try {
-            login = LoginControler.getInstancia();
+            login = ConfigControler.getInstancia();
             //login.conectarStardog();
             //conexionStardog = login.getConexionStardog();
         } catch (IOException ex) {

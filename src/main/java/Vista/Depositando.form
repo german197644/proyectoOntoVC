@@ -455,7 +455,6 @@
                             <Property name="visibleRowCount" type="int" value="5"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listaOAMouseClicked"/>
                             <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listaOAMousePressed"/>
                           </Events>
                           <AuxValues>
@@ -489,9 +488,6 @@
                             <Property name="opaque" type="boolean" value="false"/>
                             <Property name="visibleRowCount" type="int" value="5"/>
                           </Properties>
-                          <Events>
-                            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="listaMetadatoMouseClicked"/>
-                          </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                           </AuxValues>
