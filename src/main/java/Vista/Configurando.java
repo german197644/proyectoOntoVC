@@ -7,6 +7,7 @@ package Vista;
 
 import Control.DialogWaitControler;
 import Control.ConfigControler;
+import Control.FicheroControler;
 import Control.RestControler;
 import Control.StardogControler;
 import com.complexible.stardog.StardogException;
@@ -21,9 +22,9 @@ import javax.swing.SwingWorker;
 
 /**
  *
- * @author germa
+ * @author
  */
-public class Config extends javax.swing.JDialog {
+public class Configurando extends javax.swing.JDialog {
 
     private ConfigControler login = null;
 
@@ -46,17 +47,21 @@ public class Config extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public Config(java.awt.Frame parent, boolean modal) {
+    public Configurando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
 
         try {
             initComponents();
+            this.setTitle("Preferencias");
             this.setLocationRelativeTo(null);
 
             restlogin = false;
             stardoglogin = false;
 
             login = ConfigControler.getInstancia();
+            login.setup_stardog();
+            login.setup_dspace();
+            login.setup_general();
 
             // STARDOG
             this.st_url.removeAllItems();
@@ -81,9 +86,9 @@ public class Config extends javax.swing.JDialog {
             this.txtHandle.setText(login.getHandle());
             // fin General                        
         } catch (IOException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -150,11 +155,12 @@ public class Config extends javax.swing.JDialog {
         jPanel13 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txtWorkFolder = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnGuardarUT = new javax.swing.JButton();
         jPanel14 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtHandle = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        btnGuardarHandle = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -403,39 +409,49 @@ public class Config extends javax.swing.JDialog {
         jPanel13.setPreferredSize(new java.awt.Dimension(100, 20));
         jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
-        jLabel2.setText("Lugar de Trabajo:");
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setText("Unidad de Trabajo");
         jPanel13.add(jLabel2);
 
         txtWorkFolder.setColumns(25);
         txtWorkFolder.setText("E:/");
         jPanel13.add(txtWorkFolder);
 
-        jButton1.setText("Guardar cambios");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnEditarActionPerformed(evt);
             }
         });
-        jPanel13.add(jButton1);
+        jPanel13.add(btnEditar);
+
+        btnGuardarUT.setText("Guardar cambios");
+        btnGuardarUT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarUTActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnGuardarUT);
 
         jPanel17.add(jPanel13);
 
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
-        jLabel1.setText("Web Browse - Handle:");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setText("Handle - Web Browse");
         jPanel14.add(jLabel1);
 
         txtHandle.setColumns(25);
         txtHandle.setText("http://localhot:8080/xmlui");
         jPanel14.add(txtHandle);
 
-        jButton3.setText("Guardar cambios");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardarHandle.setText("Guardar cambios");
+        btnGuardarHandle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnGuardarHandleActionPerformed(evt);
             }
         });
-        jPanel14.add(jButton3);
+        jPanel14.add(btnGuardarHandle);
 
         jLabel3.setText("ej:  (http://localhot:8080/xmlui)");
         jPanel14.add(jLabel3);
@@ -491,7 +507,7 @@ public class Config extends javax.swing.JDialog {
                     }
                     setVisible(false);
                 } catch (StardogException ex) {
-                    Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
                 return null;
@@ -510,8 +526,8 @@ public class Config extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
+        this.consola.append("Operación de conexión cancelada.\n");
         this.setVisible(false);
-        this.consola.append("Operación de conexión cancelada.");
     }//GEN-LAST:event_btn_cancelarActionPerformed
 
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
@@ -588,27 +604,32 @@ public class Config extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_sw_passActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnGuardarUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarUTActionPerformed
         if (!txtWorkFolder.getText().isEmpty()) {
             login.grabarFolder(txtWorkFolder.getText());
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnGuardarUTActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btnGuardarHandleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarHandleActionPerformed
         if (!txtHandle.getText().isEmpty()) {
             login.grabarHandle(txtHandle.getText());
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btnGuardarHandleActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         if (!st_bd.getText().isEmpty()) {
             try {
                 login.grabarBase(st_bd.getText());
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al guardar cambios del nombre de la BD.", "Informe", JOptionPane.INFORMATION_MESSAGE);            
+                JOptionPane.showMessageDialog(this, "Error al guardar cambios del nombre de la BD.", "Informe", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        FicheroControler unFichero = FicheroControler.getInstancia();
+        txtWorkFolder.setText(unFichero.getCarpeta(this).getAbsolutePath());
+    }//GEN-LAST:event_btnEditarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -627,21 +648,23 @@ public class Config extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Config dialog = new Config(new javax.swing.JFrame(), true);
+                Configurando dialog = new Configurando(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -654,15 +677,16 @@ public class Config extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnGuardarHandle;
+    private javax.swing.JButton btnGuardarUT;
     private javax.swing.JButton btn_agregar_st;
     private javax.swing.JButton btn_agregar_sw;
     private javax.swing.JButton btn_cancelar;
     private javax.swing.JPanel cont_stardog;
     private javax.swing.JPanel cont_sword;
     private javax.swing.JPanel generalPanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

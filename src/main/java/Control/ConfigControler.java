@@ -68,9 +68,9 @@ public final class ConfigControler {
     private ConfigControler() {
         try {
             getProperty();
-            setup_stardog();
-            setup_dspace();
-            setup_general();
+            //setup_stardog();
+            //setup_dspace();
+            //setup_general();
         } catch (IOException ex) {
             Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {

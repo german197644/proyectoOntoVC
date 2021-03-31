@@ -120,10 +120,10 @@ public class FicheroControler {
     }
 
     /**
-     * Devuelve la carpeta del directorio.
+     * Devuelve el directorio seleccionado.
      *
      * @param parent LLamador
-     * @return Una carpeta
+     * @return El directorio seleccionado.
      * 
      */
     public File getCarpeta(Component parent){

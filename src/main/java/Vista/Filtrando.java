@@ -28,7 +28,7 @@ import javax.swing.tree.TreePath;
  *
  * @author germa
  */
-public class Filtro extends javax.swing.JDialog {
+public class Filtrando extends javax.swing.JDialog {
 
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
@@ -40,7 +40,7 @@ public class Filtro extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public Filtro(java.awt.Frame parent, boolean modal) {
+    public Filtrando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         try {
             initComponents();
@@ -59,7 +59,7 @@ public class Filtro extends javax.swing.JDialog {
             jPanel17.add(link);
             //jPanel16.repaint();
         } catch (IOException ex) {
-            Logger.getLogger(Filtro.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -138,7 +138,6 @@ public class Filtro extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Filtrado de Items");
-        setPreferredSize(new java.awt.Dimension(900, 630));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(670, 220));
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -482,7 +481,7 @@ public class Filtro extends javax.swing.JDialog {
                 dtm.addRow(new Object[]{equivalente, txtMetadato.getText()});
             }
         } catch (Exception ex) {
-            Logger.getLogger(Filtro.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -505,7 +504,7 @@ public class Filtro extends javax.swing.JDialog {
                         + jTable2.getModel().getValueAt(fila, columna).toString().trim());
             }
         } catch (IOException ex) {
-            Logger.getLogger(Filtro.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jTable2MousePressed
 
@@ -526,20 +525,21 @@ public class Filtro extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Filtro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Filtro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Filtro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Filtro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Filtro dialog = new Filtro(new javax.swing.JFrame(), true);
+                Filtrando dialog = new Filtrando(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

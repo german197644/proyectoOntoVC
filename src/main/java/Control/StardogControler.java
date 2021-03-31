@@ -21,7 +21,6 @@ import org.openrdf.query.TupleQueryResult;
 import Modelo.Metadato;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.toedter.calendar.JDateChooser;
-import static io.netty.util.CharsetUtil.UTF_8;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -77,24 +76,22 @@ public final class StardogControler {
     //Variable que contiene la lista de metadatos a capturar
     private DefaultListModel<Metadato> capturaMetadados = new DefaultListModel<>();
 
-    //Variable de conexion a stardog
-    //private static ConexionStardogControl connOnto = null;
-    //archivo de configuracion configMetadatas.properties
     Properties properties = new Properties();
+    
     InputStream propertiesStream;
 
     //mensajes de validacion
     String retornoValidacion = null;
 
+    boolean errorValidacion = false;
+
     private ConfigControler login = null;
-    
-    private static final Charset ISO = Charset.forName("ISO-8859-1");
+
+    //private static final Charset ISO = Charset.forName("ISO-8859-1");
 
     private StardogControler() {
         try {
             login = ConfigControler.getInstancia();
-            //login.conectarStardog();
-            //conexionStardog = login.getConexionStardog();
         } catch (IOException ex) {
             Logger.getLogger(StardogControler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,6 +102,10 @@ public final class StardogControler {
             instancia = new StardogControler();
         }
         return instancia;
+    }
+
+    public DefaultListModel<Metadato> getListaMetadados() {
+        return listaMetadados;
     }
 
     public void conectar() {
@@ -131,6 +132,10 @@ public final class StardogControler {
         } else {
             return false;
         }
+    }
+
+    public boolean isErrorValidacion() {
+        return errorValidacion;
     }
 
     /**
@@ -245,13 +250,18 @@ public final class StardogControler {
     public String validateMetadatos() throws Exception {
         DefaultListModel<Metadato> lista = this.capturaMetadados;
         retornoValidacion = "";
-
+        errorValidacion = false;
         for (int i = 0; i < lista.size(); ++i) {
             final String aValue = lista.get(i).getValidarMetadato();
             if (aValue.length() > 0) {
                 retornoValidacion += aValue + "\n";
             }
         }
+
+        if (retornoValidacion.length() > 0) {
+            errorValidacion = true;
+        }
+
         return retornoValidacion;
     }
 
@@ -1358,9 +1368,7 @@ public final class StardogControler {
 
                         String rawString = m.getContenidoMetadato();
                         //convertimos 
-                        String newValue = new String(rawString.getBytes("UTF-8"));
-                        //
-                        //System.out.println("utf8EncodedString...... : " + value);
+                        String newValue = new String(rawString.getBytes("UTF-8"));                                                
                         //
                         obj.put("value", newValue);
                         list.add(obj); // [{},{},...]
