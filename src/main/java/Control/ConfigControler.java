@@ -61,7 +61,7 @@ public final class ConfigControler {
     ServiceDocument sd;
     private SWORDClient client = null;
 
-    private RestControler rest = null;
+    private RestControler conexionRest = null;
 
     private static ConfigControler instancia = null;
 
@@ -90,6 +90,7 @@ public final class ConfigControler {
      *
      * @throws StardogException
      */
+    /*
     protected void conectarStardog() throws StardogException {
         conexionStardog = ConnectionConfiguration
                 .to(this.base.trim())
@@ -103,6 +104,7 @@ public final class ConfigControler {
     protected void desconectarServidor() {
         conexionStardog.close();
     }
+    */
 
     /**
      *

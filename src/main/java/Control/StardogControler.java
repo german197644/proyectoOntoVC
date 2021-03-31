@@ -90,11 +90,13 @@ public final class StardogControler {
     //private static final Charset ISO = Charset.forName("ISO-8859-1");
 
     private StardogControler() {
+        
         try {
             login = ConfigControler.getInstancia();
         } catch (IOException ex) {
             Logger.getLogger(StardogControler.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 
     public static StardogControler getInstancia() throws Exception {

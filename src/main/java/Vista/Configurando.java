@@ -129,7 +129,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         nombreBDStardogLabel1 = new javax.swing.JLabel();
         st_bd = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        btnGuardarBase = new javax.swing.JButton();
         cont_sword = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         nombreBDStardogLabel2 = new javax.swing.JLabel();
@@ -144,8 +144,8 @@ public class Configurando extends javax.swing.JDialog {
         userStardogLabel1 = new javax.swing.JLabel();
         sw_pass = new javax.swing.JPasswordField();
         panel_inferior = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        btn_cancelar = new javax.swing.JButton();
+        btnConectar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
         generalPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -271,13 +271,13 @@ public class Configurando extends javax.swing.JDialog {
         });
         jPanel3.add(st_bd);
 
-        jButton4.setText("Guardar cambios");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardarBase.setText("Guardar cambios");
+        btnGuardarBase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnGuardarBaseActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton4);
+        jPanel3.add(btnGuardarBase);
 
         cont_stardog.add(jPanel3);
 
@@ -369,21 +369,21 @@ public class Configurando extends javax.swing.JDialog {
 
         panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
 
-        jButton2.setText("Conectar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnConectar.setText("Conectar");
+        btnConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnConectarActionPerformed(evt);
             }
         });
-        panel_inferior.add(jButton2);
+        panel_inferior.add(btnConectar);
 
-        btn_cancelar.setText("Cancelar");
-        btn_cancelar.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_cancelarActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
             }
         });
-        panel_inferior.add(btn_cancelar);
+        panel_inferior.add(btnCancelar);
 
         loginPanel.add(panel_inferior, java.awt.BorderLayout.PAGE_END);
 
@@ -467,7 +467,7 @@ public class Configurando extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
         DialogWaitControler wait = new DialogWaitControler(2);
         SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
             @Override
@@ -523,12 +523,12 @@ public class Configurando extends javax.swing.JDialog {
 
         mySwingWorker.execute();
         wait.makeWait("Conectando...", evt, 0);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnConectarActionPerformed
 
-    private void btn_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelarActionPerformed
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.consola.append("Operación de conexión cancelada.\n");
         this.setVisible(false);
-    }//GEN-LAST:event_btn_cancelarActionPerformed
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void st_otroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_otroActionPerformed
         // TODO add your handling code here:
@@ -616,7 +616,7 @@ public class Configurando extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnGuardarHandleActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btnGuardarBaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarBaseActionPerformed
         if (!st_bd.getText().isEmpty()) {
             try {
                 login.grabarBase(st_bd.getText());
@@ -624,7 +624,7 @@ public class Configurando extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Error al guardar cambios del nombre de la BD.", "Informe", JOptionPane.INFORMATION_MESSAGE);
             }
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_btnGuardarBaseActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         FicheroControler unFichero = FicheroControler.getInstancia();
@@ -677,17 +677,17 @@ public class Configurando extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnConectar;
     private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnGuardarBase;
     private javax.swing.JButton btnGuardarHandle;
     private javax.swing.JButton btnGuardarUT;
     private javax.swing.JButton btn_agregar_st;
     private javax.swing.JButton btn_agregar_sw;
-    private javax.swing.JButton btn_cancelar;
     private javax.swing.JPanel cont_stardog;
     private javax.swing.JPanel cont_sword;
     private javax.swing.JPanel generalPanel;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

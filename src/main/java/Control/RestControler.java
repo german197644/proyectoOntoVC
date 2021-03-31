@@ -77,7 +77,6 @@ public final class RestControler {
         String result = null;
         boolean result2 = false;
         try {
-
             // traerlo de loginControler despues
             String url = "http://localhost:8080";
             String email = "gerdarpog@gmail.com";
@@ -86,6 +85,9 @@ public final class RestControler {
                     + url + "/rest/login --cookie-jar \"E:/cookies.txt\"";
             Process process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
+            if (waitFor != 0) {
+                return false;
+            }
 
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
                     + "--cookie \"E:/cookies.txt\"";
