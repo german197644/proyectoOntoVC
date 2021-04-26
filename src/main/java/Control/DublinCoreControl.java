@@ -15,25 +15,31 @@ import java.util.StringTokenizer;
  *
  * @author germa
  */
-public class DublinCoreControler {
+public class DublinCoreControl {
     // unica instancia.
 
-    private static DublinCoreControler instancia = null;
+    private static DublinCoreControl instancia = null;
 
     Properties properties = null;
     InputStream propertiesStream = null;
 
-    protected DublinCoreControler() throws IOException {
+    protected DublinCoreControl() throws IOException {
         properties = new Properties();
     }
 
-    public static DublinCoreControler getInstancia() throws Exception {
+    public static DublinCoreControl getInstancia() throws Exception {
         if (instancia == null) {
-            instancia = new DublinCoreControler();
+            instancia = new DublinCoreControl();
         }
         return instancia;
     }
 
+    /**
+     *
+     * @param aValue Tipo de metadato.
+     * @return Retorna la equivalencia Dublin Core en función del tipo de metadato.
+     * @throws Exception
+     */
     public Object getEquivalenciaDC(String aValue) throws Exception {
         String equi = null;
 
@@ -47,6 +53,12 @@ public class DublinCoreControler {
         return equi;
     }
 
+    /**
+     *
+     * @param aValue Tipo de matadato.
+     * @return Retorna la equivalencia Dublin Core en función del tipo de metadato.
+     * @throws Exception
+     */
     public String buscarEquivalencias(String aValue) throws Exception {
         propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
         properties.load(propertiesStream);

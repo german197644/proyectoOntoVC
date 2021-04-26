@@ -7,11 +7,9 @@ package Control;
 
 /**
  *
- * @author Pogliani, german
+ * @author Pogliani, German
+ * 
  */
-import com.complexible.stardog.StardogException;
-import com.complexible.stardog.api.ConnectionConfiguration;
-import com.complexible.stardog.api.reasoning.ReasoningConnection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,12 +21,8 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.swordapp.client.AuthCredentials;
-import org.swordapp.client.ClientConfiguration;
-import org.swordapp.client.SWORDClient;
-import org.swordapp.client.ServiceDocument;
 
-public final class ConfigControler {
+public final class ConfigControl {
 
     Properties properties = null;
     InputStream propertiesStream = null;
@@ -37,10 +31,10 @@ public final class ConfigControler {
     // Rest - variables de seteo
     private int nrouri = 0;
     private String uri = "";
-    private String usesw = "";
-    private String passw = "";
-    private String obo = "";
-    private Vector<String> servidores_sw = new Vector<>();
+    private String useRest = "";
+    private String passRest = "";
+    //private String obo = "";
+    private Vector<String> servidores_rest = new Vector<>();
 
     // StarDog - variables de seteo
     private String base = "";
@@ -53,34 +47,25 @@ public final class ConfigControler {
     //Config general
     private String folderWork = "";
     private String handle = "";
+  
+    private static ConfigControl instancia = null;
 
-    // Variable de conexion a la base de datos de Stardog
-    private static ReasoningConnection conexionStardog;
-
-    //Variables de coneccion de Sword
-    ServiceDocument sd;
-    private SWORDClient client = null;
-
-    private RestControler conexionRest = null;
-
-    private static ConfigControler instancia = null;
-
-    private ConfigControler() {
+    private ConfigControl() {
         try {
             getProperty();
             //setup_stardog();
             //setup_dspace();
             //setup_general();
         } catch (IOException ex) {
-            Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static synchronized ConfigControler getInstancia() throws IOException {
+    public static synchronized ConfigControl getInstancia() throws IOException {
         if (instancia == null) {
-            instancia = new ConfigControler();
+            instancia = new ConfigControl();
         }
         return instancia;
     }
@@ -104,20 +89,19 @@ public final class ConfigControler {
     protected void desconectarServidor() {
         conexionStardog.close();
     }
-    */
-
+     */
     /**
      *
      * @throws Exception
      */
-    protected void ConectarSword() throws Exception {
+    /*protected void ConectarSword() throws Exception {
         client = null;
         sd = null;
         client = new SWORDClient(new ClientConfiguration());
         sd = client.getServiceDocument(uri.trim(),
-                new AuthCredentials(usesw.trim(), passw.trim()));
+                new AuthCredentials(useRest.trim(), passRest.trim()));
     }
-
+     */
     private void getProperty() throws IOException {
         properties = new Properties();
         propertiesStream = new FileInputStream("src/main/java/propiedades/config.properties");
@@ -137,15 +121,15 @@ public final class ConfigControler {
     }
 
     public void setup_dspace() throws IOException {
-        this.servidores_sw.removeAllElements();
+        this.servidores_rest.removeAllElements();
         this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
         for (int i = 1; i <= this.nrouri; i++) {
-            servidores_sw.addElement(properties.getProperty("uri" + "_" + String.valueOf(i).trim()).trim());
+            servidores_rest.addElement(properties.getProperty("uri" + "_" + String.valueOf(i).trim()).trim());
         }
         this.uri = properties.getProperty("uri").trim();
-        this.usesw = properties.getProperty("swuser").trim();
-        this.passw = properties.getProperty("swpass").trim();
-        this.obo = properties.getProperty("obo").trim();
+        this.useRest = properties.getProperty("restUser").trim();
+        this.passRest = properties.getProperty("restPass").trim();
+        //this.obo = properties.getProperty("obo").trim();
     }
 
     public void setup_general() {
@@ -187,10 +171,10 @@ public final class ConfigControler {
                 try {
                     properties.store(output, "datos login-general v2");
                 } catch (IOException ex) {
-                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -204,15 +188,14 @@ public final class ConfigControler {
                 try {
                     properties.store(output, "datos login-general v2");
                 } catch (IOException ex) {
-                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
-    
+
     public void grabarBase(String miBase) {
         properties.setProperty("base", miBase);
         File file = new File("src/main/java/propiedades/config.properties");
@@ -220,12 +203,12 @@ public final class ConfigControler {
             try {
                 output = new FileOutputStream(file.getAbsoluteFile());
                 try {
-                    properties.store(output, "datos login-general v2");
+                    properties.store(output, "datos Config-General v2");
                 } catch (IOException ex) {
-                    Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ConfigControler.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -262,36 +245,28 @@ public final class ConfigControler {
         this.uri = uri;
     }
 
-    public String getUsesw() {
-        return usesw;
+    public String getUseRest() {
+        return useRest;
     }
 
-    public void setUsesw(String usesw) {
-        this.usesw = usesw;
+    public void setUseRest(String useRest) {
+        this.useRest = useRest;
     }
 
-    public String getPassw() {
-        return passw;
+    public String getPassRest() {
+        return passRest;
     }
 
-    public void setPassw(String passw) {
-        this.passw = passw;
+    public void setPassRest(String passRest) {
+        this.passRest = passRest;
     }
 
-    public String getObo() {
-        return obo;
+    public Vector<String> getServidores_rest() {
+        return servidores_rest;
     }
 
-    public void setObo(String obo) {
-        this.obo = obo;
-    }
-
-    public Vector<String> getServidores_sw() {
-        return servidores_sw;
-    }
-
-    public void setServidores_sw(Vector<String> servidores_sw) {
-        this.servidores_sw = servidores_sw;
+    public void setServidores_rest(Vector<String> servidores_rest) {
+        this.servidores_rest = servidores_rest;
     }
 
     public String getBase() {
@@ -340,30 +315,6 @@ public final class ConfigControler {
 
     public void setServidores_st(Vector<String> servidores_st) {
         this.servidores_st = servidores_st;
-    }
-
-    public ReasoningConnection getConexionStardog() {
-        return conexionStardog;
-    }
-
-    public void setConexionStardog(ReasoningConnection conexionStardog) {
-        ConfigControler.conexionStardog = conexionStardog;
-    }
-
-    public ServiceDocument getSd() {
-        return sd;
-    }
-
-    public void setSd(ServiceDocument sd) {
-        this.sd = sd;
-    }
-
-    public SWORDClient getClient() {
-        return client;
-    }
-
-    public void setClient(SWORDClient client) {
-        this.client = client;
     }
 
 } //fin

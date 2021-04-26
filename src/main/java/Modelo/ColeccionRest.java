@@ -5,19 +5,7 @@
  */
 package Modelo;
 
-import Control.RestControler;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -68,6 +56,10 @@ public class ColeccionRest {
     }
     
     public boolean isComunidad(){
+        return false;
+    }
+    
+    public boolean isItem(){
         return false;
     }
     

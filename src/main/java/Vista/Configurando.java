@@ -5,11 +5,11 @@
  */
 package Vista;
 
-import Control.DialogWaitControler;
-import Control.ConfigControler;
-import Control.FicheroControler;
-import Control.RestControler;
-import Control.StardogControler;
+import Control.DialogWaitControl;
+import Control.ConfigControl;
+import Control.FicheroControl;
+import Control.RestControl;
+import Control.StardogControl;
 import com.complexible.stardog.StardogException;
 import java.io.IOException;
 import java.util.List;
@@ -26,19 +26,22 @@ import javax.swing.SwingWorker;
  */
 public class Configurando extends javax.swing.JDialog {
 
-    private ConfigControler login = null;
+    // seteo de los parametros conexión.
+    private ConfigControl config = null;
 
     // rest api dspace
-    RestControler rest = null;
+    RestControl rest = null;
 
     // conectar a Stardog
-    StardogControler stardog = null;
+    StardogControl stardog = null;
 
-    // saber si se hizo alguna modificacion
-    boolean conn = false;
+    // saber si se hizo alguna modificacion en la conexion.
+    public boolean conn = false;
 
+    // 
     boolean restlogin, stardoglogin = false;
 
+    // salia de los resultados.
     JTextArea consola;
 
     /**
@@ -58,32 +61,32 @@ public class Configurando extends javax.swing.JDialog {
             restlogin = false;
             stardoglogin = false;
 
-            login = ConfigControler.getInstancia();
-            login.setup_stardog();
-            login.setup_dspace();
-            login.setup_general();
+            config = ConfigControl.getInstancia();
+            config.setup_stardog();
+            config.setup_dspace();
+            config.setup_general();
 
             // STARDOG
             this.st_url.removeAllItems();
-            this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
-            this.st_bd.setText(login.getBase());
-            this.st_usuario.setText(login.getUserst());
-            this.st_pass.setText(login.getPassst());
-            stardog = StardogControler.getInstancia();
+            this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
+            this.st_bd.setText(config.getBase());
+            this.st_usuario.setText(config.getUserst());
+            this.st_pass.setText(config.getPassst());
+            stardog = StardogControl.getInstancia();
             // fin coneccion stardog
 
             // DSpace
             this.sw_url.removeAllItems();
-            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
-            this.sw_usuario.setText(login.getUsesw());
-            this.sw_pass.setText(login.getPassw());
+            this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
+            this.sw_usuario.setText(config.getUseRest());
+            this.sw_pass.setText(config.getPassRest());
             //this.sw_obo.setText(login.getObo()); // ya no aplica.
-            rest = RestControler.getInstancia();
+            rest = RestControl.getInstancia();
             // fin coneccion DSpace
 
             // General
-            this.txtWorkFolder.setText(login.getFolderWork());
-            this.txtHandle.setText(login.getHandle());
+            this.txtWorkFolder.setText(config.getFolderWork());
+            this.txtHandle.setText(config.getHandle());
             // fin General                        
         } catch (IOException ex) {
             Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,9 +146,6 @@ public class Configurando extends javax.swing.JDialog {
         sw_usuario = new javax.swing.JTextField();
         userStardogLabel1 = new javax.swing.JLabel();
         sw_pass = new javax.swing.JPasswordField();
-        panel_inferior = new javax.swing.JPanel();
-        btnConectar = new javax.swing.JButton();
-        btnCancelar = new javax.swing.JButton();
         generalPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -162,6 +162,9 @@ public class Configurando extends javax.swing.JDialog {
         txtHandle = new javax.swing.JTextField();
         btnGuardarHandle = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        panel_inferior = new javax.swing.JPanel();
+        btnConectar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -169,7 +172,7 @@ public class Configurando extends javax.swing.JDialog {
 
         panel_Superior.setLayout(new javax.swing.BoxLayout(panel_Superior, javax.swing.BoxLayout.Y_AXIS));
 
-        cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Base de Datos a Grafos: StarDog", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Base de Datos Gráfico - Stardog", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
         cont_stardog.setLayout(new java.awt.GridLayout(4, 1));
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -259,7 +262,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel1.setText("BD");
+        nombreBDStardogLabel1.setText("Base de datos");
         nombreBDStardogLabel1.setName(""); // NOI18N
         jPanel3.add(nombreBDStardogLabel1);
 
@@ -283,7 +286,7 @@ public class Configurando extends javax.swing.JDialog {
 
         panel_Superior.add(cont_stardog);
 
-        cont_sword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Repositorio DSpace", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_sword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Repositorio DSpace - Rest API", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
         cont_sword.setLayout(new java.awt.GridLayout(3, 1, 5, 5));
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -367,26 +370,6 @@ public class Configurando extends javax.swing.JDialog {
 
         loginPanel.add(panel_Superior, java.awt.BorderLayout.PAGE_START);
 
-        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
-
-        btnConectar.setText("Conectar");
-        btnConectar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConectarActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(btnConectar);
-
-        btnCancelar.setText("Cancelar");
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(btnCancelar);
-
-        loginPanel.add(panel_inferior, java.awt.BorderLayout.PAGE_END);
-
         jTabbedPane1.addTab("Conexión", loginPanel);
 
         generalPanel.setLayout(new java.awt.BorderLayout());
@@ -403,6 +386,7 @@ public class Configurando extends javax.swing.JDialog {
         jLabel5.setText("    ");
         generalPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);
 
+        jPanel17.setPreferredSize(new java.awt.Dimension(653, 200));
         jPanel17.setLayout(new java.awt.GridLayout(10, 1));
 
         jPanel13.setMinimumSize(new java.awt.Dimension(193, 20));
@@ -410,7 +394,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setText("Unidad de Trabajo");
+        jLabel2.setText("Unidad de trabajo");
         jPanel13.add(jLabel2);
 
         txtWorkFolder.setColumns(25);
@@ -438,11 +422,11 @@ public class Configurando extends javax.swing.JDialog {
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel1.setText("Handle - Web Browse");
+        jLabel1.setText("Handle - web browser");
         jPanel14.add(jLabel1);
 
         txtHandle.setColumns(25);
-        txtHandle.setText("http://localhot:8080/xmlui");
+        txtHandle.setText("http://localhot:8080/xmlui/handle/");
         jPanel14.add(txtHandle);
 
         btnGuardarHandle.setText("Guardar cambios");
@@ -464,11 +448,31 @@ public class Configurando extends javax.swing.JDialog {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
+        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
+
+        btnConectar.setText("Conectar");
+        btnConectar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConectarActionPerformed(evt);
+            }
+        });
+        panel_inferior.add(btnConectar);
+
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+        panel_inferior.add(btnCancelar);
+
+        getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
-        DialogWaitControler wait = new DialogWaitControler(2);
+        DialogWaitControl wait = new DialogWaitControl(2);
         SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -477,19 +481,19 @@ public class Configurando extends javax.swing.JDialog {
                     //conectar a DSpace a traves de rest api
                     // seteamos las variables primero
                     publish(">> Conectando a DSpace...\n", "0");
-                    login.setUri((String) sw_url.getSelectedItem());    //private String uri = "";
-                    login.setUsesw(sw_usuario.getText());    //private String usesw = "";
-                    login.setPassw(new String(sw_pass.getPassword()));    //private String passw = "";
+                    config.setUri((String) sw_url.getSelectedItem());    //private String uri = "";
+                    config.setUseRest(sw_usuario.getText());    //private String usesw = "";
+                    config.setPassRest(new String(sw_pass.getPassword()));    //private String passw = "";
                     // conectamos
                     restlogin = rest.conectar();
 
                     // -----------------------------------------------------------------
                     //conectar a DSpace a traves de Stardog api
                     // seteamos las variables primero
-                    login.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";           
-                    login.setUserst(st_usuario.getText());    //private String userst = "";
-                    login.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
-                    login.setBase(st_bd.getText());    //private String base = "";
+                    config.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";           
+                    config.setUserst(st_usuario.getText());    //private String userst = "";
+                    config.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
+                    config.setBase(st_bd.getText());    //private String base = "";
                     // conectar a Stardog 
 
                     publish(">> Conectando a Stardog...\n", "1");
@@ -504,12 +508,12 @@ public class Configurando extends javax.swing.JDialog {
                         conn = true;
                     } else {
                         JOptionPane.showMessageDialog(null, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
-                    }
-                    setVisible(false);
+                    }                    
                 } catch (StardogException ex) {
                     Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
+                setVisible(false);
                 return null;
             }
 
@@ -518,9 +522,7 @@ public class Configurando extends javax.swing.JDialog {
                 wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
                 consola.append(chunks.get(0));
             }
-
         };
-
         mySwingWorker.execute();
         wait.makeWait("Conectando...", evt, 0);
     }//GEN-LAST:event_btnConectarActionPerformed
@@ -539,13 +541,12 @@ public class Configurando extends javax.swing.JDialog {
             if (st_otro.getText().isEmpty()) {
                 return;
             }
-            login.grabarUrlSt(this.st_otro.getText());
-            login.setup_stardog();
-            this.st_url.setModel(new DefaultComboBoxModel(login.getServidores_st()));
-            //this.st_url.updateUI();
+            config.grabarUrlSt(this.st_otro.getText());
+            config.setup_stardog();
+            this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));            
             this.st_otro.setText("");
         } catch (Exception ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error: " + ex.getMessage());
         }
     }//GEN-LAST:event_btn_agregar_stActionPerformed
 
@@ -578,13 +579,13 @@ public class Configurando extends javax.swing.JDialog {
             if (sw_otro.getText().isEmpty()) {
                 return;
             }
-            login.grabarUriSw(this.sw_otro.getText());
-            login.setup_dspace();
-            this.sw_url.setModel(new DefaultComboBoxModel(login.getServidores_sw()));
+            config.grabarUriSw(this.sw_otro.getText());
+            config.setup_dspace();
+            this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
             //this.sw_url.updateUI();
             this.sw_otro.setText("");
         } catch (Exception ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error: " + ex.getMessage());
         }
     }//GEN-LAST:event_btn_agregar_swActionPerformed
 
@@ -606,28 +607,31 @@ public class Configurando extends javax.swing.JDialog {
 
     private void btnGuardarUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarUTActionPerformed
         if (!txtWorkFolder.getText().isEmpty()) {
-            login.grabarFolder(txtWorkFolder.getText());
+            config.grabarFolder(txtWorkFolder.getText());
         }
     }//GEN-LAST:event_btnGuardarUTActionPerformed
 
     private void btnGuardarHandleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarHandleActionPerformed
         if (!txtHandle.getText().isEmpty()) {
-            login.grabarHandle(txtHandle.getText());
+            config.grabarHandle(txtHandle.getText());
         }
     }//GEN-LAST:event_btnGuardarHandleActionPerformed
 
     private void btnGuardarBaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarBaseActionPerformed
-        if (!st_bd.getText().isEmpty()) {
-            try {
-                login.grabarBase(st_bd.getText());
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al guardar cambios del nombre de la BD.", "Informe", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            if (!st_bd.getText().isEmpty()) {
+                config.grabarBase(st_bd.getText());
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al guardar cambios del nombre de la BD." + e.getMessage(),
+                    "Informe",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnGuardarBaseActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        FicheroControler unFichero = FicheroControler.getInstancia();
+        FicheroControl unFichero = FicheroControl.getInstancia();
         txtWorkFolder.setText(unFichero.getCarpeta(this).getAbsolutePath());
     }//GEN-LAST:event_btnEditarActionPerformed
 

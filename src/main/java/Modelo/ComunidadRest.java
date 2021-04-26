@@ -5,7 +5,7 @@
  */
 package Modelo;
 
-import Control.RestControler;
+import Control.RestControl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -67,8 +66,12 @@ public class ComunidadRest {
     public boolean isColeccion() {
         return false;
     }
-    
-        /**
+
+    public boolean isItem() {
+        return false;
+    }
+
+    /**
      *
      * @param url El host donde se aloja DSpace.
      * @param nodo Nodo del arbol elejido.
@@ -105,7 +108,7 @@ public class ComunidadRest {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodo;
     }
@@ -127,8 +130,8 @@ public class ComunidadRest {
                 JsonArray array = (JsonArray) datos;
                 if (array.size() == 0) {
                     return nodo;
-                }           
-                nodo.removeAllChildren();                
+                }
+                nodo.removeAllChildren();
                 Iterator<JsonElement> iter = array.iterator();
                 while (iter.hasNext()) {
                     JsonObject jsonComunidad = (JsonObject) iter.next();
@@ -141,8 +144,8 @@ public class ComunidadRest {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return nodo;
     }
 }

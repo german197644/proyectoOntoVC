@@ -16,38 +16,39 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
- * @author germa
+ * @author Pogliani, Germán
+ * 
  */
-public class FicheroControler {
+public class FicheroControl {
 
     //Creamos el objeto JFileChooser
     JFileChooser fileChooser = new JFileChooser(".");
  
     //Contenedor de los ficheros seleccionados
-    DefaultListModel<Fichero> listaFicheros = new DefaultListModel<>();
+    DefaultListModel<Fichero> ficheros = new DefaultListModel<>();
     
-    //instancia unica de FicheroControler
-    private static FicheroControler instancia = null;
+    //instancia unica de FicheroControl
+    private static FicheroControl instancia = null;
     
     // Carpeta de salida zip - en desuso
     private String folderZip = null;
 
-    protected FicheroControler() {
+    protected FicheroControl() {
     }
 
-    public static FicheroControler getInstancia() {
+    public static FicheroControl getInstancia() {
         if (instancia == null) {
-            instancia = new FicheroControler();
+            instancia = new FicheroControl();
         }
         return instancia;
     }
 
     public DefaultListModel getListaFicheros() {
-        return listaFicheros;
+        return ficheros;        
     }
 
     public void ClearFicheros() {
-        listaFicheros.clear();
+        ficheros.clear();
     }
 
     public String getFolderZip() {
@@ -79,7 +80,7 @@ public class FicheroControler {
                 //Seleccionamos el fichero
                 fichero = fileChooser.getSelectedFile();
                 Fichero f = new Fichero(fichero);
-                listaFicheros.addElement(f);                
+                ficheros.addElement(f);                
             } else {
                 // Si el usuario pulsa en cancelar o ocurre un error
             }
@@ -145,8 +146,8 @@ public class FicheroControler {
     }
 
     public void quitarFichero(int aPosi){
-        if ((aPosi >= 0) && (aPosi < listaFicheros.size())) {
-            this.listaFicheros.remove(aPosi);
+        if ((aPosi >= 0) && (aPosi < ficheros.size())) {
+            this.ficheros.remove(aPosi);
         }
     }
 
@@ -185,14 +186,13 @@ public class FicheroControler {
         ZipOutputStream os = new ZipOutputStream(new FileOutputStream(this.folderZip));
 
         //hay que agregar el archivo de metadatos mets
-        for (int i = 0; i < listaFicheros.size(); ++i) {
+        for (int i = 0; i < ficheros.size(); ++i) {
 
             //obtenego el fichero
-            //File aFichero = new File(listaFicheros.get(i));
-            File aFichero = listaFicheros.get(i).getUnFile();
+            //File aFichero = new File(ficheros.get(i));
+            File aFichero = ficheros.get(i).getUnFile();
 
-            if (aFichero.exists()) {
-                //System.out.println("gererandoooooooooooooooooooooooooo");
+            if (aFichero.exists()) {                
                 //establecemos el nombre del archivo comprimido.
                 //generamos la entrada del archivo al ZipOutputStream
                 ZipEntry entrada = new ZipEntry(aFichero.getName());

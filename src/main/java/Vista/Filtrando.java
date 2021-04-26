@@ -5,9 +5,9 @@
  */
 package Vista;
 
-import Control.DublinCoreControler;
-import Control.ConfigControler;
-import Control.RestControler;
+import Control.DublinCoreControl;
+import Control.ConfigControl;
+import Control.RestControl;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.JLabelLink;
@@ -46,11 +46,11 @@ public class Filtrando extends javax.swing.JDialog {
             initComponents();
             this.setLocationRelativeTo(null);
 
-            jTable2.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
-            jTable2.setRowHeight(50); // con 50 anda
+            tablaFiltro.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
+            tablaFiltro.setRowHeight(50); // con 50 anda
 
             //
-            ConfigControler login = ConfigControler.getInstancia();
+            ConfigControl login = ConfigControl.getInstancia();
             JLabelLink link = new JLabelLink();
             link.setText("Busqueda en el repositorio. Aquí.");
             link.setSize(link.getText().length(), 20);
@@ -134,7 +134,7 @@ public class Filtrando extends javax.swing.JDialog {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tablaFiltro = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Filtrado de Items");
@@ -393,7 +393,7 @@ public class Filtrando extends javax.swing.JDialog {
         jLabel14.setText("   ");
         jPanel4.add(jLabel14, java.awt.BorderLayout.LINE_END);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tablaFiltro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -413,16 +413,16 @@ public class Filtrando extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
-        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+        tablaFiltro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTable2MousePressed(evt);
+                tablaFiltroMousePressed(evt);
             }
         });
-        jScrollPane4.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setMinWidth(60);
-            jTable2.getColumnModel().getColumn(0).setPreferredWidth(50);
-            jTable2.getColumnModel().getColumn(0).setMaxWidth(90);
+        jScrollPane4.setViewportView(tablaFiltro);
+        if (tablaFiltro.getColumnModel().getColumnCount() > 0) {
+            tablaFiltro.getColumnModel().getColumn(0).setMinWidth(60);
+            tablaFiltro.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tablaFiltro.getColumnModel().getColumn(0).setMaxWidth(90);
         }
 
         jPanel4.add(jScrollPane4, java.awt.BorderLayout.CENTER);
@@ -439,8 +439,8 @@ public class Filtrando extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        RestControler rest = RestControler.getInstancia();
-        rest.unFiltro(coleccion, evt, jTable2, jTable1, 
+        RestControl rest = RestControl.getInstancia();
+        rest.unFiltro(coleccion, evt, tablaFiltro, jTable1, 
                 Integer.parseInt(fTextLimite.getText()), Integer.parseInt(txtOffSet.getText()));
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -473,7 +473,7 @@ public class Filtrando extends javax.swing.JDialog {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
-            DublinCoreControler dublinCore = DublinCoreControler.getInstancia();
+            DublinCoreControl dublinCore = DublinCoreControl.getInstancia();
             if ((jListMetadatos.getSelectedIndex() >= 0) && !txtMetadato.getText().isEmpty()) {
                 Metadato mt = (Metadato) ((Object) jListMetadatos.getSelectedValue());
                 String equivalente = (String) dublinCore.getEquivalenciaDC(mt.getTipo().toLowerCase().trim());
@@ -493,20 +493,13 @@ public class Filtrando extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jTable1MouseClicked
 
-    private void jTable2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MousePressed
-        try {
-            ConfigControler login = ConfigControler.getInstancia();
-            int fila = jTable2.rowAtPoint(evt.getPoint());
-            int columna = jTable2.columnAtPoint(evt.getPoint());
-            if ((fila > -1) && (columna > -1) && (columna == 3)) {
-                System.out.println(jTable2.getModel().getValueAt(fila, columna));
-                Runtime.getRuntime().exec("cmd.exe /c start chrome " + login.getUri().trim() + "/xmlui" + "/handle/"
-                        + jTable2.getModel().getValueAt(fila, columna).toString().trim());
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jTable2MousePressed
+    private void tablaFiltroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFiltroMousePressed
+        RestControl rest = RestControl.getInstancia();
+        int fila = tablaFiltro.rowAtPoint(evt.getPoint());
+        int columna = tablaFiltro.columnAtPoint(evt.getPoint());
+        String unHandle = tablaFiltro.getModel().getValueAt(fila, columna).toString().trim();
+        rest.miHandle(fila, columna, unHandle);
+    }//GEN-LAST:event_tablaFiltroMousePressed
 
     /**
      * @param args the command line arguments
@@ -601,10 +594,10 @@ public class Filtrando extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private javax.swing.JTree jTree1;
     private javax.swing.JPanel norte;
     private javax.swing.JPanel sur;
+    private javax.swing.JTable tablaFiltro;
     private javax.swing.JTextField txtMetadato;
     private javax.swing.JTextField txtOffSet;
     // End of variables declaration//GEN-END:variables

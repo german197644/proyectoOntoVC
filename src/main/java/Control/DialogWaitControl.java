@@ -23,19 +23,19 @@ import javax.swing.SwingUtilities;
  *
  * @author germa
  */
-public class DialogWaitControler {
+public class DialogWaitControl {
 
     private JDialog dialog;
 
     JProgressBar progressBar;
     JLabel label = new JLabel();
 
-    public DialogWaitControler() {
+    public DialogWaitControl() {
         this.progressBar = new JProgressBar();
         this.progressBar.setIndeterminate(true);
     }
 
-    public DialogWaitControler(int max) {
+    public DialogWaitControl(int max) {
         if (max > 0) {
             this.progressBar = new JProgressBar(0, max);
         } else {

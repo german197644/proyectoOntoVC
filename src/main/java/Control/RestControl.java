@@ -8,16 +8,18 @@ package Control;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Fichero;
-import Vista.prueba;
+import Modelo.ItemRest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -41,24 +43,24 @@ import org.json.JSONException;
  *
  * @author germa
  */
-public final class RestControler {
+public final class RestControl {
 
     private String newItem = null;
 
-    private static RestControler instancia = null;
+    private static RestControl instancia = null;
 
     private DefaultTreeModel modeloRepo = null;
 
-    private RestControler() {
+    private RestControl() {
     }
 
     /**
      *
      * @return
      */
-    public static RestControler getInstancia() {
+    public static RestControl getInstancia() {
         if (instancia == null) {
-            instancia = new RestControler();
+            instancia = new RestControl();
         }
         return instancia;
     }
@@ -107,7 +109,7 @@ public final class RestControler {
                 result2 = estado.getAsBoolean();
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result2;
     }
@@ -142,7 +144,7 @@ public final class RestControler {
             result2 = estado.getAsBoolean();
 
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result2;
     }
@@ -153,12 +155,12 @@ public final class RestControler {
      */
     public boolean estatus() {
         String result = null;
-        JsonElement estado = null;
+        boolean estado = false;
         String command = null;
         Process process = null;
         try {
             // traerlo de loginControler despues
-            ConfigControler login = ConfigControler.getInstancia();
+            ConfigControl login = ConfigControl.getInstancia();
             String url = login.getUri().trim();
             //
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
@@ -174,15 +176,25 @@ public final class RestControler {
             BufferedReader br = new BufferedReader(isr);
             //
             result = br.lines().collect(Collectors.joining("\n"));
+            //c
             //
             JsonParser parse = new JsonParser();
             //
-            estado = ((JsonObject) parse.parse(result)).get("authenticated");
-            //            
+
+            //Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new StringReader(result));
+            reader.setLenient(true);
+            JsonElement elem = parse.parse(reader);
+            //System.out.println("Elemento: " + elem + "   / "  + elem.isJsonObject());
+            if (elem.isJsonObject()) { // si no es nulo.
+                estado = ((JsonObject) parse.parse(result)).get("authenticated").getAsBoolean();
+            }
+            // 
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return estado == null ? false : estado.getAsBoolean();
+        //return estado == null ? false : estado.getAsBoolean();
+        return estado;
     }
 
     public String newItem(String coleccion) {
@@ -227,7 +239,7 @@ public final class RestControler {
                 this.newItem = link.getAsString();
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result + " -- " + this.newItem;
     }
@@ -276,7 +288,7 @@ public final class RestControler {
             //    this.newItem = link.getAsString();
             //}
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result + " -- " + this.newItem;
     }
@@ -299,7 +311,7 @@ public final class RestControler {
             //JSONObject myJson = new JSONObject(salida);
             //System.out.print("authenticated: " + myJson.get("authenticated"));
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -349,20 +361,20 @@ public final class RestControler {
                 return modelo;
             }
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return modelo;
     }
 
     public void prueba(java.awt.event.ActionEvent evt, JTextArea ta) {
-        DialogWaitControler wait = new DialogWaitControler(10);
+        DialogWaitControl wait = new DialogWaitControl(10);
 
         SwingWorker<Void, Integer> mySwingWorker = new SwingWorker<Void, Integer>() {
             @Override
             protected Void doInBackground() throws Exception {
 
                 //Here you put your long-running process...
-                //RestControler rest = new RestControler();
+                //RestControler rest = new RestControl();
                 //tree.setModel(rest.getComunidades(txtHost.getText(), txtComand.getText()));
                 //tree.updateUI();  
                 for (int i = 1; i < 11; i++) {
@@ -427,7 +439,7 @@ public final class RestControler {
                 //return modeloRepo;
             }
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return modelo;
@@ -444,7 +456,7 @@ public final class RestControler {
             protected DefaultTreeModel doInBackground() throws Exception {
                 DefaultTreeModel modelo = null;
                 try {
-                    ConfigControler conn = ConfigControler.getInstancia();
+                    ConfigControl conn = ConfigControl.getInstancia();
                     String comando = "curl -X GET -H \"accept: application/json\" "
                             + conn.getUri().trim() + "/rest/communities";
                     Process process = Runtime.getRuntime().exec(comando);
@@ -480,7 +492,7 @@ public final class RestControler {
                         //return modeloRepo;
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return modelo;
             }
@@ -497,7 +509,7 @@ public final class RestControler {
         try {
             model = mySwingWorker.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return model;
     }
@@ -525,7 +537,7 @@ public final class RestControler {
             modelo = new DefaultTreeModel(padre);
             modelo = dumpJSONElement(url, datos, "", modelo, padre);
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return modelo;
     }
@@ -603,7 +615,7 @@ public final class RestControler {
                     }
                     level += level;
                 } catch (IOException ex) {
-                    Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("Error: " + ex.getMessage());
                 }
             }
         }
@@ -625,7 +637,7 @@ public final class RestControler {
                     //ta.append("Obteniendo estrucutra del repositorio.\n");
                     publish("Obteniendo estructura del repositorio.\n");
 
-                    ConfigControler conn = ConfigControler.getInstancia();
+                    ConfigControl conn = ConfigControl.getInstancia();
                     String comando = "curl -X GET -H \"accept: application/json\" "
                             + conn.getUri().trim() + "/rest/communities";
                     Process process = Runtime.getRuntime().exec(comando);
@@ -643,7 +655,7 @@ public final class RestControler {
                     modeloRepo = new DefaultTreeModel(padre);
                     publish("Estructura de repositorio obtenida satisfactoriamente.\n");
                 } catch (IOException ex) {
-                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                     publish("No se pudo obtener la estructura del repositorio satisfactoriamente.\n");
                 }
                 return modeloRepo;
@@ -654,7 +666,7 @@ public final class RestControler {
                 try {
                     tree.setModel(this.get());
                 } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -677,7 +689,7 @@ public final class RestControler {
     private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {
 
         try {
-            ConfigControler conn = ConfigControler.getInstancia();
+            ConfigControl conn = ConfigControl.getInstancia();
             if (((JsonElement) elemento).isJsonArray()) {
                 int level = 0;
                 JsonArray array = (JsonArray) elemento;
@@ -707,7 +719,7 @@ public final class RestControler {
                         //JsonElement datos = parser.parse(result);
                         JsonArray datosComunidad = (JsonArray) parser.parse(result);
                         if (datosComunidad.size() > 0) {
-                            padre = dumpJSONElement2(datosComunidad, nodoComunidad);
+                            //padre = dumpJSONElement2(datosComunidad, nodoComunidad);
                         } else {
                             String commandColeccion = "curl -X GET -H \"accept: application/json\" "
                                     + conn.getUri() + linkComunidad.getAsString() + "/collections";
@@ -741,14 +753,56 @@ public final class RestControler {
                         }
                         level += level;
                     } catch (IOException ex) {
-                        Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("Error: " + ex.getMessage());
                     }
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return padre;
+    }
+
+    /**
+     *
+     * @param ta Consola en ventana principal donde muestra adelantos.
+     * @param coleccion Colección del repositorio.
+     * @return Una Lista con los Items de la colección del Repositorio.
+     */
+    public DefaultListModel obtenerItems(JTextArea ta, ColeccionRest coleccion) {
+        DefaultListModel<ItemRest> listItems = new DefaultListModel();
+        try {
+            ConfigControl conn = ConfigControl.getInstancia();            
+            
+            //publish("Obteniendo estructura del repositorio.\n");
+            //String comando = "curl -X GET -H \"accept: application/json\" "
+            String comando = "curl " + conn.getUri().trim() + coleccion.getLink() + "/items";
+            Process process = Runtime.getRuntime().exec(comando);
+
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            String result = br.lines().collect(Collectors.joining("\n"));
+            System.out.println("Linea: " + result);
+            JsonParser parser = new JsonParser();
+            JsonElement datos = parser.parse(result);            
+            if (datos.isJsonArray()) {                
+                JsonArray array = (JsonArray) datos;                
+                Iterator<JsonElement> iter = array.iterator();
+                while (iter.hasNext()) {
+                    JsonObject jsonItem = (JsonObject) iter.next();
+                    JsonElement linkItem = jsonItem.get("link");
+                    JsonElement nameItem = jsonItem.get("name");
+                    //creamos la comunidad
+                    ItemRest item = new ItemRest(nameItem.getAsString(), linkItem.getAsString());                   
+                    listItems.addElement(item);                    
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listItems;
     }
 
     /**
@@ -762,7 +816,7 @@ public final class RestControler {
      */
     public boolean enviarBitstreams(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta)
             throws InterruptedException, ExecutionException {
-        DialogWaitControler wait = new DialogWaitControler();
+        DialogWaitControl wait = new DialogWaitControl();
 
         wait.makeWait("Verificando Credenciales.", evt, 0);
         // logueado?.
@@ -771,19 +825,19 @@ public final class RestControler {
         }
         wait.close();
         //
-        FicheroControler ficheros = FicheroControler.getInstancia();
+        FicheroControl ficheros = FicheroControl.getInstancia();
         DefaultListModel lista = ficheros.getListaFicheros();
 
         SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
-                    ConfigControler login = ConfigControler.getInstancia();
+                    ConfigControl login = ConfigControl.getInstancia();
                     String item = null;
                     int cantFile = 0;
                     Process process = null;
                     //
-                    DialogWaitControler wait = new DialogWaitControler();
+                    DialogWaitControl wait = new DialogWaitControl();
                     wait.makeWait("Creando Item.", evt, 0);
                     //
                     publish("Iniciando Envio.\n", String.valueOf(0));
@@ -821,7 +875,7 @@ public final class RestControler {
                     // Agregar el bitstream ...
                     // Leemos la lista de archivos a enviar.
                     //
-                    wait = new DialogWaitControler();
+                    wait = new DialogWaitControl();
                     wait.makeWait("Depositando Item(s).", evt, lista.size());
                     //                   
                     for (int i = 0; i < lista.size(); i++) {
@@ -853,7 +907,7 @@ public final class RestControler {
                     }
                     publish("Operación Finalizada con exito.");
                 } catch (IOException ex) {
-                    Logger.getLogger(RestControler.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
                 return true;
@@ -874,14 +928,14 @@ public final class RestControler {
 
     public void unFiltro(ColeccionRest miColeccion, ActionEvent evt, JTable tabla, JTable filtros,
             int limite, int offset) {
-        DialogWaitControler wait = new DialogWaitControler();
+        DialogWaitControl wait = new DialogWaitControl();
 
         SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
 
             @Override
             protected Void doInBackground() throws Exception {
 
-                ConfigControler login = ConfigControler.getInstancia();
+                ConfigControl login = ConfigControl.getInstancia();
                 int cantItem = 0;
                 Process process = null;
                 String comandQueryField = "query_field%5B%5D=";
@@ -980,6 +1034,18 @@ public final class RestControler {
         };
         mySwingWorker.execute();
         wait.makeWait("Filtrando...", evt, 0);
+    }
+
+    public void miHandle(int fila, int columna, String unHandle) {
+        try {
+            ConfigControl login = ConfigControl.getInstancia();
+            if ((fila > -1) && (columna > -1) && (columna == 3)) {
+                Runtime.getRuntime().exec("cmd.exe /c start chrome "
+                        + login.getHandle() + unHandle);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
