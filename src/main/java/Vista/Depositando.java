@@ -9,6 +9,7 @@ import Control.DialogWaitControl;
 import Control.FicheroControl;
 import Control.RestControl;
 import Control.StardogControl;
+import Modelo.BitstreamsRest;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.ItemRest;
@@ -40,7 +41,7 @@ public class Depositando extends javax.swing.JFrame {
 
     public Depositando() {
         initComponents();
-        this.setTitle("Depósito y recuperaciòn de ítems.");
+        this.setTitle("Depósito y recuperación de ítems.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setVisible(true);
         //
@@ -82,7 +83,7 @@ public class Depositando extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
+        miMenu = new javax.swing.JPopupMenu();
         mnuRefrescar = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         mnuNewComunidad = new javax.swing.JMenuItem();
@@ -101,7 +102,7 @@ public class Depositando extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbOpcion = new javax.swing.JComboBox<>();
         btnDepositar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         panel_central = new javax.swing.JPanel();
@@ -138,9 +139,11 @@ public class Depositando extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         jPanel17 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnObtenerItems = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         listaItems = new javax.swing.JList<>();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        listaBitstreams = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
         jPanel13 = new javax.swing.JPanel();
@@ -156,21 +159,21 @@ public class Depositando extends javax.swing.JFrame {
         mnuSalir = new javax.swing.JMenuItem();
 
         mnuRefrescar.setText("Refrescar");
-        jPopupMenu1.add(mnuRefrescar);
-        jPopupMenu1.add(jSeparator2);
+        miMenu.add(mnuRefrescar);
+        miMenu.add(jSeparator2);
 
         mnuNewComunidad.setText("Crear Comunidad");
-        jPopupMenu1.add(mnuNewComunidad);
+        miMenu.add(mnuNewComunidad);
 
         mnuDeleteComunidad.setText("Eliminar Comunidad");
-        jPopupMenu1.add(mnuDeleteComunidad);
-        jPopupMenu1.add(jSeparator3);
+        miMenu.add(mnuDeleteComunidad);
+        miMenu.add(jSeparator3);
 
         mnuNewColeccion.setText("Crear Colección");
-        jPopupMenu1.add(mnuNewColeccion);
+        miMenu.add(mnuNewColeccion);
 
         mnuDeleteColeccion.setText("Eliminar Colección");
-        jPopupMenu1.add(mnuDeleteColeccion);
+        miMenu.add(mnuDeleteColeccion);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -217,9 +220,14 @@ public class Depositando extends javax.swing.JFrame {
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
 
-        jComboBox1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enviar Item", "Enviar Metadato", "Enviar Bitstreams", "Eliminar Item", "Eliminar Metadato", "Eliminar Bitstreams", "Modificar Metadato" }));
-        jPanel3.add(jComboBox1);
+        cbOpcion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        cbOpcion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Crear ítem", "Enviar metadatos", "Enviar bitstreams", "Eliminar ítem", "Eliminar metadato", "Eliminar bitstreams", "Modificar metadato" }));
+        cbOpcion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbOpcionActionPerformed(evt);
+            }
+        });
+        jPanel3.add(cbOpcion);
 
         btnDepositar.setForeground(new java.awt.Color(51, 102, 0));
         btnDepositar.setText("Depositar");
@@ -264,6 +272,7 @@ public class Depositando extends javax.swing.JFrame {
 
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
 
+        taConsola.setEditable(false);
         taConsola.setBackground(new java.awt.Color(255, 204, 153));
         taConsola.setColumns(20);
         taConsola.setLineWrap(true);
@@ -388,13 +397,13 @@ public class Depositando extends javax.swing.JFrame {
         jPanel17.setLayout(new java.awt.GridLayout(5, 1, 5, 5));
         jPanel17.add(jLabel13);
 
-        jButton1.setText("Extraer Items");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnObtenerItems.setText("Extraer Items");
+        btnObtenerItems.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnObtenerItemsActionPerformed(evt);
             }
         });
-        jPanel17.add(jButton1);
+        jPanel17.add(btnObtenerItems);
 
         jPanel11.add(jPanel17);
 
@@ -405,9 +414,25 @@ public class Depositando extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        listaItems.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                listaItemsMousePressed(evt);
+            }
+        });
         jScrollPane4.setViewportView(listaItems);
 
         jPanel11.add(jScrollPane4);
+
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos presentes"));
+
+        listaBitstreams.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Bitstreams" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane6.setViewportView(listaBitstreams);
+
+        jPanel11.add(jScrollPane6);
 
         jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos"));
 
@@ -463,7 +488,7 @@ public class Depositando extends javax.swing.JFrame {
         mnuTool.add(mnuConectar);
 
         mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuFiltrar.setText("Búsqueda de ïtems");
+        mnuFiltrar.setText("Búsqueda de ítems");
         mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuFiltrarActionPerformed(evt);
@@ -498,36 +523,36 @@ public class Depositando extends javax.swing.JFrame {
         Configurando win = new Configurando(this, true);
         win.setConsola(taConsola);
         win.setVisible(true);
-        //System.out.println("Conectar?: " + win.conn);
-        if (win.conn) {
-            try {
-                // rest api
-                //limpiamos
-                listaRecursos.setModel(new DefaultListModel<>());
-                listaRecursos.updateUI();
-                jTree1.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Repositorio")));
-                jTree1.updateUI();
-                // obtenemos la estructura del repositorio en cuestion.
-                RestControl rest = RestControl.getInstancia();
-                rest.estructuraRepositorio(taConsola, jTree1);
-                //
-                // stardog
-                //limpiamos                 
-                listaOA.setModel(new DefaultListModel<>());
-                listaOA.updateUI();
-                listaMetadato.setModel(new DefaultListModel<>());
-                listaMetadato.updateUI();
-                captura.getViewport().removeAll();
-                captura.updateUI();
-                // obtenemos la lista.
-                StardogControl baseGrafica = StardogControl.getInstancia();
-                baseGrafica.getTiposOA(taConsola, listaOA);
-                //    
-            } catch (Exception ex) {
-                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            win.dispose();
+
+        //if (win.conn) {
+        try {
+            // rest api
+            //limpiamos
+            listaRecursos.setModel(new DefaultListModel<>());
+            listaRecursos.updateUI();
+            jTree1.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Repositorio")));
+            jTree1.updateUI();
+            // obtenemos la estructura del repositorio en cuestion.
+            RestControl rest = RestControl.getInstancia();
+            rest.estructuraRepositorio(taConsola, jTree1);
+            //
+            // stardog
+            //limpiamos                 
+            listaOA.setModel(new DefaultListModel<>());
+            listaOA.updateUI();
+            listaMetadato.setModel(new DefaultListModel<>());
+            listaMetadato.updateUI();
+            captura.getViewport().removeAll();
+            captura.updateUI();
+            // obtenemos la lista.
+            StardogControl baseGrafica = StardogControl.getInstancia();
+            baseGrafica.getTiposOA(taConsola, listaOA);
+            //    
+        } catch (Exception ex) {
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
         }
+        win.dispose();
+        //}
     }//GEN-LAST:event_mnuConectarActionPerformed
 
     private void limpiarComponentes() {
@@ -597,29 +622,59 @@ public class Depositando extends javax.swing.JFrame {
             StardogControl base = StardogControl.getInstancia();
             // Se valida si hay coleccion seleccionada, recursos seleccionados y 
             // los metadatos no tengan errores.
-            if ((this.coleccion == null) | (listaRecursos.getModel().getSize() == 0)
-                    | (base.isErrorValidacion())) {
-                String msg = "";
-                msg = "Hay errores en los datos. Verifique: \n";
-                msg = msg + "La selección de la Colección.\n";
-                msg = msg + "La selección de los recursos.\n";
-                msg = msg + "Que no tengan errores los metadatos [Rótulos en rojo]. \n";
-                JOptionPane.showMessageDialog(this, msg, "Información", JOptionPane.INFORMATION_MESSAGE);
-                return;
+
+            int opcion = cbOpcion.getSelectedIndex();
+            opcion += 1;
+            switch (opcion) {
+                case 1:
+                    if ((this.coleccion == null) | (listaRecursos.getModel().getSize() == 0)
+                            | (base.isErrorValidacion())) {
+                        String msg = "";
+                        msg = "Hay errores en los datos. Verifique: \n";
+                        msg = msg + "La selección de la Colección.\n";
+                        msg = msg + "La selección de los recursos.\n";
+                        msg = msg + "Que no tengan errores los metadatos [Rótulos en rojo]. \n";
+                        JOptionPane.showMessageDialog(this, msg, "Información", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    if (listaItems.getSelectedIndex() < 0) {
+                        JOptionPane.showMessageDialog(this,
+                                "Seleccione algun item!.",
+                                "Informe", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    } else {
+                        item = (ItemRest) ((Object) listaItems.getSelectedValue());
+                    }
+                    break;
+                case 5:
+                    return;
+                case 7:
+                    return;
+                default:
+                    break;
             }
 
             // creamos el archivo json con los metadatos
             base.jsonMetadatos();
             //
             // depositamos los recursos.
-            RestControl repositorio = RestControl.getInstancia();
-            if (repositorio.enviarBitstreams(coleccion, evt, taConsola)) {
-                this.limpiarComponentes();
+            RestControl repo = RestControl.getInstancia();
+            //if (repositorio.enviarItem(coleccion, evt, taConsola)) {
+            //    this.limpiarComponentes();
+            //}
+            // nuevo
+            if (repo.protocoloRest(cbOpcion.getSelectedIndex(), evt, coleccion, item, new BitstreamsRest(), taConsola)) {
+                limpiarComponentes();
             }
-            //
         } catch (Exception ex) {
             //Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Error al depositar", "Informe", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al depositar.\n" + ex.getMessage(), "Informe", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_btnDepositarActionPerformed
@@ -627,6 +682,21 @@ public class Depositando extends javax.swing.JFrame {
     private void btnAgregarMetadatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMetadatoActionPerformed
         try {
             StardogControl baseGrafica = StardogControl.getInstancia();
+            if (baseGrafica.getListaMetadados().size() == 0) {
+                return;
+            }
+            Object[] options = {"OK", "CANCELAR"};
+            int result = JOptionPane.showOptionDialog(this,
+                    "Desea agregar este metadato a la lista",
+                    "Lo agregamos?",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    options,
+                    options[0]);
+            if (result == 1) {
+                return;
+            }
+            //
             //try {
             List objeto = listaMetadato.getSelectedValuesList();
             //System.out.println("Objetos seleccinados: " + objeto.size() + "  / es vacios: " + objeto.isEmpty());
@@ -690,7 +760,6 @@ public class Depositando extends javax.swing.JFrame {
                 @Override
                 protected void done() {
                     try {
-                        //captura.getViewport().removeAll();
                         captura.getViewport().setView(this.get());
                         if (listMetadatos.size() > 0) {
                             captura.setEnabled(true);
@@ -754,20 +823,50 @@ public class Depositando extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuFiltrarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (coleccion != null) {
-            if (coleccion.isColeccion()) {
+    private void btnObtenerItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnObtenerItemsActionPerformed
+        try {
+            if (coleccion != null) {
+                if (coleccion.isColeccion()) {
+                    RestControl rest = RestControl.getInstancia();
+                    DefaultListModel misItems = rest.obtenerItems(taConsola, this.coleccion);
+                    if (!misItems.isEmpty()) {
+                        listaItems.setModel(misItems);
+                    } else {
+                        // pd = por defecto
+                        DefaultListModel<String> pd = new DefaultListModel();
+                        pd.addElement("sin ítems");
+                        listaItems.setModel(pd);
+                        taConsola.append("No hay datos de los items de la colección.\n");
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnObtenerItemsActionPerformed
+
+    private void listaItemsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaItemsMousePressed
+        this.item = (ItemRest) ((Object) listaItems.getSelectedValue());
+        if (item != null) {
+            if (item.isItem()) {
                 RestControl rest = RestControl.getInstancia();
-                DefaultListModel misItems = rest.obtenerItems(taConsola, this.coleccion);
+                DefaultListModel misItems = rest.obtenerBitstreams(taConsola, this.item);
                 if (!misItems.isEmpty()) {
-                    listaItems.setModel(misItems);
+                    listaBitstreams.setModel(misItems);
                 } else {
-                    listaItems.setModel(new DefaultListModel<>());
+                    // pd = por defecto
+                    DefaultListModel<String> pd = new DefaultListModel();
+                    pd.addElement("sin bitStreams");
+                    listaBitstreams.setModel(pd);
                     taConsola.append("No hay datos de los items de la colección.\n");
                 }
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_listaItemsMousePressed
+
+    private void cbOpcionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOpcionActionPerformed
+        this.btnDepositar.setText((String) cbOpcion.getSelectedItem());
+    }//GEN-LAST:event_cbOpcionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -808,10 +907,10 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregarMetadato;
     private javax.swing.JButton btnDelFichero;
     private javax.swing.JButton btnDepositar;
+    private javax.swing.JButton btnObtenerItems;
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbOpcion;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -847,21 +946,23 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JTree jTree1;
+    private javax.swing.JList<String> listaBitstreams;
     private javax.swing.JList<String> listaItems;
     private javax.swing.JList<String> listaMetadato;
     private javax.swing.JList<String> listaOA;
     private javax.swing.JList<String> listaRecursos;
+    private javax.swing.JPopupMenu miMenu;
     private javax.swing.JMenuItem mnuConectar;
     private javax.swing.JMenuItem mnuDeleteColeccion;
     private javax.swing.JMenuItem mnuDeleteComunidad;

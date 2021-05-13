@@ -5,6 +5,7 @@
  */
 package Control;
 
+import Modelo.BitstreamsRest;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Fichero;
@@ -14,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.xml.ws.Endpoint;
 import org.json.JSONException;
 
 /**
@@ -650,6 +653,10 @@ public final class RestControl {
                     System.out.println("Linea: " + result);
                     JsonParser parser = new JsonParser();
                     JsonElement datos = parser.parse(result);
+                    if (datos.isJsonArray()) {
+                        JsonArray array = (JsonArray) datos;
+                        publish("El repositorio posee una estructura de: " + array.size() + " elementos. Relevando, por favor espere...\n");
+                    }
                     DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
                     padre = dumpJSONElement2(datos, padre);
                     modeloRepo = new DefaultTreeModel(padre);
@@ -672,6 +679,7 @@ public final class RestControl {
 
             @Override
             protected void process(List<String> chunks) {
+                //ta.setEditable(false);
                 ta.append(chunks.get(0));
             }
 
@@ -691,7 +699,6 @@ public final class RestControl {
         try {
             ConfigControl conn = ConfigControl.getInstancia();
             if (((JsonElement) elemento).isJsonArray()) {
-                int level = 0;
                 JsonArray array = (JsonArray) elemento;
                 //System.out.println("Es array. Numero de elementos: " + array.size());
                 Iterator<JsonElement> iter = array.iterator();
@@ -719,7 +726,8 @@ public final class RestControl {
                         //JsonElement datos = parser.parse(result);
                         JsonArray datosComunidad = (JsonArray) parser.parse(result);
                         if (datosComunidad.size() > 0) {
-                            //padre = dumpJSONElement2(datosComunidad, nodoComunidad);
+                            DefaultMutableTreeNode downTree = dumpJSONElement2(datosComunidad, nodoComunidad);
+                            padre.add(downTree);
                         } else {
                             String commandColeccion = "curl -X GET -H \"accept: application/json\" "
                                     + conn.getUri() + linkComunidad.getAsString() + "/collections";
@@ -751,7 +759,6 @@ public final class RestControl {
                                 }
                             }
                         }
-                        level += level;
                     } catch (IOException ex) {
                         System.out.println("Error: " + ex.getMessage());
                     }
@@ -772,8 +779,8 @@ public final class RestControl {
     public DefaultListModel obtenerItems(JTextArea ta, ColeccionRest coleccion) {
         DefaultListModel<ItemRest> listItems = new DefaultListModel();
         try {
-            ConfigControl conn = ConfigControl.getInstancia();            
-            
+            ConfigControl conn = ConfigControl.getInstancia();
+
             //publish("Obteniendo estructura del repositorio.\n");
             //String comando = "curl -X GET -H \"accept: application/json\" "
             String comando = "curl " + conn.getUri().trim() + coleccion.getLink() + "/items";
@@ -786,17 +793,17 @@ public final class RestControl {
             String result = br.lines().collect(Collectors.joining("\n"));
             System.out.println("Linea: " + result);
             JsonParser parser = new JsonParser();
-            JsonElement datos = parser.parse(result);            
-            if (datos.isJsonArray()) {                
-                JsonArray array = (JsonArray) datos;                
+            JsonElement datos = parser.parse(result);
+            if (datos.isJsonArray()) {
+                JsonArray array = (JsonArray) datos;
                 Iterator<JsonElement> iter = array.iterator();
                 while (iter.hasNext()) {
                     JsonObject jsonItem = (JsonObject) iter.next();
                     JsonElement linkItem = jsonItem.get("link");
                     JsonElement nameItem = jsonItem.get("name");
                     //creamos la comunidad
-                    ItemRest item = new ItemRest(nameItem.getAsString(), linkItem.getAsString());                   
-                    listItems.addElement(item);                    
+                    ItemRest item = new ItemRest(nameItem.getAsString(), linkItem.getAsString());
+                    listItems.addElement(item);
                 }
             }
         } catch (IOException ex) {
@@ -804,6 +811,40 @@ public final class RestControl {
         }
         return listItems;
     }
+    
+     public DefaultListModel obtenerBitstreams(JTextArea ta, ItemRest item) {
+        DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
+        try {
+            ConfigControl conn = ConfigControl.getInstancia();            
+            String comando = "curl " + conn.getUri().trim() + item.getLink() + "/bitstreams";
+            Process process = Runtime.getRuntime().exec(comando);
+            //
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            //
+            String result = br.lines().collect(Collectors.joining("\n"));
+            System.out.println("Linea: " + result);
+            JsonParser parser = new JsonParser();
+            JsonElement datos = parser.parse(result);
+            if (datos.isJsonArray()) {
+                JsonArray array = (JsonArray) datos;
+                Iterator<JsonElement> iter = array.iterator();
+                while (iter.hasNext()) {
+                    JsonObject jsonItem = (JsonObject) iter.next();
+                    JsonElement linkItem = jsonItem.get("link");
+                    JsonElement nameItem = jsonItem.get("name");
+                    // Creamos el Bitstreams a presentar en el principal
+                    BitstreamsRest bs = new BitstreamsRest(nameItem.getAsString(), linkItem.getAsString());
+                    listBitstreams.addElement(bs);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listBitstreams;
+    }
+    
 
     /**
      *
@@ -814,7 +855,7 @@ public final class RestControl {
      * @throws java.lang.InterruptedException
      * @throws java.util.concurrent.ExecutionException
      */
-    public boolean enviarBitstreams(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta)
+    public boolean enviarItem(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta)
             throws InterruptedException, ExecutionException {
         DialogWaitControl wait = new DialogWaitControl();
 
@@ -964,8 +1005,7 @@ public final class RestControl {
                 // Creamos el comando del filtro.
                 String miCole = (miColeccion == null) ? "" : miColeccion.getNombre();
 
-                System.out.println("URI" + login.getUri().trim());
-
+                //System.out.println("URI" + login.getUri().trim());
                 String comando = "curl -g -H \"Accept: application/json\"  "
                         + "\"" + login.getUri().trim() + "/rest/filtered-items?"
                         + queryFields + queryOpes + queryVals
@@ -978,7 +1018,7 @@ public final class RestControl {
                 BufferedReader br = new BufferedReader(isr);
                 JsonParser parser = new JsonParser();
                 String result = br.lines().collect(Collectors.joining("\n"));
-                System.out.println("resuldato del filtro: " + result);
+                //System.out.println("resuldato del filtro: " + result);
                 JsonElement datos = parser.parse(result);
                 if (datos.isJsonObject()) {
                     JsonObject obj = (JsonObject) datos;
@@ -1046,6 +1086,477 @@ public final class RestControl {
         } catch (IOException ex) {
             Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private boolean enviarItem(ActionEvent evt, ColeccionRest coleccion, JTextArea ta) {
+        boolean error = false;
+        try {
+            StardogControl base = StardogControl.getInstancia();
+            // creamos el archivo json con los metadatos
+            base.jsonMetadatos();
+            error = enviarItem(coleccion, evt, ta);
+        } catch (Exception ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return error;
+    }
+
+    private Boolean EliminarItem(ItemRest item, JTextArea ta) throws InterruptedException, ExecutionException {
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                publish("Procediendo a eliminar ìtem.\n", String.valueOf(0));
+                // creamos el comando del filtro.                                
+                // System.out.println("URI" + login.getUri().trim());
+                ConfigControl login = ConfigControl.getInstancia();
+
+                String comando = "curl -i -X DELETE "
+                        + "\"" + login.getUri().trim() + item.getLink() + "\" --cookie E:/cookies.txt";
+                // vemos como queda el comnando.
+                publish("Comando eliminar ------------------------------\n" + comando);
+                //                
+                Process process = Runtime.getRuntime().exec(comando);
+                InputStream is = process.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                //  capturamos el resultado de la operacion.  
+                String result = br.lines().collect(Collectors.joining("\n"));
+                System.out.println("resuldato de la e li mi na ciòn : " + result);
+                //
+                return result.contains("200");                
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0) + "\n");
+            }
+
+        };
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean enviarBitstreams(ItemRest item, ActionEvent evt, JTextArea ta)
+            throws InterruptedException, ExecutionException {
+
+        ta.append("Verificando credenciales. Aguarde.\n");
+        // Esta logueado?.
+        if (!this.estatus()) {
+            return false;
+        }
+        //
+        FicheroControl ficheros = FicheroControl.getInstancia();
+        DefaultListModel lista = ficheros.getListaFicheros();
+        ta.append("Verificando recursos seleccionados. Aguarde.\n");
+        if (lista.size() == 0) {
+            ta.append("No hay recursos. Operación finalizada SIN exito.\n");
+            return false;
+        }
+
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    ConfigControl login = ConfigControl.getInstancia();
+                    //String item = null;
+                    int cantFile = 0;
+                    Process process = null;
+                    //
+                    for (int i = 0; i < lista.size(); i++) {
+                        Fichero archivo = (Fichero) lista.get(i);
+                        cantFile = i + 1;
+                        String comando = "curl -k -4 -v  -H \"Content-Type: multipart/form-data\"  "
+                                + "-H \"accept: application/json\" --cookie E:/cookies.txt "
+                                + "-X POST "
+                                + login.getUri().trim() + item.getLink().trim() + "/bitstreams?name="
+                                + archivo.getUnFile().getName()
+                                + " -T " + archivo.getUnFile().getAbsolutePath();
+
+                        process = Runtime.getRuntime().exec(comando);
+                        InputStream is = process.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader br = new BufferedReader(isr);
+                        JsonParser parser = new JsonParser();
+                        String result = br.lines().collect(Collectors.joining("\n"));
+                        JsonElement datos = parser.parse(result);
+                        //
+                        if (datos.isJsonObject()) { // devuelve un JsonObject
+                            publish("Archivo " + i + "" + archivo.getUnFile().getName()
+                                    + " - Enviado\n", String.valueOf(cantFile));
+                        } else {
+                            // avisar del error
+                            publish("Operación finalizada SIN exito.");
+                            return false;
+                        }
+                    }
+                    publish("Operación finalizada con exito.");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //wait.close();
+                return true;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+                ta.updateUI();
+            }
+
+        };
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean enviarMetadatos(ItemRest item, ActionEvent evt, JTextArea ta)
+            throws InterruptedException, ExecutionException {
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    ConfigControl login = ConfigControl.getInstancia();
+                    //                    
+                    Process process = null;
+                    //
+                    publish("Iniciando Envio de metadatos.\n", String.valueOf(0));
+                    // Creo el item en la coleccion ...
+                    String comando = "curl -d \"@" + login.getFolderWork().trim() + ":/metadatos_sb.json\" "
+                            + "-H \"Content-Type: application/json\" -H \"accept: application/json\" "
+                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\" -X POST "
+                            + login.getUri().trim() + item.getLink().trim() + "/metadata";
+                    //
+                    process = Runtime.getRuntime().exec(comando);
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        return false; //no tuvo exito.
+                    }
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    JsonParser parser = new JsonParser();
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    publish(result);
+                    //
+                    JsonElement datos = parser.parse(result);
+                    if (datos.isJsonObject()) {
+                        JsonObject obj = (JsonObject) datos;
+                        // obj?? 
+                    } else {
+                        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                                "Error en el envio de los metadatos al item: " + item.getName().trim() + ".", "Informe", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    //
+                    publish("Operación Finalizada con exito.");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return true;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }
+
+        };
+        // ----------------------------------------------------
+        ta.append("Verificando credenciales. Aguarde.\n");
+        ta.updateUI();
+        // logueado?. 
+        if (!this.estatus()) {
+            return false;
+        }
+        //
+        StardogControl base = null;
+        try {
+            base = StardogControl.getInstancia();
+        } catch (Exception ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            // nos fijamos si los metadatos tienen errores.
+            if (base.validarMetadatos_v2()) {
+                Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+                JOptionPane.showMessageDialog(win, base, newItem, 0);
+                ta.append("Metadatos con errores. Revíselos!. Operación cancelada.\n");
+                return false;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        base.jsonMetadatosSinBitstreams();
+        ta.append("Metadatos generados.\n");
+        // inicio el hilo y espero el resultado.
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean EliminarMetadatos(ItemRest item, ActionEvent evt, JTextArea ta)
+            throws InterruptedException, ExecutionException {
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    ConfigControl login = ConfigControl.getInstancia();
+                    //                    
+                    Process process = null;
+                    //
+                    publish("Iniciando Envio de metadatos.\n", String.valueOf(0));
+                    // Creo el item en la coleccion ...
+                    String comando = "curl -i -X DELETE "
+                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\" "
+                            + "\"" + login.getUri().trim() + item.getLink().trim() + "/metadata" + "\"";
+                    //
+                    process = Runtime.getRuntime().exec(comando);
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        return false; //no tuvo exito.
+                    }
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    JsonParser parser = new JsonParser();
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    System.out.println("resultado: " + result);
+                    publish(result);
+                    //
+                    JsonElement datos = parser.parse(result);
+                    if (datos.isJsonObject()) {
+                        JsonObject obj = (JsonObject) datos;
+                        // obj?? 
+                        if (obj.getAsString().contains("200")) {
+                        };
+                    } else {
+                        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                                "Error en el envio de los metadatos al item: " + item.getName().trim() + ".", "Informe", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    //
+                    publish("Operación Finalizada con exito.");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return true;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }
+
+        };
+        // ----------------------------------------------------
+        ta.append("Verificando credenciales. Aguarde.\n");
+        ta.updateUI();
+        // logueado?. 
+        if (!this.estatus()) {
+            return false;
+        }
+        // inicio el hilo y espero el resultado.
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean EliminarBitstreams(BitstreamsRest bitStreams, ActionEvent evt, JTextArea ta)
+            throws InterruptedException, ExecutionException {
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    ConfigControl login = ConfigControl.getInstancia();
+                    //                    
+                    Process process = null;
+                    //
+                    publish("Quitando recurso del ítem.\n", String.valueOf(0));
+                    // Creo el item en la coleccion ...
+                    String comando = "curl -i -X DELETE "
+                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\" "
+                            + "\"" + login.getUri().trim() + bitStreams.getLink().trim() + "\"";
+                    //
+                    process = Runtime.getRuntime().exec(comando);
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        return false; //no tuvo exito.
+                    }
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    JsonParser parser = new JsonParser();
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    System.out.println("resultado: " + result);
+                    if (result.contains("200")) {
+                        publish("La elimanación del recurso fué exitosa. \n");
+                    } else {
+                        publish("Error en la elimanación del recurso fué exitosa. \n");
+                    }
+                    publish(result);
+                    //
+                    JsonElement datos = parser.parse(result);
+                    if (datos.isJsonObject()) {
+                        JsonObject obj = (JsonObject) datos;
+                        // obj?? 
+                        if (obj.getAsString().contains("200")) {
+                        };
+                    } else {
+                        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                                "Error en el envio de los metadatos al item: " + bitStreams.getNombre().trim() + ".", "Informe", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    //
+                    publish("Operación Finalizada con exito.");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return true;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }
+
+        };
+        // ----------------------------------------------------
+        ta.append("Verificando credenciales. Aguarde.\n");
+        ta.updateUI();
+        // logueado?. 
+        if (!this.estatus()) {
+            return false;
+        }
+        // inicio el hilo y espero el resultado.
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean modificarMetadatos(ItemRest item, ActionEvent evt, JTextArea ta)
+            throws InterruptedException, ExecutionException {
+        SwingWorker<Boolean, String> mySwingWorker = new SwingWorker<Boolean, String>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    ConfigControl login = ConfigControl.getInstancia();
+                    //                    
+                    Process process = null;
+                    //
+                    publish("Iniciando Envio de metadatos.\n", String.valueOf(0));
+                    // Creo el item en la coleccion ...
+                    String comando = "curl  -i -X PUT -d \"@" + login.getFolderWork().trim() + ":/metadatos_sb.json\" "
+                            + "-H \"Content-Type: application/json\" -H \"accept: application/json\" "
+                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\"  "
+                            + "\"" + login.getUri().trim() + item.getLink().trim() + "/metadata \"";
+                    //
+                    process = Runtime.getRuntime().exec(comando);
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        return false; //no tuvo exito.
+                    }
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    JsonParser parser = new JsonParser();
+                    String result = br.lines().collect(Collectors.joining("\n"));
+                    publish(result);
+                    //
+                    JsonElement datos = parser.parse(result);
+                    if (datos.isJsonObject()) {
+                        JsonObject obj = (JsonObject) datos;
+                        // obj?? 
+                    } else {
+                        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                                "Error en el envio de los metadatos al item: " + item.getName().trim() + ".", "Informe", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    //
+                    publish("Operación Finalizada con exito.");
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return true;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                ta.append(chunks.get(0));
+            }
+
+        };
+        // ----------------------------------------------------
+        ta.append("Verificando credenciales. Aguarde.\n");
+        ta.updateUI();
+        // logueado?. 
+        if (!this.estatus()) {
+            return false;
+        }
+        //
+        StardogControl base = null;
+        try {
+            base = StardogControl.getInstancia();
+        } catch (Exception ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            // nos fijamos si los metadatos tienen errores.
+            if (base.validarMetadatos_v2()) {
+                Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+                JOptionPane.showMessageDialog(win, base, newItem, 0);
+                ta.append("Metadatos con errores. Revíselos!. Operación cancelada.\n");
+                return false;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        base.jsonMetadatosSinBitstreams();
+        ta.append("Archivo de metadatos para modificar generados.\n");
+        // inicio el hilo y espero el resultado.
+        mySwingWorker.execute();
+        return mySwingWorker.get();
+    }
+
+    public boolean protocoloRest(int opcion, ActionEvent evt,
+            ColeccionRest coleccion, ItemRest item, BitstreamsRest bitstreams,
+            JTextArea ta) {
+        boolean result = false;
+        try {
+            if (opcion < 0) {
+                return result;
+            }
+            opcion += 1;
+            System.out.println("Control.RestControl.protocoloEnvios().Opcion: " + opcion);
+            switch (opcion) {
+                case 1:
+                    result = enviarItem(evt, coleccion, ta);
+                    break;
+                case 2:
+                    result = enviarMetadatos(item, evt, ta);
+                    break;
+                case 3:
+                    result = enviarBitstreams(item, evt, ta);
+                    break;
+                case 4:
+                    result = EliminarItem(item, ta);
+                    break;
+                case 5:
+                    result = EliminarMetadatos(item, evt, ta);
+                    break;
+                case 6:
+                    result = EliminarBitstreams(bitstreams, evt, ta);
+                    break;
+                case 7:
+                    result = modificarMetadatos(item, evt, ta);
+                    break;
+                default:
+                    // nada
+                    break;
+            }
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 
 }

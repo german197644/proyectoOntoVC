@@ -247,7 +247,7 @@ public final class StardogControl {
         return ret;
     }
 
-    public String validateMetadatos() throws Exception {
+    public String validarMetadatos() throws Exception {
         DefaultListModel<Metadato> lista = this.capturaMetadados;
         retornoValidacion = "";
         errorValidacion = false;
@@ -263,6 +263,24 @@ public final class StardogControl {
         }
 
         return retornoValidacion;
+    }
+
+    public boolean validarMetadatos_v2() throws Exception {
+        DefaultListModel<Metadato> lista = this.capturaMetadados;
+        retornoValidacion = "";
+        errorValidacion = false;
+        for (int i = 0; i < lista.size(); ++i) {
+            final String aValue = lista.get(i).getValidarMetadato();
+            if (aValue.length() > 0) {
+                retornoValidacion += aValue + "\n";
+            }
+        }
+
+        if (retornoValidacion.length() > 0) {
+            errorValidacion = true;
+        }
+
+        return errorValidacion;
     }
 
     /**
@@ -1373,7 +1391,7 @@ public final class StardogControl {
         BindingSet fila;
         TupleQueryResult aResult;
 
-        IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasContext");        
+        IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasContext");
         IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#context");
         SelectQuery aQuery = conexionStardog.select(
                 "SELECT ?descrip "
@@ -1405,7 +1423,7 @@ public final class StardogControl {
     public void jsonMetadatos() {
         FileWriter file = null;
         JSONObject data = new JSONObject();
-        JSONArray list = new JSONArray();        
+        JSONArray list = new JSONArray();
         try {
             ConfigControl config = ConfigControl.getInstancia();
             //List<Element> aListEle = new ArrayList<>();
@@ -1454,6 +1472,61 @@ public final class StardogControl {
             //            
             file = new FileWriter(new File(config.getFolderWork() + "metadatos.json"));
             file.write(data.toJSONString());
+            file.flush();
+            file.close();
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+
+    public void jsonMetadatosSinBitstreams() {
+        FileWriter file = null;
+        JSONObject data = new JSONObject();
+        JSONArray list = new JSONArray();
+        try {
+            ConfigControl config = ConfigControl.getInstancia();
+            DublinCoreControl dublincore = DublinCoreControl.getInstancia();
+
+            for (int i = 0; i < capturaMetadados.size(); ++i) {
+                Metadato m = capturaMetadados.get(i);
+                //System.out.println("pase por aca!. metadato: " + m.getTipo());
+                //Object aDC = dublincore.getEquivalenciaDC(m.getTipo().toLowerCase().trim());
+                Object aDC = dublincore.buscarEquivalencias(m.getTipo().toLowerCase().trim());
+                if (aDC != null) {
+                    if (aDC instanceof StringTokenizer) {
+                        StringTokenizer aux = (StringTokenizer) aDC;
+                        //String[] result = "this is a test".split("\\s");
+                        //dividimos la cadena de los periodos
+                        String[] result = m.getContenidoMetadato().split("-"); //mejorar la entrega del valor
+                        i = 0;
+                        while (aux.hasMoreTokens()) {
+                            //String dato = result[i];aux.nextToken()
+                            JSONObject obj = new JSONObject();
+                            obj.put("key", aux.nextToken().trim());
+                            obj.put("value", result[i].trim());
+                            list.add(obj); // [{},{},...]
+                            i++;
+                        }
+                    } else {
+                        final String myDC = ((String) aDC);
+                        // ...       
+                        //System.out.println("Contenido "+i+1+": " + m.getContenidoMetadato());
+                        JSONObject obj = new JSONObject();
+                        obj.put("key", myDC);
+
+                        String rawString = m.getContenidoMetadato();
+                        //convertimos 
+                        String newValue = new String(rawString.getBytes("UTF-8"));
+                        //
+                        obj.put("value", newValue);
+                        list.add(obj); // [{},{},...]
+                    }
+                }
+            }
+            //data.put("metadata", list); // {"metadata":[{},{},...]}
+            //            
+            file = new FileWriter(new File(config.getFolderWork() + "metadatos_sb.json"));
+            file.write(list.toJSONString());
             file.flush();
             file.close();
         } catch (Exception ex) {

@@ -370,7 +370,7 @@ public class Configurando extends javax.swing.JDialog {
 
         loginPanel.add(panel_Superior, java.awt.BorderLayout.PAGE_START);
 
-        jTabbedPane1.addTab("Conexión", loginPanel);
+        jTabbedPane1.addTab("Datos de conexión", loginPanel);
 
         generalPanel.setLayout(new java.awt.BorderLayout());
 
@@ -444,7 +444,7 @@ public class Configurando extends javax.swing.JDialog {
 
         generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("General", generalPanel);
+        jTabbedPane1.addTab("Datos generales", generalPanel);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -508,7 +508,7 @@ public class Configurando extends javax.swing.JDialog {
                         conn = true;
                     } else {
                         JOptionPane.showMessageDialog(null, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
-                    }                    
+                    }
                 } catch (StardogException ex) {
                     Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -543,7 +543,7 @@ public class Configurando extends javax.swing.JDialog {
             }
             config.grabarUrlSt(this.st_otro.getText());
             config.setup_stardog();
-            this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));            
+            this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
             this.st_otro.setText("");
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -606,9 +606,18 @@ public class Configurando extends javax.swing.JDialog {
     }//GEN-LAST:event_sw_passActionPerformed
 
     private void btnGuardarUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarUTActionPerformed
-        if (!txtWorkFolder.getText().isEmpty()) {
-            config.grabarFolder(txtWorkFolder.getText());
+
+        if (JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION) == 1) {
+            if (!txtWorkFolder.getText().isEmpty()) {
+                config.grabarFolder(txtWorkFolder.getText());
+                btnConectar.setEnabled(true);
+            } else {
+                btnConectar.setEnabled(false);
+            }
+        } else {
+            this.txtWorkFolder.setText(config.getFolderWork());
         }
+
     }//GEN-LAST:event_btnGuardarUTActionPerformed
 
     private void btnGuardarHandleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarHandleActionPerformed
