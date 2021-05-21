@@ -44,6 +44,21 @@ public class DialogWaitControl {
         }
     }
 
+    public void makeWait(String msg, ActionEvent evt) {
+        Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+        dialog = new JDialog(win, msg, Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setPreferredSize(new Dimension(300, 100));
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(progressBar, BorderLayout.CENTER);
+        panel.add(new JLabel("Please wait......."), BorderLayout.PAGE_START);
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(win);
+        dialog.setVisible(true);
+    }
+
     public void makeWait(String msg, ActionEvent evt, int max) {
         //public void makeWait(String msg, JFrame evt) {        
         Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
@@ -59,7 +74,8 @@ public class DialogWaitControl {
         dialog.setLocationRelativeTo(win);
         dialog.setVisible(true);
     }
-
+    
+    
     public void makeWait(String msg, MouseEvent evt) {
 
         Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());

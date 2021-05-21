@@ -14,6 +14,7 @@ import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.ItemRest;
 import Modelo.Metadato;
+import com.sun.prism.impl.BaseGraphics;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +24,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ListModel;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -120,6 +122,8 @@ public class Depositando extends javax.swing.JFrame {
         jPanel7 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listaOA = new javax.swing.JList<>();
+        jPanel18 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
         listaMetadato = new javax.swing.JList<>();
         jPanel14 = new javax.swing.JPanel();
@@ -304,6 +308,9 @@ public class Depositando extends javax.swing.JFrame {
         listaOA.setBackground(new java.awt.Color(240, 240, 240));
         listaOA.setVisibleRowCount(5);
         listaOA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaOAMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 listaOAMousePressed(evt);
             }
@@ -312,9 +319,17 @@ public class Depositando extends javax.swing.JFrame {
 
         jPanel7.add(jScrollPane1);
 
+        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jButton1.setText("Obtener Metadatos del Objeto de Aprendizaje");
+        jPanel18.add(jButton1);
+
+        jPanel7.add(jPanel18);
+
         jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
 
         listaMetadato.setBackground(new java.awt.Color(240, 240, 240));
+        listaMetadato.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listaMetadato.setOpaque(false);
         listaMetadato.setVisibleRowCount(5);
         jScrollPane7.setViewportView(listaMetadato);
@@ -384,6 +399,7 @@ public class Depositando extends javax.swing.JFrame {
 
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.setComponentPopupMenu(miMenu);
         jTree1.setVisibleRowCount(7);
         jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
@@ -572,7 +588,8 @@ public class Depositando extends javax.swing.JFrame {
         this.listaMetadato.setEnabled(false);
 
         // cleaning consola
-        this.taConsola.setEnabled(false);
+        //this.taConsola.setEnabled(false);
+        this.taConsola.setEditable(false);
         this.taConsola.setText("");
     }
 
@@ -669,8 +686,8 @@ public class Depositando extends javax.swing.JFrame {
             //    this.limpiarComponentes();
             //}
             // nuevo
-            if (repo.protocoloRest(cbOpcion.getSelectedIndex(), evt, coleccion, item, new BitstreamsRest(), taConsola)) {
-                limpiarComponentes();
+            if (repo.protocoloRest(opcion, evt, coleccion, item, new BitstreamsRest(), taConsola)) {
+                //limpiarComponentes();
             }
         } catch (Exception ex) {
             //Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
@@ -709,7 +726,7 @@ public class Depositando extends javax.swing.JFrame {
             //if (listaMetadato.getSelectedIndices().length > 0) {
             //    stardog.removerItemSeleccionados(listaMetadato.getSelectedIndices());
             //}
-            taConsola.append("Operación finalizada. Se agregaron " + objeto.size() + " metadatos.\n");
+            taConsola.append("Operación finalizada. Se agregó " + objeto.size() + " metadato.\n");
 
             //} catch (Exception ex) {
             //    JOptionPane.showMessageDialog(this, "Error.\n" + ex.getMessage(), "Informe", JOptionPane.ERROR_MESSAGE);
@@ -720,62 +737,7 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
 
     private void listaOAMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMousePressed
-        DialogWaitControl wait = new DialogWaitControl();
-        try {
-            StardogControl baseGrafica = StardogControl.getInstancia();
-            if (!baseGrafica.estatus()) {
-                return;
-            }
 
-            SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
-                @Override
-                protected JPanel doInBackground() throws Exception {
-                    publish("Procesando... por favor espere.\n");
-                    wait.setMensaje("Procesando... por favor espere.");
-                    Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
-                    System.out.println("dato: " + dato.getTipo());
-                    listMetadatos.removeAllElements();
-                    listMetadatos = baseGrafica.getMetadatos_v2(dato); // mejorado.                    
-                    listaMetadato.setModel(listMetadatos);
-                    //preseteamos el panel de captura con los metadatos obligatorios.
-                    publish("Seteando Panel de carga... por favor espere.\n");
-                    //wait.setMensaje("Seteando Panel de carga... por favor espere.");
-                    JPanel unPanel = baseGrafica.preSeteoPanelCaptura();
-                    wait.close();
-                    //habilitamos la lista de metadatos.
-                    if (listMetadatos.size() > 0) {
-                        listaMetadato.setEnabled(true);
-                    } else {
-                        listaMetadato.setEnabled(false);
-                    }
-
-                    return unPanel;
-                }
-
-                @Override
-                protected void process(List<String> chunks) {
-                    taConsola.append(chunks.get(0));
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        captura.getViewport().setView(this.get());
-                        if (listMetadatos.size() > 0) {
-                            captura.setEnabled(true);
-                        }
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            };
-            if (listaOA.getSelectedIndex() >= 0) {
-                mySwingWorker.execute();
-                wait.makeWait("Obteniendo datos", this);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }//GEN-LAST:event_listaOAMousePressed
 
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
@@ -868,6 +830,74 @@ public class Depositando extends javax.swing.JFrame {
         this.btnDepositar.setText((String) cbOpcion.getSelectedItem());
     }//GEN-LAST:event_cbOpcionActionPerformed
 
+    private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+        DialogWaitControl wait = new DialogWaitControl();
+
+        SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
+            @Override
+            protected JPanel doInBackground() throws Exception {
+                publish("Procesando... por favor espere.\n");
+                wait.setMensaje("Procesando... por favor espere.");
+                Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
+                System.out.println("dato: " + dato.getTipo());
+                listMetadatos.removeAllElements();
+                StardogControl base = StardogControl.getInstancia();
+                listMetadatos = base.getMetadatos_v2(dato); // mejorado.                    
+                //listaMetadato.setModel(listMetadatos);
+                //preseteamos el panel de captura con los metadatos obligatorios.
+                publish("Seteando Panel de carga... por favor espere.\n");
+                //wait.setMensaje("Seteando Panel de carga... por favor espere.");
+                JPanel unPanel = base.preSeteoPanelCaptura();
+                //seteamos los metadatos a cargar
+                DefaultListModel misMetas = base.getListaMetadados();
+                listaMetadato.setModel(misMetas);
+                //                
+                //habilitamos la lista de metadatos.
+                if (listMetadatos.size() > 0) {
+                    listaMetadato.setEnabled(true);
+                } else {
+                    listaMetadato.setEnabled(false);
+                }
+                wait.close();
+                return unPanel;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                taConsola.append(chunks.get(0));
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    captura.getViewport().setView(this.get());
+                    if (listMetadatos.size() > 0) {
+                        captura.setEnabled(true);
+                    }
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+
+        try {
+            StardogControl baseGrafica = StardogControl.getInstancia();
+            if (baseGrafica.estatus()) {
+                System.out.println("validado correctamente ..........");
+                System.out.println("valor de selected: " + listaOA.getSelectedIndex());
+                System.out.println("filtrando ..........");
+                if (listaOA.getSelectedIndex() >= 0) {
+                    mySwingWorker.execute();
+                    wait.makeWait("Obteniendo datos.", this);                    
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+    }//GEN-LAST:event_listaOAMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -911,6 +941,7 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
     private javax.swing.JComboBox<String> cbOpcion;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -938,6 +969,7 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

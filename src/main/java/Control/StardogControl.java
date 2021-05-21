@@ -424,7 +424,7 @@ public final class StardogControl {
      */
     public JPanel preSeteoPanelCaptura() throws Exception {
         JPanel jp = new JPanel();
-        DefaultListModel<Metadato> eliminar = new DefaultListModel<>();
+        DefaultListModel<Metadato> noMostrar = new DefaultListModel<>();
 
         //seteamos las variables contenedoras a cero.
         this.capturaMetadados.clear();
@@ -437,23 +437,27 @@ public final class StardogControl {
             //System.out.println("mertadato:" + m.getTipo() + " | repite: " + m.isRepite() + " | obligatorio: " + m.isObligatorio());
             if (m.isObligatorio()) { //podria obviarse el isExists()
                 //final Metadato met = getComponente(objeto.get(i));
-                if (m.isRepite()) {
+                //if (m.isRepite()) {
                     this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
-                } else {
+                //} else {
                     //para el caso que no exista se crea y agtega
-                    this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
+                //    this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
                     //listaMetadados.remove(i);
-                    eliminar.addElement(m);
-                }
+                    //noMostrar.addElement(m); //ya no hace falta
+                }            
+            if (m.isRepite()) {
+                noMostrar.addElement(m); //ya no hace falta
             }
         }
 
+        listaMetadados = noMostrar;
         //quitamos los metadatos que se agregaron pero no se repiten.
         //for (int i = 0; i < eliminar.size(); ++i) {
         //    listaMetadados.removeElement(eliminar.get(i));
         //}
-        //ordenamos capturaMetadatos -----------------------------------                       
-        //this.ordenar(); // mejorar
+
+        //ordenamos capturaMetadatos -----------------------------------
+        this.ordenar(); // mejorar
         //--------------------------------------------------------------
         jp = rellenarJPanel(jp);
         return jp;
@@ -478,8 +482,7 @@ public final class StardogControl {
         for (int i = 0; i < objeto.size(); ++i) {
             //y sino si ya no esta en la lista de captura
             //antes de agregar controlar si el metadatos se debe repetir
-            Metadato m = (Metadato) objeto.get(i);
-            //System.out.println("entreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee ---  " + (i+1));
+            Metadato m = (Metadato) objeto.get(i);            
             if (isExists(m)) {
                 //para el caso de que el metadato exista
                 //verificamos si este se puede repetir
@@ -927,13 +930,13 @@ public final class StardogControl {
         aQuery.parameter("predi2", iri2);
         aQuery.parameter("buscar", filtro.getTipo());
         aResult = aQuery.execute();
-        int soloUna = 0;
+        //int soloUna = 0;
         while (aResult.hasNext()) {
             fila = aResult.next();
             final String miresultado = fila.getValue("predi").stringValue();
             final Metadato m1 = new Metadato(miresultado);
             //seteo del tipo
-            m1.setTipo(m1.getTipo().substring(3));
+            m1.setTipo(m1.getTipo().substring(3)); //saco el has del predicado
             final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
             final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
             final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
@@ -942,7 +945,8 @@ public final class StardogControl {
             m1.setRepite(repite);
             m1.setRotulo(rotulo);
             listaMetadados.addElement(m1);
-            soloUna += 1;
+            //soloUna += 0;
+            /*
             if (soloUna == 1) {
                 final String miresultado2 = fila.getValue("predicado").stringValue();
                 final Metadato m2 = new Metadato(miresultado2);
@@ -957,7 +961,37 @@ public final class StardogControl {
                 m2.setRotulo(rotulo2);
                 listaMetadados.addElement(m2);
             }
+             */
         }
+
+        // obtenemos los metadatos de Title.           
+        iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
+                + "Title");
+        iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
+        IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
+
+        aQuery = conexionStardog.select(
+                "SELECT DISTINCT ?subclase "
+                + "WHERE { "
+                + " ?subclase ?predicado ?metadata."
+                + "} "
+        );
+        aQuery.parameter("predicado", iri3);
+        aQuery.parameter("metadata", iri1);
+        aResult = aQuery.execute();
+        while (aResult.hasNext()) {
+            fila = aResult.next();
+            final String aValue = fila.getValue("subclase").stringValue();
+            final Metadato m1 = new Metadato(aValue);
+            final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
+            final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
+            final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
+            m1.setObligatorio(obligatorio);
+            m1.setRepite(repite);
+            m1.setRotulo(rotulo);
+            listaMetadados.addElement(m1);
+        }
+
         return listaMetadados;
     }
 
@@ -1836,6 +1870,47 @@ public final class StardogControl {
             Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        return listaMetadados;
+    }
+
+    public DefaultListModel getMetadatos_v4(Metadato filtro) {
+        try {
+            BindingSet fila;
+            TupleQueryResult aResult;
+            //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+            //properties.load(propertiesStream);
+            // obtenemos los metadatos de Content.
+            listaMetadados.clear();
+            IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
+                    + "");
+            IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
+            IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
+
+            SelectQuery aQuery = conexionStardog.select(
+                    "SELECT DISTINCT ?subclase "
+                    + "WHERE { "
+                    + " ?subclase ?predicado ?metadata."
+                    + "} "
+            );
+            aQuery.parameter("predicado", iri3);
+            aQuery.parameter("metadata", iri2);
+            //aQuery.parameter("buscar", filtro.getTipo());
+            aResult = aQuery.execute();
+            while (aResult.hasNext()) {
+                fila = aResult.next();
+                final String aValue = fila.getValue("subclase").stringValue();
+                final Metadato m1 = new Metadato(aValue);
+                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
+                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
+                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
+                m1.setObligatorio(obligatorio);
+                m1.setRepite(repite);
+                m1.setRotulo(rotulo);
+                listaMetadados.addElement(m1);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return listaMetadados;
     }
 

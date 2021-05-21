@@ -18,6 +18,7 @@ import com.google.gson.stream.JsonReader;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +40,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.xml.ws.Endpoint;
 import org.json.JSONException;
 
 /**
@@ -82,23 +82,33 @@ public final class RestControl {
         String result = null;
         boolean result2 = false;
         try {
-            // traerlo de loginControler despues
-            String url = "http://localhost:8080";
-            String email = "gerdarpog@gmail.com";
-            String pass = "german";
+            // traemos los datos de conexion.
+            ConfigControl login = ConfigControl.getInstancia();
+            String folder = login.getFolderWork().trim();
+            System.out.println("nro. de letras del folder: " + folder.length());
+            if (folder.length() > 3) {
+                folder = folder + File.separator;
+                System.out.println("folder de conexion: " + folder);
+            }
+            // traerlo de configControler despues
+            String url = login.getUri(); //"http://localhost:8080";
+            String email = login.getUseRest(); //"gerdarpog@gmail.com";
+            String pass = login.getPassRest(); //"german";
             String command = "curl -v -X POST --data \"email= " + email + "&password=" + pass + "\" "
-                    + url + "/rest/login --cookie-jar \"E:/cookies.txt\"";
+                    + url + "/rest/login --cookie-jar \"" + folder + "cookies.txt\"";
             Process process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
             if (waitFor != 0) {
                 return false;
             }
-
+            //
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
-                    + "--cookie \"E:/cookies.txt\"";
+                    + "--cookie \"" + folder + "cookies.txt\"";
             process = Runtime.getRuntime().exec(command);
             waitFor = process.waitFor();
-
+            if (waitFor != 0) {
+                return false;
+            }
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
@@ -125,14 +135,25 @@ public final class RestControl {
         String result = null;
         boolean result2 = false;
         try {
+            // traemos los datos de conexion.
+            ConfigControl login = ConfigControl.getInstancia();
+            String folder = login.getFolderWork().trim();
+            System.out.println("nro. de letras del folder: " + folder.length());
+            if (folder.length() > 3) {
+                folder = folder + File.separator;
+                System.out.println("folder de conexion: " + folder);
+            }
+
             // traerlo de loginControler despues
-            String url = "http://localhost:8080";
-            String command = "curl -v -X POST " + url + "/rest/logout --cookie \"E:/cookies.txt\"";
+            String url = login.getUri();  //"http://localhost:8080";
+            String command = "curl -v -X POST " + url + "/rest/logout --cookie \"" + folder + "cookies.txt\"";
             Process process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
-
+            if (waitFor != 0) {
+                return false;
+            }
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
-                    + "--cookie \"E:/cookies.txt\"";
+                    + "--cookie \"" + folder + "cookies.txt\"";
             process = Runtime.getRuntime().exec(command);
             waitFor = process.waitFor();
 
@@ -165,9 +186,18 @@ public final class RestControl {
             // traerlo de loginControler despues
             ConfigControl login = ConfigControl.getInstancia();
             String url = login.getUri().trim();
+            // traemos los datos de conexion.            
+            String folder = login.getFolderWork().trim();
+            System.out.println("nro. de letras del folder: " + folder.length());
+            if (folder.length() > 3) {
+                folder = folder + File.separator;
+                System.out.println("folder de conexion: " + folder);
+            }
             //
-            command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
-                    + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\"";
+            command = "curl -v \"" + url.trim() + "/rest/status\" -H \"accept: application/json\" "
+                    + "--cookie " + folder + "cookies.txt";
+            //System.out.println("estatus: " + command);
+
             process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
             if (waitFor != 0) {
@@ -200,19 +230,26 @@ public final class RestControl {
         return estado;
     }
 
+    /*
     public String newItem(String coleccion) {
         String result = null;
         String command = null;
         Process process;
         int waitFor;
         // traerlo de loginControler despues
-        String url = "http://localhost:8080";
         try {
+            //
+            ConfigControl login = ConfigControl.getInstancia();
+            String url = login.getUri(); //"http://localhost:8080";
+            //
             command = "curl -v \"" + url + "/rest/status\" -H \"accept: application/json\" "
                     + "--cookie \"E:/cookies.txt\"";
             process = Runtime.getRuntime().exec(command);
             waitFor = process.waitFor();
-
+            if (waitFor != 0) { // no termino correctamente.
+                return "Error"; 
+            }
+            //
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
@@ -246,7 +283,9 @@ public final class RestControl {
         }
         return result + " -- " + this.newItem;
     }
+     */
 
+ /*
     public String sendBitstreams(String item, String dirFile) {
         String result = null;
         String command = null;
@@ -296,6 +335,7 @@ public final class RestControl {
         return result + " -- " + this.newItem;
     }
 
+    
     public void comandoEXEC(String command) throws JSONException {
         try {
             //String command = "curl -X POST 'https://xxxxxxxxxxxxx' --digest -u user:pass -H 'Content-Type: application/json' -H 'Accept: application/json' --data-binary $'{\"from\" : \"xxxx\", \"msg\" : \"xxxxxx\", \"frag\": null}'";
@@ -318,136 +358,104 @@ public final class RestControl {
         }
     }
 
+     */
     /**
      *
      * @param url dle host donde se aloja DSpace
      * @param comunidad comunidad a filtrar
      * @return
      */
-    public DefaultTreeModel getColeciones(String url, String comunidad) {
-        DefaultTreeModel modelo = null;
-        String comando = null;
-        try {
-            comando = "curl -X GET -H \"accept: application/json\" "
-                    + url + comunidad + "/collections";
-            Process process = Runtime.getRuntime().exec(comando);
-            InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            JsonParser parser = new JsonParser();
-            String result = br.lines().collect(Collectors.joining("\n"));
-            //System.out.println("Linea: " + result);
-            JsonElement datos = parser.parse(result);
-            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-            modelo = new DefaultTreeModel(padre);
-            if (((JsonElement) datos).isJsonArray()) {
-                int level = 0;
-                JsonArray array = (JsonArray) datos;
-                System.out.println("Es array. Numero de elementos: " + array.size());
-                Iterator<JsonElement> iter = array.iterator();
-
-                System.out.println(padre.getRoot().toString());
-                while (iter.hasNext()) {
-                    JsonObject jsonComunidad = (JsonObject) iter.next();
-                    JsonElement linkComunidad = jsonComunidad.get("link");
-                    JsonElement nameComunidad = jsonComunidad.get("name");
-                    //creamos la comunidad
-                    ComunidadRest comunidadRest
-                            = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
-                    DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidadRest);
-
-                    modelo.insertNodeInto(nodoComunidad, padre, level);
-
-                    System.out.println(" -- " + comunidadRest.toString());
-                    level += level;
-                }
-                return modelo;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modelo;
-    }
-
-    public void prueba(java.awt.event.ActionEvent evt, JTextArea ta) {
-        DialogWaitControl wait = new DialogWaitControl(10);
-
-        SwingWorker<Void, Integer> mySwingWorker = new SwingWorker<Void, Integer>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-
-                //Here you put your long-running process...
-                //RestControler rest = new RestControl();
-                //tree.setModel(rest.getComunidades(txtHost.getText(), txtComand.getText()));
-                //tree.updateUI();  
-                for (int i = 1; i < 11; i++) {
-                    publish(i);
-                    Thread.sleep(1000);
-                }
-                wait.close();
-                return null;
-            }
-
-            @Override
-            protected void process(List<Integer> chunks) {
-                wait.incrementarProBar(chunks.get(0));
-                ta.append(chunks.get(0).toString());
-            }
-        };
-
-        mySwingWorker.execute();
-        wait.makeWait("Consultando las comunidades...", evt, 100);
-        //---------------------------------------
-    }
-
+    /**
+     * public DefaultTreeModel getColeciones(String url, String comunidad) {
+     * DefaultTreeModel modelo = null; String comando = null; try { comando =
+     * "curl -X GET -H \"accept: application/json\" " + url + comunidad +
+     * "/collections"; Process process = Runtime.getRuntime().exec(comando);
+     * InputStream is = process.getInputStream(); InputStreamReader isr = new
+     * InputStreamReader(is); BufferedReader br = new BufferedReader(isr);
+     * JsonParser parser = new JsonParser(); String result =
+     * br.lines().collect(Collectors.joining("\n"));
+     * //System.out.println("Linea: " + result); JsonElement datos =
+     * parser.parse(result); DefaultMutableTreeNode padre = new
+     * DefaultMutableTreeNode("Repositorio"); modelo = new
+     * DefaultTreeModel(padre); if (((JsonElement) datos).isJsonArray()) { int
+     * level = 0; JsonArray array = (JsonArray) datos; //System.out.println("Es
+     * array. Numero de elementos: " + array.size()); Iterator<JsonElement> iter
+     * = array.iterator(); //System.out.println(padre.getRoot().toString());
+     * while (iter.hasNext()) { JsonObject jsonComunidad = (JsonObject)
+     * iter.next(); JsonElement linkComunidad = jsonComunidad.get("link");
+     * JsonElement nameComunidad = jsonComunidad.get("name"); //creamos la
+     * comunidad ComunidadRest comunidadRest = new
+     * ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
+     * DefaultMutableTreeNode nodoComunidad = new
+     * DefaultMutableTreeNode(comunidadRest); //
+     * modelo.insertNodeInto(nodoComunidad, padre, level); //
+     * System.out.println(" -- " + comunidadRest.toString()); level += level; }
+     * return modelo; } } catch (IOException ex) {
+     * Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null,
+     * ex); } return modelo; }
+     *
+     */
+    /**
+     * public void prueba(java.awt.event.ActionEvent evt, JTextArea ta) {
+     * DialogWaitControl wait = new DialogWaitControl(10);
+     *
+     * SwingWorker<Void, Integer> mySwingWorker = new
+     * SwingWorker<Void, Integer>() {
+     *
+     * @Override protected Void doInBackground() throws Exception {
+     *
+     * //Here you put your long-running process... //RestControler rest = new
+     * RestControl(); //tree.setModel(rest.getComunidades(txtHost.getText(),
+     * txtComand.getText())); //tree.updateUI(); for (int i = 1; i < 11; i++) {
+     * publish(i); Thread.sleep(1000); } wait.close(); return null; }
+     *
+     * @Override protected void process(List<Integer> chunks) {
+     * wait.incrementarProBar(chunks.get(0));
+     * ta.append(chunks.get(0).toString()); } };
+     *
+     * mySwingWorker.execute(); wait.makeWait("Consultando las comunidades...",
+     * evt, 100); //--------------------------------------- }
+     */
     /**
      *
      * @param url
      * @param comando
      * @return
+     *
+     * public DefaultTreeModel getComunidades(String url, String comando) {
+     * DefaultTreeModel modelo = null; try { Process process =
+     * Runtime.getRuntime().exec(comando); InputStream is =
+     * process.getInputStream(); InputStreamReader isr = new
+     * InputStreamReader(is); BufferedReader br = new BufferedReader(isr);
+     * JsonParser parser = new JsonParser(); String result =
+     * br.lines().collect(Collectors.joining("\n"));
+     * //System.out.println("Linea: " + result); JsonElement datos =
+     * parser.parse(result); DefaultMutableTreeNode padre = new
+     * DefaultMutableTreeNode("Repositorio"); modelo = new
+     * DefaultTreeModel(padre); if (((JsonElement) datos).isJsonArray()) { //int
+     * level = 0; JsonArray array = (JsonArray) datos; // System.out.println("Es
+     * array. Numero de elementos: " + array.size()); Iterator<JsonElement> iter
+     * = array.iterator();
+     *
+     * System.out.println(padre.getRoot().toString()); while (iter.hasNext()) {
+     * JsonObject jsonComunidad = (JsonObject) iter.next(); JsonElement
+     * linkComunidad = jsonComunidad.get("link"); JsonElement nameComunidad =
+     * jsonComunidad.get("name"); //creamos la comunidad ComunidadRest comunidad
+     * = new ComunidadRest(nameComunidad.getAsString(),
+     * linkComunidad.getAsString()); DefaultMutableTreeNode nodoComunidad = new
+     * DefaultMutableTreeNode(comunidad);
+     *
+     * //modelo.insertNodeInto(nodoComunidad, padre, level);
+     * padre.add(nodoComunidad); //System.out.println(" -- " +
+     * comunidad.toString()); //level += level; } //return modeloRepo; } } catch
+     * (IOException ex) {
+     * Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null,
+     * ex); }
+     *
+     * return modelo; }
      */
-    public DefaultTreeModel getComunidades(String url, String comando) {
-        DefaultTreeModel modelo = null;
-        try {
-            Process process = Runtime.getRuntime().exec(comando);
-            InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            JsonParser parser = new JsonParser();
-            String result = br.lines().collect(Collectors.joining("\n"));
-            //System.out.println("Linea: " + result);
-            JsonElement datos = parser.parse(result);
-            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-            modelo = new DefaultTreeModel(padre);
-            if (((JsonElement) datos).isJsonArray()) {
-                //int level = 0;
-                JsonArray array = (JsonArray) datos;
-                // System.out.println("Es array. Numero de elementos: " + array.size());
-                Iterator<JsonElement> iter = array.iterator();
-
-                System.out.println(padre.getRoot().toString());
-                while (iter.hasNext()) {
-                    JsonObject jsonComunidad = (JsonObject) iter.next();
-                    JsonElement linkComunidad = jsonComunidad.get("link");
-                    JsonElement nameComunidad = jsonComunidad.get("name");
-                    //creamos la comunidad
-                    ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
-                    DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
-
-                    //modelo.insertNodeInto(nodoComunidad, padre, level);
-                    padre.add(nodoComunidad);
-                    //System.out.println(" -- " + comunidad.toString());
-                    //level += level;
-                }
-                //return modeloRepo;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return modelo;
-    }
-
+    
+    
     /**
      *
      * @param ta muestra la salida en este compenente.
@@ -811,11 +819,11 @@ public final class RestControl {
         }
         return listItems;
     }
-    
-     public DefaultListModel obtenerBitstreams(JTextArea ta, ItemRest item) {
+
+    public DefaultListModel obtenerBitstreams(JTextArea ta, ItemRest item) {
         DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
         try {
-            ConfigControl conn = ConfigControl.getInstancia();            
+            ConfigControl conn = ConfigControl.getInstancia();
             String comando = "curl " + conn.getUri().trim() + item.getLink() + "/bitstreams";
             Process process = Runtime.getRuntime().exec(comando);
             //
@@ -844,7 +852,6 @@ public final class RestControl {
         }
         return listBitstreams;
     }
-    
 
     /**
      *
@@ -858,14 +865,6 @@ public final class RestControl {
     public boolean enviarItem(ColeccionRest miColeccion, ActionEvent evt, JTextArea ta)
             throws InterruptedException, ExecutionException {
         DialogWaitControl wait = new DialogWaitControl();
-
-        wait.makeWait("Verificando Credenciales.", evt, 0);
-        // logueado?.
-        if (!this.estatus()) {
-            return false;
-        }
-        wait.close();
-        //
         FicheroControl ficheros = FicheroControl.getInstancia();
         DefaultListModel lista = ficheros.getListaFicheros();
 
@@ -878,29 +877,29 @@ public final class RestControl {
                     int cantFile = 0;
                     Process process = null;
                     //
-                    DialogWaitControl wait = new DialogWaitControl();
-                    wait.makeWait("Creando Item.", evt, 0);
-                    //
-                    publish("Iniciando Envio.\n", String.valueOf(0));
+                    publish("Iniciando Envio.\n");
                     // Creo el item en la coleccion ...
-                    String comando = "curl -d \"@" + login.getFolderWork().trim() + ":/metadatos.json\" "
+                    String comando = "curl -d \"@" + login.getFolderWork().trim() + "metadatos.json\" "
                             + "-H \"Content-Type: application/json\" -H \"accept: application/json\" "
-                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\" -X POST "
+                            + "--cookie \"" + login.getFolderWork().trim() + "cookies.txt\" -X POST "
                             + login.getUri().trim() + miColeccion.getLink() + "/items";
                     //
                     process = Runtime.getRuntime().exec(comando);
                     int p = process.waitFor();
                     if (p != 0) {
+                        wait.close();
                         return false; //no tuvo exito.
                     }
+                    //
+                    publish("Se enviaron los metadatos a la colección: " + miColeccion.getNombre() + ".\n");
+                    //
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
                     //
                     JsonParser parser = new JsonParser();
                     String result = br.lines().collect(Collectors.joining("\n"));
-                    publish(result, "0");
-                    //
+                    //                    
                     JsonElement datos = parser.parse(result);
                     if (datos.isJsonObject()) {
                         JsonObject obj = (JsonObject) datos;
@@ -909,16 +908,13 @@ public final class RestControl {
                         wait.close();
                         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
                                 "Error al crear el ítem.", "Informe", JOptionPane.ERROR_MESSAGE);
+                        publish("Error al crear el ítem.");
                         return false;
                     }
-                    wait.close();
                     // --------------------------------------------------------------
                     // Agregar el bitstream ...
                     // Leemos la lista de archivos a enviar.
-                    //
-                    wait = new DialogWaitControl();
-                    wait.makeWait("Depositando Item(s).", evt, lista.size());
-                    //                   
+                    //                          
                     for (int i = 0; i < lista.size(); i++) {
                         Fichero archivo = (Fichero) lista.get(i);
                         cantFile = i + 1;
@@ -938,15 +934,16 @@ public final class RestControl {
                         datos = parser.parse(result);
                         //
                         if (datos.isJsonObject()) { // devuelve in JsonObject
-                            //wait.setMensaje("Archivo " + i + "" + archivo.getUnFile().getName() +  " - Enviado");
-                            publish("Archivo " + i + "" + archivo.getUnFile().getName() + " - Enviado\n", String.valueOf(cantFile));
+                            publish("Archivo " + cantFile + " - " + archivo.getUnFile().getName() + " - Enviado\n");
                         } else {
-                            // avisar del error
+                            // avisar del error                            
+                            publish("Operación cancelada por error en el envio de material.\n", "0");
                             wait.close();
                             return false;
                         }
                     }
-                    publish("Operación Finalizada con exito.");
+                    //
+                    publish("Operación de envio FINALIZADA con éxito.\n", "0");
                 } catch (IOException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -958,12 +955,17 @@ public final class RestControl {
             protected void process(List<String> chunks) {
                 ta.append(chunks.get(0));
                 wait.setMensaje(chunks.get(0));
-                wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
             }
 
         };
+
+        // logueado?.
+        if (!this.estatus()) {
+            ta.append("No está correctamente logueado. Se cancela el envío.\n");
+            return false;
+        }
         mySwingWorker.execute();
-        //wait.makeWait("Verificando Credenciales.", evt, 0);
+        wait.makeWait("Creando item.", evt, 0);
         return mySwingWorker.get();
     }
 
@@ -1123,7 +1125,7 @@ public final class RestControl {
                 String result = br.lines().collect(Collectors.joining("\n"));
                 System.out.println("resuldato de la e li mi na ciòn : " + result);
                 //
-                return result.contains("200");                
+                return result.contains("200");
             }
 
             @Override
@@ -1525,7 +1527,7 @@ public final class RestControl {
             if (opcion < 0) {
                 return result;
             }
-            opcion += 1;
+            //opcion += 1;
             System.out.println("Control.RestControl.protocoloEnvios().Opcion: " + opcion);
             switch (opcion) {
                 case 1:

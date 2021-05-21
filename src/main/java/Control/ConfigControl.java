@@ -238,11 +238,11 @@ public final class ConfigControl {
     }
 
     public String getUri() {
-        return uri;
+        return uri.trim();
     }
 
     public void setUri(String uri) {
-        this.uri = uri;
+        this.uri = uri.trim();
     }
 
     public String getUseRest() {

@@ -96,6 +96,7 @@ public class Metadato {
 
     @Override
     public String toString() {
+        //return this.repite? this.rotulo: "";
         return this.rotulo;
     }
 

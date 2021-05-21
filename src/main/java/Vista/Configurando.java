@@ -606,10 +606,11 @@ public class Configurando extends javax.swing.JDialog {
     }//GEN-LAST:event_sw_passActionPerformed
 
     private void btnGuardarUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarUTActionPerformed
-
-        if (JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION) == 1) {
+        int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);        
+        if (result == 0) {
             if (!txtWorkFolder.getText().isEmpty()) {
                 config.grabarFolder(txtWorkFolder.getText());
+                config.setup_general();// VOLVEMOS A SETEAR
                 btnConectar.setEnabled(true);
             } else {
                 btnConectar.setEnabled(false);
