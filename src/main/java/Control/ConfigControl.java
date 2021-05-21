@@ -214,7 +214,10 @@ public final class ConfigControl {
     }
 
     public String getFolderWork() {
-        return folderWork;
+        if ((this.folderWork.length() > 3) && (this.folderWork.charAt(folderWork.length() - 1) == '\\')) {
+            this.folderWork = this.folderWork.trim() + File.separator;
+        }        
+       return folderWork.trim();
     }
 
     public String getHandle() {

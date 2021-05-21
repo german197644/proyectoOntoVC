@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -78,18 +79,15 @@ public final class RestControl {
         return modeloRepo;
     }
 
+
     public boolean conectar() {
         String result = null;
         boolean result2 = false;
         try {
             // traemos los datos de conexion.
             ConfigControl login = ConfigControl.getInstancia();
-            String folder = login.getFolderWork().trim();
-            System.out.println("nro. de letras del folder: " + folder.length());
-            if (folder.length() > 3) {
-                folder = folder + File.separator;
-                System.out.println("folder de conexion: " + folder);
-            }
+            String folder = login.getFolderWork();
+            
             // traerlo de configControler despues
             String url = login.getUri(); //"http://localhost:8080";
             String email = login.getUseRest(); //"gerdarpog@gmail.com";
@@ -137,12 +135,8 @@ public final class RestControl {
         try {
             // traemos los datos de conexion.
             ConfigControl login = ConfigControl.getInstancia();
-            String folder = login.getFolderWork().trim();
-            System.out.println("nro. de letras del folder: " + folder.length());
-            if (folder.length() > 3) {
-                folder = folder + File.separator;
-                System.out.println("folder de conexion: " + folder);
-            }
+            String folder = login.getFolderWork();
+            System.out.println("Folder: " + folder.length());
 
             // traerlo de loginControler despues
             String url = login.getUri();  //"http://localhost:8080";
@@ -454,105 +448,80 @@ public final class RestControl {
      *
      * return modelo; }
      */
-    
-    
     /**
      *
      * @param ta muestra la salida en este compenente.
      * @return DefaultTreeModel
+     *
+     * public DefaultTreeModel obtenerComunidades(JTextArea ta, JFrame jfram) {
+     * SwingWorker<DefaultTreeModel, Integer> mySwingWorker = new
+     * SwingWorker<DefaultTreeModel, Integer>() {
+     * @Override protected DefaultTreeModel doInBackground() throws Exception {
+     * DefaultTreeModel modelo = null; try { ConfigControl conn =
+     * ConfigControl.getInstancia(); String miURL = conn.getUri(); //String
+     * comando = "curl -X GET -H \"accept: application/json\" " //+ miURL +
+     * "/rest/communities"; String comando = "curl \"" + miURL +
+     * "/rest/communities\""; Process process =
+     * Runtime.getRuntime().exec(comando); InputStream is =
+     * process.getInputStream(); InputStreamReader isr = new
+     * InputStreamReader(is); BufferedReader br = new BufferedReader(isr);
+     * JsonParser parser = new JsonParser(); String result =
+     * br.lines().collect(Collectors.joining("\n")); System.out.println("Linea:
+     * " + result); JsonElement datos = parser.parse(result);
+     * DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+     * modelo = new DefaultTreeModel(padre); if (((JsonElement)
+     * datos).isJsonArray()) { //int level = 0; JsonArray array = (JsonArray)
+     * datos; DialogWaitControl wait = new DialogWaitControl(array.size());
+     * wait.makeWait(miURL, jfram); // System.out.println("Es array. Numero de
+     * elementos: " + array.size()); Iterator<JsonElement> iter =
+     * array.iterator(); publish(array.size());
+     * System.out.println(padre.getRoot().toString()); while (iter.hasNext()) {
+     * JsonObject jsonComunidad = (JsonObject) iter.next(); JsonElement
+     * linkComunidad = jsonComunidad.get("link"); JsonElement nameComunidad =
+     * jsonComunidad.get("name"); //creamos la comunidad ComunidadRest comunidad
+     * = new ComunidadRest(nameComunidad.getAsString(),
+     * linkComunidad.getAsString()); DefaultMutableTreeNode nodoComunidad = new
+     * DefaultMutableTreeNode(comunidad);
+     *
+     * //modelo.insertNodeInto(nodoComunidad, padre, level);
+     * padre.add(nodoComunidad); //System.out.println(" -- " +
+     * comunidad.toString()); //level += level; } //return modeloRepo; } } catch
+     * (IOException ex) {
+     * Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null,
+     * ex); } return modelo; }
+     *
+     * @Override protected void process(List<Integer> chunks) { ta.append("Se
+     * encontraron: " + chunks.get(0) + " comunidades" + "\n");
+     * ta.append("Extrayendo estructura." + "\n"); } };
+     *
+     * mySwingWorker.execute(); DefaultTreeModel model = null; try { model =
+     * mySwingWorker.get(); } catch (InterruptedException | ExecutionException
+     * ex) { Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE,
+     * null, ex); } return model; }
+     *
      */
-    public DefaultTreeModel obtenerComunidades(JTextArea ta) {
-        SwingWorker<DefaultTreeModel, Integer> mySwingWorker = new SwingWorker<DefaultTreeModel, Integer>() {
-            @Override
-            protected DefaultTreeModel doInBackground() throws Exception {
-                DefaultTreeModel modelo = null;
-                try {
-                    ConfigControl conn = ConfigControl.getInstancia();
-                    String comando = "curl -X GET -H \"accept: application/json\" "
-                            + conn.getUri().trim() + "/rest/communities";
-                    Process process = Runtime.getRuntime().exec(comando);
-                    InputStream is = process.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    JsonParser parser = new JsonParser();
-                    String result = br.lines().collect(Collectors.joining("\n"));
-                    //System.out.println("Linea: " + result);
-                    JsonElement datos = parser.parse(result);
-                    DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-                    modelo = new DefaultTreeModel(padre);
-                    if (((JsonElement) datos).isJsonArray()) {
-                        //int level = 0;
-                        JsonArray array = (JsonArray) datos;
-                        // System.out.println("Es array. Numero de elementos: " + array.size());                        
-                        Iterator<JsonElement> iter = array.iterator();
-                        publish(array.size());
-                        System.out.println(padre.getRoot().toString());
-                        while (iter.hasNext()) {
-                            JsonObject jsonComunidad = (JsonObject) iter.next();
-                            JsonElement linkComunidad = jsonComunidad.get("link");
-                            JsonElement nameComunidad = jsonComunidad.get("name");
-                            //creamos la comunidad
-                            ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
-                            DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
-
-                            //modelo.insertNodeInto(nodoComunidad, padre, level);
-                            padre.add(nodoComunidad);
-                            //System.out.println(" -- " + comunidad.toString());
-                            //level += level;
-                        }
-                        //return modeloRepo;
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return modelo;
-            }
-
-            @Override
-            protected void process(List<Integer> chunks) {
-                ta.append("Se encontraron: " + chunks.get(0) + " comunidades" + "\n");
-                ta.append("Extrayendo estructura." + "\n");
-            }
-        };
-
-        mySwingWorker.execute();
-        DefaultTreeModel model = null;
-        try {
-            model = mySwingWorker.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return model;
-    }
-
     /**
      *
      * @param comando l
      * @param url en que host se encuentra alojado DSpace
      * @return
+     *
+     * public DefaultTreeModel estructRepositorio(String comando, String url) {
+     * DefaultTreeModel modelo = null; try { Process process =
+     * Runtime.getRuntime().exec(comando);
+     *
+     * InputStream is = process.getInputStream(); InputStreamReader isr = new
+     * InputStreamReader(is); BufferedReader br = new BufferedReader(isr);
+     *
+     * String result = br.lines().collect(Collectors.joining("\n"));
+     * //System.out.println("Linea: " + result); JsonParser parser = new
+     * JsonParser(); JsonElement datos = parser.parse(result);
+     * DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+     * modelo = new DefaultTreeModel(padre); modelo = dumpJSONElement(url,
+     * datos, "", modelo, padre); } catch (IOException ex) {
+     * Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null,
+     * ex); } return modelo; }
      */
-    public DefaultTreeModel estructRepositorio(String comando, String url) {
-        DefaultTreeModel modelo = null;
-        try {
-            Process process = Runtime.getRuntime().exec(comando);
-
-            InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            String result = br.lines().collect(Collectors.joining("\n"));
-            //System.out.println("Linea: " + result);
-            JsonParser parser = new JsonParser();
-            JsonElement datos = parser.parse(result);
-            DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-            modelo = new DefaultTreeModel(padre);
-            modelo = dumpJSONElement(url, datos, "", modelo, padre);
-        } catch (IOException ex) {
-            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modelo;
-    }
-
     /**
      *
      * @param elemento JsonElement
@@ -561,82 +530,61 @@ public final class RestControl {
      * @param padre nodo inmediato superior
      * @param jerarquia el orden que ocupa en la estructura.
      * @return Un arbol.
+     *
+     * private DefaultTreeModel dumpJSONElement(String url, Object elemento,
+     * String miTree, DefaultTreeModel modelo, DefaultMutableTreeNode padre) {
+     * if (((JsonElement) elemento).isJsonArray()) { int level = 0; JsonArray
+     * array = (JsonArray) elemento; //System.out.println("Es array. Numero de
+     * elementos: " + array.size()); Iterator<JsonElement> iter =
+     * array.iterator(); while (iter.hasNext()) { try { JsonObject jsonComunidad
+     * = (JsonObject) iter.next(); JsonElement linkComunidad =
+     * jsonComunidad.get("link"); JsonElement nameComunidad =
+     * jsonComunidad.get("name"); //creamos la comunidad ComunidadRest comunidad
+     * = new ComunidadRest(nameComunidad.getAsString(),
+     * linkComunidad.getAsString()); DefaultMutableTreeNode nodoComunidad = new
+     * DefaultMutableTreeNode(comunidad); modelo.insertNodeInto(nodoComunidad,
+     * padre, level); //mostramos //System.out.println(miTree + " " +
+     * comunidad.toString()); //nuevo //String command = "curl -X GET -H
+     * \"accept: application/json\" " // + url + linkComunidad.getAsString() +
+     * "/communities"; String command = "curl \"" + url +
+     * linkComunidad.getAsString() + "/communities\""; // Process process =
+     * Runtime.getRuntime().exec(command); InputStream is =
+     * process.getInputStream(); InputStreamReader isr = new
+     * InputStreamReader(is); BufferedReader br = new BufferedReader(isr);
+     * String result = br.lines().collect(Collectors.joining("\n"));
+     * //System.out.println("Linea: "+ result); JsonParser parser = new
+     * JsonParser(); //JsonElement datos = parser.parse(result); JsonArray
+     * datosComunidad = (JsonArray) parser.parse(result); if
+     * (datosComunidad.size() > 0) { modelo = dumpJSONElement(url,
+     * datosComunidad, miTree + "-- ", modelo, nodoComunidad); } else { String
+     * commandColeccion = "curl -X GET -H \"accept: application/json\" " + url +
+     * linkComunidad.getAsString() + "/collections"; Process processColeccion =
+     * Runtime.getRuntime().exec(commandColeccion); InputStream is2 =
+     * processColeccion.getInputStream(); InputStreamReader isr2 = new
+     * InputStreamReader(is2); BufferedReader br2 = new BufferedReader(isr2);
+     * String result2 = br2.lines().collect(Collectors.joining("\n"));
+     * //System.out.println("Comunidades: "+ result2); //JsonParser parser2 =
+     * new JsonParser(); JsonArray datosColeccion = (JsonArray)
+     * parser.parse(result2); if (datosColeccion.size() > 0) { JsonArray
+     * arrayColeccion = (JsonArray) datosColeccion; //System.out.println("Es
+     * array. Numero de elementos: " + array2.size()); Iterator<JsonElement>
+     * iterColeccion = arrayColeccion.iterator(); int n = 0; while
+     * (iterColeccion.hasNext()) { JsonObject jsonColeccion = (JsonObject)
+     * iterColeccion.next(); JsonElement nameColeccion =
+     * jsonColeccion.get("name"); JsonElement linkColeccion =
+     * jsonColeccion.get("link"); ColeccionRest coleccion = new
+     * ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString());
+     * //mostramos la coleccion System.out.println(miTree + "-- " +
+     * coleccion.toString()); //generamos un nodo hoja y la agregamos al arbol.
+     * DefaultMutableTreeNode nodoColeccion = new
+     * DefaultMutableTreeNode(coleccion); modelo.insertNodeInto(nodoColeccion,
+     * nodoComunidad, n); n += n; } } } level += level; } catch (IOException ex)
+     * { System.out.println("Error: " + ex.getMessage()); } } } return modelo; }
      */
-    private DefaultTreeModel dumpJSONElement(String url, Object elemento, String miTree, DefaultTreeModel modelo, DefaultMutableTreeNode padre) {
-        if (((JsonElement) elemento).isJsonArray()) {
-            int level = 0;
-            JsonArray array = (JsonArray) elemento;
-            //System.out.println("Es array. Numero de elementos: " + array.size());
-            Iterator<JsonElement> iter = array.iterator();
-            while (iter.hasNext()) {
-                try {
-                    JsonObject jsonComunidad = (JsonObject) iter.next();
-                    JsonElement linkComunidad = jsonComunidad.get("link");
-                    JsonElement nameComunidad = jsonComunidad.get("name");
-                    //creamos la comunidad
-                    ComunidadRest comunidad = new ComunidadRest(nameComunidad.getAsString(), linkComunidad.getAsString());
-                    DefaultMutableTreeNode nodoComunidad = new DefaultMutableTreeNode(comunidad);
-                    modelo.insertNodeInto(nodoComunidad, padre, level);
-                    //mostramos
-                    System.out.println(miTree + " " + comunidad.toString());
-                    //nuevo
-                    String command = "curl -X GET -H \"accept: application/json\" "
-                            + url + linkComunidad.getAsString() + "/communities";
-                    Process process = Runtime.getRuntime().exec(command);
-                    InputStream is = process.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    String result = br.lines().collect(Collectors.joining("\n"));
-                    //System.out.println("Linea: "+ result);
-                    JsonParser parser = new JsonParser();
-                    //JsonElement datos = parser.parse(result);
-                    JsonArray datosComunidad = (JsonArray) parser.parse(result);
-                    if (datosComunidad.size() > 0) {
-                        modelo = dumpJSONElement(url, datosComunidad, miTree + "-- ", modelo, nodoComunidad);
-                    } else {
-                        String commandColeccion = "curl -X GET -H \"accept: application/json\" "
-                                + url + linkComunidad.getAsString() + "/collections";
-                        Process processColeccion = Runtime.getRuntime().exec(commandColeccion);
-                        InputStream is2 = processColeccion.getInputStream();
-                        InputStreamReader isr2 = new InputStreamReader(is2);
-                        BufferedReader br2 = new BufferedReader(isr2);
-                        String result2 = br2.lines().collect(Collectors.joining("\n"));
-                        //System.out.println("Comunidades: "+ result2);
-                        //JsonParser parser2 = new JsonParser();
-                        JsonArray datosColeccion = (JsonArray) parser.parse(result2);
-                        if (datosColeccion.size() > 0) {
-                            JsonArray arrayColeccion = (JsonArray) datosColeccion;
-                            //System.out.println("Es array. Numero de elementos: " + array2.size());
-                            Iterator<JsonElement> iterColeccion = arrayColeccion.iterator();
-                            int n = 0;
-                            while (iterColeccion.hasNext()) {
-                                JsonObject jsonColeccion = (JsonObject) iterColeccion.next();
-                                JsonElement nameColeccion = jsonColeccion.get("name");
-                                JsonElement linkColeccion = jsonColeccion.get("link");
-                                ColeccionRest coleccion
-                                        = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString());
-                                //mostramos la coleccion
-                                System.out.println(miTree + "-- " + coleccion.toString());
-                                //generamos un nodo hoja y la agregamos al arbol.
-                                DefaultMutableTreeNode nodoColeccion = new DefaultMutableTreeNode(coleccion);
-                                modelo.insertNodeInto(nodoColeccion, nodoComunidad, n);
-                                n += n;
-                            }
-                        }
-                    }
-                    level += level;
-                } catch (IOException ex) {
-                    System.out.println("Error: " + ex.getMessage());
-                }
-            }
-        }
-        return modelo;
-    }
-
     /**
      *
      * @param ta JTextArea donde se informa los avances.
-     * @param tree
+     * @param tree Representacion devuelta de la estructura del repositorio.
      */
     public void estructuraRepositorio(JTextArea ta, JTree tree) {
         SwingWorker<DefaultTreeModel, String> mySwingWorker = new SwingWorker<DefaultTreeModel, String>() {
@@ -644,19 +592,17 @@ public final class RestControl {
             protected DefaultTreeModel doInBackground() {
                 //DefaultTreeModel modeloRepo = null;
                 try {
-
-                    //ta.append("Obteniendo estrucutra del repositorio.\n");
                     publish("Obteniendo estructura del repositorio.\n");
-
                     ConfigControl conn = ConfigControl.getInstancia();
-                    String comando = "curl -X GET -H \"accept: application/json\" "
-                            + conn.getUri().trim() + "/rest/communities";
+                    //String comando = "curl -X GET -H \"accept: application/json\" "
+                    //        + conn.getUri().trim() + "/rest/communities";
+                    String comando = "curl \"" + conn.getUri().trim() + "/rest/communities\"";
                     Process process = Runtime.getRuntime().exec(comando);
-
+                    //
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
-
+                    //
                     String result = br.lines().collect(Collectors.joining("\n"));
                     System.out.println("Linea: " + result);
                     JsonParser parser = new JsonParser();
@@ -696,12 +642,6 @@ public final class RestControl {
         mySwingWorker.execute();
     }
 
-    /**
-     *
-     * @param elemento JsonElement
-     * @param padre nodo inmediato superior
-     * @return Un arbol.
-     */
     private DefaultMutableTreeNode dumpJSONElement2(JsonElement elemento, DefaultMutableTreeNode padre) {
 
         try {
@@ -737,8 +677,11 @@ public final class RestControl {
                             DefaultMutableTreeNode downTree = dumpJSONElement2(datosComunidad, nodoComunidad);
                             padre.add(downTree);
                         } else {
-                            String commandColeccion = "curl -X GET -H \"accept: application/json\" "
-                                    + conn.getUri() + linkComunidad.getAsString() + "/collections";
+                            //String commandColeccion = "curl -X GET -H \"accept: application/json\" "
+                            //        + conn.getUri() + linkComunidad.getAsString() + "/collections";
+                            String commandColeccion = "curl \""
+                                    + conn.getUri() + linkComunidad.getAsString() + "/collections\"";
+                            //
                             Process processColeccion = Runtime.getRuntime().exec(commandColeccion);
                             InputStream is2 = processColeccion.getInputStream();
                             InputStreamReader isr2 = new InputStreamReader(is2);
@@ -791,7 +734,7 @@ public final class RestControl {
 
             //publish("Obteniendo estructura del repositorio.\n");
             //String comando = "curl -X GET -H \"accept: application/json\" "
-            String comando = "curl " + conn.getUri().trim() + coleccion.getLink() + "/items";
+            String comando = "curl \"" + conn.getUri().trim() + coleccion.getLink() + "/items\"";
             Process process = Runtime.getRuntime().exec(comando);
 
             InputStream is = process.getInputStream();
@@ -824,7 +767,7 @@ public final class RestControl {
         DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
         try {
             ConfigControl conn = ConfigControl.getInstancia();
-            String comando = "curl " + conn.getUri().trim() + item.getLink() + "/bitstreams";
+            String comando = "curl \"" + conn.getUri().trim() + item.getLink() + "/bitstreams\"";
             Process process = Runtime.getRuntime().exec(comando);
             //
             InputStream is = process.getInputStream();
@@ -873,17 +816,20 @@ public final class RestControl {
             protected Boolean doInBackground() throws Exception {
                 try {
                     ConfigControl login = ConfigControl.getInstancia();
+                    String folder = login.getFolderWork();
+                    //
                     String item = null;
                     int cantFile = 0;
                     Process process = null;
                     //
                     publish("Iniciando Envio.\n");
                     // Creo el item en la coleccion ...
-                    String comando = "curl -d \"@" + login.getFolderWork().trim() + "metadatos.json\" "
+                    String comando = "curl -d \"@" + folder + "metadatos.json\" "
                             + "-H \"Content-Type: application/json\" -H \"accept: application/json\" "
-                            + "--cookie \"" + login.getFolderWork().trim() + "cookies.txt\" -X POST "
-                            + login.getUri().trim() + miColeccion.getLink() + "/items";
+                            + "--cookie \"" + folder + "cookies.txt\" -X POST "
+                            + login.getUri().trim() + miColeccion.getLink() + "/items\"";
                     //
+                    System.out.println("comando 1: " + comando);
                     process = Runtime.getRuntime().exec(comando);
                     int p = process.waitFor();
                     if (p != 0) {
@@ -919,12 +865,13 @@ public final class RestControl {
                         Fichero archivo = (Fichero) lista.get(i);
                         cantFile = i + 1;
                         comando = "curl -k -4 -v  -H \"Content-Type: multipart/form-data\"  "
-                                + "-H \"accept: application/json\" --cookie E:/cookies.txt "
+                                + "-H \"accept: application/json\" --cookie "+folder+"cookies.txt "
                                 + "-X POST "
                                 + login.getUri().trim() + item.trim() + "/bitstreams?name="
                                 + archivo.getUnFile().getName()
                                 + " -T " + archivo.getUnFile().getAbsolutePath();
-
+                        //
+                        System.out.println("comando 2: " + comando);
                         process = Runtime.getRuntime().exec(comando);
                         is = process.getInputStream();
                         isr = new InputStreamReader(is);
@@ -1217,14 +1164,16 @@ public final class RestControl {
             protected Boolean doInBackground() throws Exception {
                 try {
                     ConfigControl login = ConfigControl.getInstancia();
+                    String folder = login.getFolderWork();                    
                     //                    
                     Process process = null;
                     //
                     publish("Iniciando Envio de metadatos.\n", String.valueOf(0));
                     // Creo el item en la coleccion ...
-                    String comando = "curl -d \"@" + login.getFolderWork().trim() + ":/metadatos_sb.json\" "
+                    // metadatos_sb = metas sin bitstreams.
+                    String comando = "curl -d \"@" + folder + ":/metadatos_sb.json\" "
                             + "-H \"Content-Type: application/json\" -H \"accept: application/json\" "
-                            + "--cookie \"" + login.getFolderWork().trim() + ":/cookies.txt\" -X POST "
+                            + "--cookie \"" + folder + "cookies.txt\" -X POST "
                             + login.getUri().trim() + item.getLink().trim() + "/metadata";
                     //
                     process = Runtime.getRuntime().exec(comando);
@@ -1243,7 +1192,7 @@ public final class RestControl {
                     JsonElement datos = parser.parse(result);
                     if (datos.isJsonObject()) {
                         JsonObject obj = (JsonObject) datos;
-                        // obj?? 
+                        // obj?? Para despues. 
                     } else {
                         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
                                 "Error en el envio de los metadatos al item: " + item.getName().trim() + ".", "Informe", JOptionPane.ERROR_MESSAGE);

@@ -202,6 +202,9 @@ public final class StardogControl {
         return capturaMetadados;
     }
 
+    /**
+     * Limpia la lista con los metadatos a capturar.
+     */
     public void clearCapturaMetadatos() {
         capturaMetadados.clear();
     }
@@ -269,6 +272,9 @@ public final class StardogControl {
         DefaultListModel<Metadato> lista = this.capturaMetadados;
         retornoValidacion = "";
         errorValidacion = false;
+        if (lista.size() == 0) {
+            errorValidacion = true;
+        }
         for (int i = 0; i < lista.size(); ++i) {
             final String aValue = lista.get(i).getValidarMetadato();
             if (aValue.length() > 0) {
@@ -438,13 +444,13 @@ public final class StardogControl {
             if (m.isObligatorio()) { //podria obviarse el isExists()
                 //final Metadato met = getComponente(objeto.get(i));
                 //if (m.isRepite()) {
-                    this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
+                this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
                 //} else {
-                    //para el caso que no exista se crea y agtega
+                //para el caso que no exista se crea y agtega
                 //    this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
-                    //listaMetadados.remove(i);
-                    //noMostrar.addElement(m); //ya no hace falta
-                }            
+                //listaMetadados.remove(i);
+                //noMostrar.addElement(m); //ya no hace falta
+            }
             if (m.isRepite()) {
                 noMostrar.addElement(m); //ya no hace falta
             }
@@ -482,7 +488,7 @@ public final class StardogControl {
         for (int i = 0; i < objeto.size(); ++i) {
             //y sino si ya no esta en la lista de captura
             //antes de agregar controlar si el metadatos se debe repetir
-            Metadato m = (Metadato) objeto.get(i);            
+            Metadato m = (Metadato) objeto.get(i);
             if (isExists(m)) {
                 //para el caso de que el metadato exista
                 //verificamos si este se puede repetir
@@ -795,7 +801,7 @@ public final class StardogControl {
         return m;
     }
 
-    //arreglar esto por favor.
+    // FIX ME.
     private void ordenar() {
         ArrayList<Metadato> auxList = new ArrayList<>();
         for (int i = 0; i < capturaMetadados.size(); ++i) {
@@ -805,6 +811,20 @@ public final class StardogControl {
         capturaMetadados.removeAllElements();
         for (int j = 0; j < auxList.size(); ++j) {
             capturaMetadados.add(j, auxList.get(j));
+        }
+    }
+
+    // FIX ME.
+    private void ordenarMetadatos() {
+        ArrayList<Metadato> auxList = new ArrayList<>();
+        for (int i = 0; i < listaMetadados.size(); ++i) {
+            auxList.add(listaMetadados.get(i));
+        }
+        auxList.sort(Comparator.comparing(Metadato::getRotulo));
+        listaMetadados.removeAllElements();
+        for (int j = 0; j < auxList.size(); ++j) {
+            //listaMetadados.add(j, auxList.get(j));
+            listaMetadados.addElement(auxList.get(j));
         }
     }
 
@@ -1000,47 +1020,37 @@ public final class StardogControl {
      *
      * @return
      * @throws StardogException
+     *
+     * public DefaultListModel getMetadatos() throws StardogException {
+     *
+     * ArrayList<String> auxMetadatos = new ArrayList<>(); BindingSet fila;
+     * TupleQueryResult aResult;
+     *
+     * //POR ALGUNA RAZON QUE DESCONOZCO NO DEVUELVE LA CANTIDAD QUE TIRA
+     * PROTÉGÉ. listaMetadados.clear(); IRI iri1 =
+     * Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf"); IRI
+     * iri2 =
+     * Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#"
+     * + "Educational");
+     *
+     * SelectQuery aQuery = conexionStardog.select( "SELECT DISTINCT ?sujeto " +
+     * "WHERE { " + " ?sujeto ?predicado ?objeto. " + "} " );
+     * aQuery.parameter("predicado", iri1); //aQuery.parameter("predicado7",
+     * iri2); aResult = aQuery.execute(); while (aResult.hasNext()) { fila =
+     * aResult.next();
+     *
+     * //System.out.println("fila..:" + fila); final String aSujeto =
+     * fila.getValue("sujeto").stringValue();
+     *
+     * //System.out.println("dominio..:" + aValue1); //revisamos el campo.
+     * //System.out.println("rango..:" + aValue2); //revisamos el campo.
+     * //System.out.println("subClase..:" + aValue3); //revisamos el campo.
+     * //System.out.println("Sujeto..:" + aSujeto); //revisamos el campo. final
+     * Metadato m1 = new Metadato(aSujeto, aSujeto);
+     *
+     * if (!auxMetadatos.contains(aSujeto)) { auxMetadatos.add(aSujeto);
+     * listaMetadados.addElement(m1); } } return listaMetadados; }
      */
-    public DefaultListModel getMetadatos() throws StardogException {
-
-        ArrayList<String> auxMetadatos = new ArrayList<>();
-        BindingSet fila;
-        TupleQueryResult aResult;
-
-        //POR ALGUNA RAZON QUE DESCONOZCO NO DEVUELVE LA CANTIDAD QUE TIRA PROTÉGÉ.
-        listaMetadados.clear();
-        IRI iri1 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-        IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
-
-        SelectQuery aQuery = conexionStardog.select(
-                "SELECT DISTINCT ?sujeto "
-                + "WHERE { "
-                + " ?sujeto ?predicado ?objeto. "
-                + "} "
-        );
-        aQuery.parameter("predicado", iri1);
-        //aQuery.parameter("predicado7", iri2);
-        aResult = aQuery.execute();
-        while (aResult.hasNext()) {
-            fila = aResult.next();
-
-            //System.out.println("fila..:" + fila);
-            final String aSujeto = fila.getValue("sujeto").stringValue();
-
-            //System.out.println("dominio..:" + aValue1); //revisamos el campo.
-            //System.out.println("rango..:" + aValue2); //revisamos el campo.
-            //System.out.println("subClase..:" + aValue3); //revisamos el campo.
-            //System.out.println("Sujeto..:" + aSujeto); //revisamos el campo.
-            final Metadato m1 = new Metadato(aSujeto, aSujeto);
-
-            if (!auxMetadatos.contains(aSujeto)) {
-                auxMetadatos.add(aSujeto);
-                listaMetadados.addElement(m1);
-            }
-        }
-        return listaMetadados;
-    }
-
     /**
      * Extrae de la ontologia los formatos de los OA
      *
@@ -1570,12 +1580,11 @@ public final class StardogControl {
 
     /**
      *
-     * @param filtro No se aplica de momento.
      * @return Lista con los metadatos presentes en la ontología.
      * @throws StardogException
      *
      */
-    public DefaultListModel getMetadatos_v3(Metadato filtro) {
+    public DefaultListModel getMetadatos_v3() {
         try {
             BindingSet fila;
             TupleQueryResult aResult;
@@ -1588,18 +1597,18 @@ public final class StardogControl {
             IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             SelectQuery aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
-            aQuery.parameter("buscar", filtro.getTipo());
+            aQuery.parameter("tipo", iri1);
+            //aQuery.parameter("buscar", filtro.getTipo());
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1617,17 +1626,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1646,17 +1655,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1667,6 +1676,7 @@ public final class StardogControl {
                 listaMetadados.addElement(m1);
             }
             // -----------------------------------------------------------------------------
+            /*
             // obtenemos los metadatos de Title.           
             iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
                     + "Title");
@@ -1674,17 +1684,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1694,6 +1704,7 @@ public final class StardogControl {
                 m1.setRotulo(rotulo);
                 listaMetadados.addElement(m1);
             }
+             */
             // -----------------------------------------------------------------------------
             // obtenemos los metadatos de Instantiation.           
             iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
@@ -1702,17 +1713,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1723,6 +1734,7 @@ public final class StardogControl {
                 listaMetadados.addElement(m1);
             }
             // -----------------------------------------------------------------------------
+            /*
             // obtenemos los metadatos de Date.           
             iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
                     + "Date");
@@ -1730,17 +1742,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1750,6 +1762,7 @@ public final class StardogControl {
                 m1.setRotulo(rotulo);
                 listaMetadados.addElement(m1);
             }
+             */
             // -----------------------------------------------------------------------------
             // obtenemos los metadatos de Educational.           
             iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
@@ -1758,17 +1771,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri2);
+            aQuery.parameter("tipo", iri2);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1786,17 +1799,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri2);
+            aQuery.parameter("tipo", iri2);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1814,17 +1827,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri1);
+            aQuery.parameter("tipo", iri1);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1842,17 +1855,17 @@ public final class StardogControl {
             iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
 
             aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subClase "
+                    "SELECT DISTINCT ?subclase "
                     + "WHERE { "
-                    + " ?subClase ?predicado ?tipoMetadata."
+                    + " ?subclase ?predicado ?tipo."
                     + "} "
             );
             aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipoMetadata", iri2);
+            aQuery.parameter("tipo", iri2);
             aResult = aQuery.execute();
             while (aResult.hasNext()) {
                 fila = aResult.next();
-                final String aValue = fila.getValue("subClase").stringValue();
+                final String aValue = fila.getValue("subclase").stringValue();
                 final Metadato m1 = new Metadato(aValue);
                 final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
                 final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
@@ -1873,7 +1886,7 @@ public final class StardogControl {
         return listaMetadados;
     }
 
-    public DefaultListModel getMetadatos_v4(Metadato filtro) {
+    public DefaultListModel getMetadatos_v4() {
         try {
             BindingSet fila;
             TupleQueryResult aResult;
@@ -1911,6 +1924,77 @@ public final class StardogControl {
         } catch (Exception ex) {
             Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return listaMetadados;
+    }
+
+    public DefaultListModel getMetadatos_v5() {
+        try {
+            BindingSet fila;
+            TupleQueryResult aResult;
+            listaMetadados.removeAllElements();            
+            
+            // obtenemos los metadatos de IntelectualProperty.           
+            //IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#IntelectualProperty");
+            //IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
+            IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+            /*
+            SelectQuery aQuery = conexionStardog.select(
+                    "SELECT distinct ?subclase "
+                    + "WHERE { "
+                    + "?subclase ?predicado ?tipo."
+                    + "} "
+            );
+            aQuery.parameter("predicado", iri3);
+            aQuery.parameter("tipo", iri1);
+            aResult = aQuery.execute();
+            while (aResult.hasNext()) {
+                fila = aResult.next();
+                final String aValue = fila.getValue("subclase").stringValue();
+                final Metadato m1 = new Metadato(aValue);
+                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
+                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
+                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
+                m1.setObligatorio(obligatorio);
+                m1.setRepite(repite);
+                m1.setRotulo(rotulo);
+                //listaMetadados.addElement(m1);
+            }*/
+            // -----------------------------------------------------------------------------
+
+            // obtenemos los metadatos presentes en la ontologia.           
+            //iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#Instantiation");
+            //IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
+            IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#Metadata");            
+
+            SelectQuery aQuery = conexionStardog.select(
+                    "SELECT distinct ?subclase "
+                    + "WHERE { "
+                    + " ?subclase ?predicado ?metadata."
+                    + "} "
+            );
+            aQuery.parameter("predicado", iri3);
+            aQuery.parameter("metadata", iri2);
+            //aQuery.parameter("buscar", filtro.getTipo());
+            aResult = aQuery.execute();
+            while (aResult.hasNext()) {
+                fila = aResult.next();
+                final String aValue = fila.getValue("subclase").stringValue();
+                final Metadato m1 = new Metadato(aValue);
+                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
+                if (!rotulo.isEmpty()) {
+                    final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
+                    final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
+                    m1.setObligatorio(obligatorio);
+                    m1.setRepite(repite);
+                    m1.setRotulo(rotulo);
+                    listaMetadados.addElement(m1);
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // ordenamos
+        this.ordenarMetadatos();
         return listaMetadados;
     }
 

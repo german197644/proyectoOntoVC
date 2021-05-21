@@ -14,7 +14,6 @@ import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.ItemRest;
 import Modelo.Metadato;
-import com.sun.prism.impl.BaseGraphics;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +23,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -123,11 +121,12 @@ public class Depositando extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listaOA = new javax.swing.JList<>();
         jPanel18 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnObtenerMetas = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
         listaMetadato = new javax.swing.JList<>();
         jPanel14 = new javax.swing.JPanel();
         btnAgregarMetadato = new javax.swing.JButton();
+        btnRestablecerMetas = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         captura = new javax.swing.JScrollPane();
@@ -321,8 +320,13 @@ public class Depositando extends javax.swing.JFrame {
 
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jButton1.setText("Obtener Metadatos del Objeto de Aprendizaje");
-        jPanel18.add(jButton1);
+        btnObtenerMetas.setText("Obtener Metadatos del Objeto de Aprendizaje");
+        btnObtenerMetas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnObtenerMetasActionPerformed(evt);
+            }
+        });
+        jPanel18.add(btnObtenerMetas);
 
         jPanel7.add(jPanel18);
 
@@ -345,6 +349,14 @@ public class Depositando extends javax.swing.JFrame {
             }
         });
         jPanel14.add(btnAgregarMetadato);
+
+        btnRestablecerMetas.setText("Restablecer selección");
+        btnRestablecerMetas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRestablecerMetasActionPerformed(evt);
+            }
+        });
+        jPanel14.add(btnRestablecerMetas);
 
         jPanel7.add(jPanel14);
 
@@ -639,18 +651,32 @@ public class Depositando extends javax.swing.JFrame {
             StardogControl base = StardogControl.getInstancia();
             // Se valida si hay coleccion seleccionada, recursos seleccionados y 
             // los metadatos no tengan errores.
-
             int opcion = cbOpcion.getSelectedIndex();
             opcion += 1;
             switch (opcion) {
                 case 1:
-                    if ((this.coleccion == null) | (listaRecursos.getModel().getSize() == 0)
-                            | (base.isErrorValidacion())) {
-                        String msg = "";
-                        msg = "Hay errores en los datos. Verifique: \n";
+                    String msg = "";
+                    String msg_inicial = "Verifique por favor: \n";
+                    if (this.coleccion == null) {
+                        if (msg.isEmpty()) {
+                            msg = msg_inicial;
+                        }
                         msg = msg + "La selección de la Colección.\n";
+                    }
+                    if (listaRecursos.getModel().getSize() == 0) {
+                        if (msg.isEmpty()) {
+                            msg = msg_inicial;
+                        }
                         msg = msg + "La selección de los recursos.\n";
-                        msg = msg + "Que no tengan errores los metadatos [Rótulos en rojo]. \n";
+                    }
+                    if (base.validarMetadatos_v2()) {
+                        if (msg.isEmpty()) {
+                            msg = msg_inicial;
+                        }
+                        msg = msg + "Ingresado los metadatos y no tenga errores [Rótulos en rojo]. \n";
+                    }
+                    //| (base.isErrorValidacion())) {
+                    if (!msg.isEmpty()) {
                         JOptionPane.showMessageDialog(this, msg, "Información", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
@@ -831,6 +857,10 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_cbOpcionActionPerformed
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
+
+    }//GEN-LAST:event_listaOAMouseClicked
+
+    private void btnObtenerMetasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnObtenerMetasActionPerformed
         DialogWaitControl wait = new DialogWaitControl();
 
         SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
@@ -888,15 +918,58 @@ public class Depositando extends javax.swing.JFrame {
                 System.out.println("filtrando ..........");
                 if (listaOA.getSelectedIndex() >= 0) {
                     mySwingWorker.execute();
-                    wait.makeWait("Obteniendo datos.", this);                    
+                    wait.makeWait("Obteniendo datos.", evt);
                 }
             }
         } catch (Exception ex) {
             Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }//GEN-LAST:event_btnObtenerMetasActionPerformed
 
+    private void btnRestablecerMetasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestablecerMetasActionPerformed
+        DialogWaitControl wait = new DialogWaitControl();
+        //
+        SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
+            @Override
+            protected JPanel doInBackground() throws Exception {
+                //publish("Procesando... por favor espere.\n");
+                wait.setMensaje("Procesando... por favor espere.");
+                listMetadatos.removeAllElements();
+                StardogControl base = StardogControl.getInstancia();
+                listMetadatos = base.getMetadatos_v5(); // mejorado.
+                JPanel unPanel = new JPanel();
+                //seteamos los metadatos a cargar                
+                base.clearCapturaMetadatos();
+                DefaultListModel misMetas = base.getListaMetadados();
+                listaMetadato.setModel(misMetas);
+                //captura.updateUI();
+                //                
+                //habilitamos la lista de metadatos.
+                if (listMetadatos.size() > 0) {
+                    listaMetadato.setEnabled(true);
+                } else {
+                    listaMetadato.setEnabled(false);
+                }
+                wait.close();
+                return unPanel;
+            }
 
-    }//GEN-LAST:event_listaOAMouseClicked
+            @Override
+            protected void process(List<String> chunks) {
+                taConsola.append(chunks.get(0));
+            }
+
+            @Override
+            protected void done() {
+                //captura.getViewport().setView(this.get());
+                captura.getViewport().removeAll();
+                captura.updateUI();
+            }
+        };
+        
+        mySwingWorker.execute();
+        wait.makeWait("Obteniendo metadatos.", evt);
+    }//GEN-LAST:event_btnRestablecerMetasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -938,10 +1011,11 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JButton btnDelFichero;
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnObtenerItems;
+    private javax.swing.JButton btnObtenerMetas;
+    private javax.swing.JButton btnRestablecerMetas;
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
     private javax.swing.JComboBox<String> cbOpcion;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;

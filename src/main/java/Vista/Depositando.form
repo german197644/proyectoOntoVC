@@ -501,10 +501,13 @@
                         <Property name="alignment" type="int" value="0"/>
                       </Layout>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="jButton1">
+                        <Component class="javax.swing.JButton" name="btnObtenerMetas">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Obtener Metadatos del Objeto de Aprendizaje"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnObtenerMetasActionPerformed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -552,6 +555,14 @@
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAgregarMetadatoActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JButton" name="btnRestablecerMetas">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Restablecer selecci&#xf3;n"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRestablecerMetasActionPerformed"/>
                           </Events>
                         </Component>
                       </SubComponents>
