@@ -37,7 +37,7 @@ public class Depositando extends javax.swing.JFrame {
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
     ItemRest item = null;
-    DefaultListModel listMetadatos = new DefaultListModel();
+    DefaultListModel mistMetadatos = new DefaultListModel();
 
     public Depositando() {
         initComponents();
@@ -798,9 +798,9 @@ public class Depositando extends javax.swing.JFrame {
             Filtrando filtro = new Filtrando(this, rootPaneCheckingEnabled);
             // seteamos el modelo del repositorio en el filtro
             filtro.setTree(jTree1.getModel());
-            if (listMetadatos != null) {
+            if (mistMetadatos != null) {
                 // seteamos la lista de metadatos en el filtro.
-                filtro.setMetadatos(listMetadatos);
+                filtro.setMetadatos(mistMetadatos);
             } else {
                 filtro.setMetadatos(new DefaultListModel());
             }
@@ -870,10 +870,10 @@ public class Depositando extends javax.swing.JFrame {
                 wait.setMensaje("Procesando... por favor espere.");
                 Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
                 System.out.println("dato: " + dato.getTipo());
-                listMetadatos.removeAllElements();
+                mistMetadatos.removeAllElements();
                 StardogControl base = StardogControl.getInstancia();
-                listMetadatos = base.getMetadatos_v2(dato); // mejorado.                    
-                //listaMetadato.setModel(listMetadatos);
+                mistMetadatos = base.getMetadatos_v2(dato); // mejorado.                    
+                //listaMetadato.setModel(mistMetadatos);
                 //preseteamos el panel de captura con los metadatos obligatorios.
                 publish("Seteando Panel de carga... por favor espere.\n");
                 //wait.setMensaje("Seteando Panel de carga... por favor espere.");
@@ -883,7 +883,7 @@ public class Depositando extends javax.swing.JFrame {
                 listaMetadato.setModel(misMetas);
                 //                
                 //habilitamos la lista de metadatos.
-                if (listMetadatos.size() > 0) {
+                if (mistMetadatos.size() > 0) {
                     listaMetadato.setEnabled(true);
                 } else {
                     listaMetadato.setEnabled(false);
@@ -901,7 +901,7 @@ public class Depositando extends javax.swing.JFrame {
             protected void done() {
                 try {
                     captura.getViewport().setView(this.get());
-                    if (listMetadatos.size() > 0) {
+                    if (mistMetadatos.size() > 0) {
                         captura.setEnabled(true);
                     }
                 } catch (InterruptedException | ExecutionException ex) {
@@ -927,48 +927,24 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_btnObtenerMetasActionPerformed
 
     private void btnRestablecerMetasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestablecerMetasActionPerformed
-        DialogWaitControl wait = new DialogWaitControl();
-        //
-        SwingWorker<JPanel, String> mySwingWorker = new SwingWorker<JPanel, String>() {
-            @Override
-            protected JPanel doInBackground() throws Exception {
-                //publish("Procesando... por favor espere.\n");
-                wait.setMensaje("Procesando... por favor espere.");
-                listMetadatos.removeAllElements();
-                StardogControl base = StardogControl.getInstancia();
-                listMetadatos = base.getMetadatos_v5(); // mejorado.
-                JPanel unPanel = new JPanel();
-                //seteamos los metadatos a cargar                
-                base.clearCapturaMetadatos();
-                DefaultListModel misMetas = base.getListaMetadados();
-                listaMetadato.setModel(misMetas);
-                //captura.updateUI();
-                //                
-                //habilitamos la lista de metadatos.
-                if (listMetadatos.size() > 0) {
-                    listaMetadato.setEnabled(true);
-                } else {
-                    listaMetadato.setEnabled(false);
-                }
-                wait.close();
-                return unPanel;
+        try {
+            mistMetadatos.removeAllElements();
+            StardogControl base = StardogControl.getInstancia();
+            mistMetadatos = base.getMetadatos_v5(taConsola,evt); // mejorado.            
+            //seteamos los metadatos a cargar
+            base.clearCapturaMetadatos();
+            DefaultListModel misMetas = base.getListaMetadados();
+            listaMetadato.setModel(misMetas);
+            //
+            //habilitamos la lista de metadatos.
+            if (mistMetadatos.size() > 0) {
+                listaMetadato.setEnabled(true);
+            } else {
+                listaMetadato.setEnabled(false);
             }
-
-            @Override
-            protected void process(List<String> chunks) {
-                taConsola.append(chunks.get(0));
-            }
-
-            @Override
-            protected void done() {
-                //captura.getViewport().setView(this.get());
-                captura.getViewport().removeAll();
-                captura.updateUI();
-            }
-        };
-        
-        mySwingWorker.execute();
-        wait.makeWait("Obteniendo metadatos.", evt);
+        } catch (Exception ex) {
+            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnRestablecerMetasActionPerformed
 
     /**

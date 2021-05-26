@@ -641,8 +641,14 @@ public class Configurando extends javax.swing.JDialog {
     }//GEN-LAST:event_btnGuardarBaseActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        FicheroControl unFichero = FicheroControl.getInstancia();
-        txtWorkFolder.setText(unFichero.getCarpeta(this).getAbsolutePath());
+        try {
+            FicheroControl unFichero = FicheroControl.getInstancia();
+            ConfigControl config = ConfigControl.getInstancia();
+            config.setFolderWork(unFichero.getCarpeta(this).getAbsolutePath());
+            txtWorkFolder.setText(config.getFolderWork());
+        } catch (IOException ex) {
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     /**

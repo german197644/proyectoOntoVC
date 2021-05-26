@@ -213,10 +213,17 @@ public final class ConfigControl {
         }
     }
 
-    public String getFolderWork() {
-        if ((this.folderWork.length() > 3) && (this.folderWork.charAt(folderWork.length() - 1) == '\\')) {
-            this.folderWork = this.folderWork.trim() + File.separator;
-        }        
+    public void setFolderWork(String path) {
+        //System.out.println("caracter setFolderWork(): " + path.charAt(path.length() - 1));
+        if ((path.length() > 3) && (path.charAt(folderWork.length() - 1) != '\\')) {
+            folderWork = path.trim() + File.separator;
+        } else {
+            folderWork = path.trim();
+        }
+        //System.out.println("Control.ConfigControl.getFolderWork(): " + folderWork);
+    }
+    
+    public String getFolderWork() {     
        return folderWork.trim();
     }
 
@@ -320,4 +327,5 @@ public final class ConfigControl {
         this.servidores_st = servidores_st;
     }
 
+    
 } //fin

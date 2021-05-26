@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -41,7 +40,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import org.json.JSONException;
 
 /**
  *
@@ -79,7 +77,10 @@ public final class RestControl {
         return modeloRepo;
     }
 
-
+    /**
+     *
+     * @return Verdadero si logra conectar. Falso en caso contrario.
+     */
     public boolean conectar() {
         String result = null;
         boolean result2 = false;
@@ -87,7 +88,6 @@ public final class RestControl {
             // traemos los datos de conexion.
             ConfigControl login = ConfigControl.getInstancia();
             String folder = login.getFolderWork();
-            
             // traerlo de configControler despues
             String url = login.getUri(); //"http://localhost:8080";
             String email = login.getUseRest(); //"gerdarpog@gmail.com";
@@ -110,11 +110,10 @@ public final class RestControl {
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
-
             result = br.lines().collect(Collectors.joining("\n"));
             //
             JsonParser parse = new JsonParser();
-            System.out.println("Valor de result : " + parse.parse(result).isJsonNull());
+            //System.out.println("Valor de result : " + parse.parse(result).isJsonNull());
             if (!parse.parse(result).isJsonNull()) {
                 JsonElement estado = ((JsonObject) parse.parse(result)).get("authenticated");
                 result2 = estado.getAsBoolean();
@@ -127,17 +126,15 @@ public final class RestControl {
 
     /**
      *
-     * @return
+     * @return Verdadero si logra desconectar. Falso en caso contrario.
      */
     public boolean desconectar() {
         String result = null;
         boolean result2 = false;
         try {
-            // traemos los datos de conexion.
+            // Traemos los datos de conexion.
             ConfigControl login = ConfigControl.getInstancia();
             String folder = login.getFolderWork();
-            System.out.println("Folder: " + folder.length());
-
             // traerlo de loginControler despues
             String url = login.getUri();  //"http://localhost:8080";
             String command = "curl -v -X POST " + url + "/rest/logout --cookie \"" + folder + "cookies.txt\"";
@@ -150,7 +147,10 @@ public final class RestControl {
                     + "--cookie \"" + folder + "cookies.txt\"";
             process = Runtime.getRuntime().exec(command);
             waitFor = process.waitFor();
-
+            if (waitFor != 0) {
+                return false;
+            }
+            //
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
@@ -182,16 +182,11 @@ public final class RestControl {
             String url = login.getUri().trim();
             // traemos los datos de conexion.            
             String folder = login.getFolderWork().trim();
-            System.out.println("nro. de letras del folder: " + folder.length());
-            if (folder.length() > 3) {
-                folder = folder + File.separator;
-                System.out.println("folder de conexion: " + folder);
-            }
-            //
+            //System.out.println("nro. de letras del folder: " + folder.length());
             command = "curl -v \"" + url.trim() + "/rest/status\" -H \"accept: application/json\" "
                     + "--cookie " + folder + "cookies.txt";
             //System.out.println("estatus: " + command);
-
+            //
             process = Runtime.getRuntime().exec(command);
             int waitFor = process.waitFor();
             if (waitFor != 0) {
@@ -203,12 +198,9 @@ public final class RestControl {
             BufferedReader br = new BufferedReader(isr);
             //
             result = br.lines().collect(Collectors.joining("\n"));
-            //c
             //
             JsonParser parse = new JsonParser();
-            //
-
-            //Gson gson = new Gson();
+            //            
             JsonReader reader = new JsonReader(new StringReader(result));
             reader.setLenient(true);
             JsonElement elem = parse.parse(reader);
@@ -220,7 +212,6 @@ public final class RestControl {
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //return estado == null ? false : estado.getAsBoolean();
         return estado;
     }
 
@@ -865,7 +856,7 @@ public final class RestControl {
                         Fichero archivo = (Fichero) lista.get(i);
                         cantFile = i + 1;
                         comando = "curl -k -4 -v  -H \"Content-Type: multipart/form-data\"  "
-                                + "-H \"accept: application/json\" --cookie "+folder+"cookies.txt "
+                                + "-H \"accept: application/json\" --cookie " + folder + "cookies.txt "
                                 + "-X POST "
                                 + login.getUri().trim() + item.trim() + "/bitstreams?name="
                                 + archivo.getUnFile().getName()
@@ -1164,7 +1155,7 @@ public final class RestControl {
             protected Boolean doInBackground() throws Exception {
                 try {
                     ConfigControl login = ConfigControl.getInstancia();
-                    String folder = login.getFolderWork();                    
+                    String folder = login.getFolderWork();
                     //                    
                     Process process = null;
                     //
