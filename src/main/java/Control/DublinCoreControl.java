@@ -42,9 +42,10 @@ public class DublinCoreControl {
      */
     public Object getEquivalenciaDC(String aValue) throws Exception {
         String equi = null;
-
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
-        properties.load(propertiesStream);
+        ConfigControl config = ConfigControl.getInstancia();
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigDublinCore();
         equi = properties.getProperty(aValue.trim().toLowerCase());
         if (equi.contains(",")) {
             StringTokenizer st = new StringTokenizer(equi, ",");            
@@ -60,8 +61,10 @@ public class DublinCoreControl {
      * @throws Exception
      */
     public String buscarEquivalencias(String aValue) throws Exception {
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
-        properties.load(propertiesStream);
+        ConfigControl config = ConfigControl.getInstancia();
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigDublinCore();
         final String equi = properties.getProperty(aValue.trim().toLowerCase());
         return equi.trim();
     }

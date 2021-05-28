@@ -38,6 +38,7 @@ public class DialogWaitControl {
     public DialogWaitControl(int max) {
         if (max > 0) {
             this.progressBar = new JProgressBar(0, max);
+            this.progressBar.setIndeterminate(false);
         } else {
             this.progressBar = new JProgressBar();
             this.progressBar.setIndeterminate(true);
@@ -48,11 +49,11 @@ public class DialogWaitControl {
         Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
         dialog = new JDialog(win, msg, Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setPreferredSize(new Dimension(300, 100));
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
+        //JProgressBar progressBar = new JProgressBar();
+        //progressBar.setIndeterminate(true);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(progressBar, BorderLayout.CENTER);
-        panel.add(new JLabel("Please wait......."), BorderLayout.PAGE_START);
+        panel.add(new JLabel("Procesando metadatos, por favor espere..."), BorderLayout.PAGE_START);
         dialog.add(panel);
         dialog.pack();
         dialog.setLocationRelativeTo(win);
@@ -108,8 +109,9 @@ public class DialogWaitControl {
         dialog.dispose();
     }
 
-    public void incrementarProBar(int valor) {
+    public void incrementar(int valor) {
         progressBar.setValue(valor);
+        //progressBar.updateUI();
     }
 
     public void setMensaje(String msg) {
@@ -122,6 +124,7 @@ public class DialogWaitControl {
             this.progressBar.setMinimum(0);
             this.progressBar.setMaximum(max);
             this.progressBar.setIndeterminate(false);
+            dialog.pack();
         }
     }
 }

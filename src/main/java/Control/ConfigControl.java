@@ -8,7 +8,7 @@ package Control;
 /**
  *
  * @author Pogliani, German
- * 
+ *
  */
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -24,7 +27,8 @@ import java.util.logging.Logger;
 
 public final class ConfigControl {
 
-    Properties properties = null;
+    Properties properties = new Properties();
+
     InputStream propertiesStream = null;
     OutputStream output = null;
 
@@ -46,21 +50,14 @@ public final class ConfigControl {
 
     //Config general
     private String folderWork = "";
+    //private String folderPropiedades = "E:\\Temp\\propiedades\\";
+    private String folderPropiedades = "";
     private String handle = "";
-  
+
     private static ConfigControl instancia = null;
 
     private ConfigControl() {
-        try {
-            getProperty();
-            //setup_stardog();
-            //setup_dspace();
-            //setup_general();
-        } catch (IOException ex) {
-            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        getConfigInicio();        
     }
 
     public static synchronized ConfigControl getInstancia() throws IOException {
@@ -70,45 +67,99 @@ public final class ConfigControl {
         return instancia;
     }
 
-    /**
-     * Este metodo permite la conexión al servidor de StarDog.
-     *
-     * @throws StardogException
-     */
-    /*
-    protected void conectarStardog() throws StardogException {
-        conexionStardog = ConnectionConfiguration
-                .to(this.base.trim())
-                .credentials(this.userst.trim(), this.passst.trim())
-                .server(this.url.trim())
-                .reasoning(true)
-                .connect()
-                .as(ReasoningConnection.class);
+    public void getConfigInicio() {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //return properties;
     }
 
-    protected void desconectarServidor() {
-        conexionStardog.close();
-    }
-     */
-    /**
-     *
-     * @throws Exception
-     */
-    /*protected void ConectarSword() throws Exception {
-        client = null;
-        sd = null;
-        client = new SWORDClient(new ClientConfiguration());
-        sd = client.getServiceDocument(uri.trim(),
-                new AuthCredentials(useRest.trim(), passRest.trim()));
-    }
-     */
-    private void getProperty() throws IOException {
-        properties = new Properties();
-        propertiesStream = new FileInputStream("src/main/java/propiedades/config.properties");
-        properties.load(propertiesStream);
+    public Properties getConfigMetadatos() {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
+            URI uri = new URI(inputURL.toString());
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return properties;
     }
 
-    public void setup_stardog() throws IOException {
+    public Properties getConfigValidacion() throws IOException {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/configValidacion.properties");
+            URI uri = new URI(inputURL.toString());
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return properties;
+    }
+
+    public Properties getConfigDublinCore() throws IOException {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/configDublinCore.properties");
+            URI uri = new URI(inputURL.toString());
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return properties;
+    }
+
+    /**
+     * Setea las variables de conexion de la base grafica.
+     */
+    public void setup_stardog() {
+        getConfigInicio();
+        if (properties == null) {                        
+            return;
+        }
         this.servidores_st.removeAllElements();
         this.nrourl = Integer.parseInt(properties.getProperty("nrourl").trim());
         for (int i = 1; i <= this.nrourl; i++) {
@@ -121,6 +172,10 @@ public final class ConfigControl {
     }
 
     public void setup_dspace() throws IOException {
+        getConfigInicio();
+        if (properties == null) {
+            return;
+        }
         this.servidores_rest.removeAllElements();
         this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
         for (int i = 1; i <= this.nrouri; i++) {
@@ -133,40 +188,105 @@ public final class ConfigControl {
     }
 
     public void setup_general() {
+        getConfigInicio();
+        if (properties == null) {
+            return;
+        }
         this.folderWork = properties.getProperty("folderwork").trim();
+        this.folderPropiedades = properties.getProperty("folderProperty").trim();
         this.handle = properties.getProperty("handle").trim();
     }
 
     //public void grabar_url_st(String aSdIRI, String aUser, String aPass, String aObo) 
-    public void grabarUrlSt(String url)
-            throws Exception {
-        nrourl = Integer.parseInt(properties.getProperty("nrourl"));
-        properties.setProperty("nrourl", String.valueOf(nrourl + 1));
-        properties.setProperty("url_" + (nrourl + 1), url);
-        File file = new File("src/main/java/propiedades/config.properties");
-        if (file.exists()) {
-            output = new FileOutputStream(file.getAbsoluteFile());
-            properties.store(output, "datos login-general v2");
+    public void grabarUrlSt(String url) throws Exception {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                nrourl = Integer.parseInt(properties.getProperty("nrourl"));
+                properties.setProperty("nrourl", String.valueOf(nrourl + 1));
+                properties.setProperty("url_" + (nrourl + 1), url);
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void grabarUriSw(String uri)
-            throws Exception {
-        nrouri = Integer.parseInt(properties.getProperty("nrouri"));
-        properties.setProperty("nrouri", String.valueOf(nrouri + 1));
-        properties.setProperty("uri_" + (nrourl + 1), uri);
-        File file = new File("src/main/java/propiedades/config.properties");
-        if (file.exists()) {
-            output = new FileOutputStream(file.getAbsoluteFile());
-            properties.store(output, "datos login-general v2");
+    public void grabarUriSw(String miuri) throws Exception {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                nrouri = Integer.parseInt(properties.getProperty("nrouri"));
+                properties.setProperty("nrouri", String.valueOf(nrouri + 1));
+                properties.setProperty("uri_" + (nrourl + 1), miuri);
+                // Grabamos en la propiedad.
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void grabarFolder(String folder) {
-        properties.setProperty("folderwork", folder);
-        File file = new File("src/main/java/propiedades/config.properties");
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                properties.setProperty("folderwork", folder);
+                properties.store(fos, "Parametros de la Configuración general");
+                fos.flush();
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void grabarFolderProperty(String folder) {
+        System.out.println(this.folderPropiedades + "config.properties");
+        File file = new File(this.folderPropiedades + "config.properties");
         if (file.exists()) {
             try {
+                properties.setProperty("folderProperty", folder);
                 output = new FileOutputStream(file.getAbsoluteFile());
                 try {
                     properties.store(output, "datos login-general v2");
@@ -176,55 +296,76 @@ public final class ConfigControl {
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            this.folderPropiedades = folder;
+            System.out.println("No existe archivo. Se seteo uno por defecto");
         }
     }
 
     public void grabarHandle(String unHandle) {
-        properties.setProperty("handle", unHandle);
-        File file = new File("src/main/java/propiedades/config.properties");
-        if (file.exists()) {
-            try {
-                output = new FileOutputStream(file.getAbsoluteFile());
-                try {
-                    properties.store(output, "datos login-general v2");
-                } catch (IOException ex) {
-                    Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
             }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                properties.setProperty("handle", unHandle);
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void grabarBase(String miBase) {
-        properties.setProperty("base", miBase);
-        File file = new File("src/main/java/propiedades/config.properties");
-        if (file.exists()) {
-            try {
-                output = new FileOutputStream(file.getAbsoluteFile());
-                try {
-                    properties.store(output, "datos Config-General v2");
-                } catch (IOException ex) {
-                    Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
             }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                properties.setProperty("base", miBase);
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void setFolderWork(String path) {
         //System.out.println("caracter setFolderWork(): " + path.charAt(path.length() - 1));
-        if ((path.length() > 3) && (path.charAt(folderWork.length() - 1) != '\\')) {
+        if ((path.length() > 3) && (path.charAt(path.length() - 1) != '\\')) {
             folderWork = path.trim() + File.separator;
         } else {
             folderWork = path.trim();
         }
         //System.out.println("Control.ConfigControl.getFolderWork(): " + folderWork);
     }
-    
-    public String getFolderWork() {     
-       return folderWork.trim();
+
+    public String getFolderWork() {
+        return folderWork.trim();
     }
 
     public String getHandle() {
@@ -327,5 +468,16 @@ public final class ConfigControl {
         this.servidores_st = servidores_st;
     }
 
-    
+    public String getFolderPropiedades() {
+        return folderPropiedades;
+    }
+
+    public void setFolderPropiedades(String path) {
+        if ((path.length() > 3) && (path.charAt(path.length() - 1) != '\\')) {
+            this.folderPropiedades = path.trim() + File.separator;
+        } else {
+            this.folderPropiedades = path.trim();
+        }
+    }
+
 } //fin

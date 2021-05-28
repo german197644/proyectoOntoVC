@@ -13,6 +13,7 @@ import Control.StardogControl;
 import com.complexible.stardog.StardogException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -41,7 +42,7 @@ public class Configurando extends javax.swing.JDialog {
     // 
     boolean restlogin, stardoglogin = false;
 
-    // salia de los resultados.
+    // Salida de los resultados.
     JTextArea consola;
 
     /**
@@ -52,48 +53,27 @@ public class Configurando extends javax.swing.JDialog {
      */
     public Configurando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-
+        //
+        initComponents();
+        this.setTitle("Preferencias");
+        this.setLocationRelativeTo(null);
+        //
+        restlogin = false;
+        stardoglogin = false;
+        //
         try {
-            initComponents();
-            this.setTitle("Preferencias");
-            this.setLocationRelativeTo(null);
-
-            restlogin = false;
-            stardoglogin = false;
-
+            // Seteamos los campos de la ventana.
             config = ConfigControl.getInstancia();
             config.setup_stardog();
             config.setup_dspace();
-            config.setup_general();
-
-            // STARDOG
-            this.st_url.removeAllItems();
-            this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
-            this.st_bd.setText(config.getBase());
-            this.st_usuario.setText(config.getUserst());
-            this.st_pass.setText(config.getPassst());
-            stardog = StardogControl.getInstancia();
-            // fin coneccion stardog
-
-            // DSpace
-            this.sw_url.removeAllItems();
-            this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
-            this.sw_usuario.setText(config.getUseRest());
-            this.sw_pass.setText(config.getPassRest());
-            //this.sw_obo.setText(login.getObo()); // ya no aplica.
-            rest = RestControl.getInstancia();
-            // fin coneccion DSpace
-
-            // General
-            this.txtWorkFolder.setText(config.getFolderWork());
-            this.txtHandle.setText(config.getHandle());
-            // fin General                        
         } catch (IOException ex) {
             Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        //
+        config.setup_general();
+        //
+        // Seteamos la configracion de la ventana.
+        this.setConfiguracion();
     }
 
     /**
@@ -102,6 +82,38 @@ public class Configurando extends javax.swing.JDialog {
      */
     public void setConsola(JTextArea consola) {
         this.consola = consola;
+    }
+
+    private void setConfiguracion() {
+        try {
+            if (config.getProperties() != null) {
+                // STARDOG
+                //this.st_url.removeAllItems();
+                this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
+                this.st_url.updateUI();
+                this.st_bd.setText(config.getBase());
+                this.st_usuario.setText(config.getUserst());
+                this.st_pass.setText(config.getPassst());
+                stardog = StardogControl.getInstancia();
+                // fin coneccion stardog
+
+                // DSpace
+                //this.sw_url.removeAllItems();
+                this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
+                this.sw_url.updateUI();
+                this.sw_usuario.setText(config.getUseRest());
+                this.sw_pass.setText(config.getPassRest());
+                //this.sw_obo.setText(login.getObo()); // ya no aplica.
+                rest = RestControl.getInstancia();
+                // fin coneccion DSpace
+
+                // General
+                this.txtWorkFolder.setText(config.getFolderWork());
+                this.txtHandle.setText(config.getHandle());
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -157,6 +169,11 @@ public class Configurando extends javax.swing.JDialog {
         txtWorkFolder = new javax.swing.JTextField();
         btnEditar = new javax.swing.JButton();
         btnGuardarUT = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        txtFolderProperty = new javax.swing.JTextField();
+        btnPropiedades = new javax.swing.JButton();
+        btnSaveFolderProperty = new javax.swing.JButton();
         jPanel14 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtHandle = new javax.swing.JTextField();
@@ -394,82 +411,113 @@ public class Configurando extends javax.swing.JDialog {
         jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setText("Unidad de trabajo");
+        jLabel2.setText("Carpeta de trabajo");
         jPanel13.add(jLabel2);
 
         txtWorkFolder.setColumns(25);
-        txtWorkFolder.setText("E:/");
-        jPanel13.add(txtWorkFolder);
+        txtWorkFolder.setText("E:\\");
+            jPanel13.add(txtWorkFolder);
 
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jPanel13.add(btnEditar);
+            btnEditar.setText("Editar");
+            btnEditar.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnEditarActionPerformed(evt);
+                }
+            });
+            jPanel13.add(btnEditar);
 
-        btnGuardarUT.setText("Guardar cambios");
-        btnGuardarUT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarUTActionPerformed(evt);
-            }
-        });
-        jPanel13.add(btnGuardarUT);
+            btnGuardarUT.setText("Guardar cambios");
+            btnGuardarUT.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnGuardarUTActionPerformed(evt);
+                }
+            });
+            jPanel13.add(btnGuardarUT);
 
-        jPanel17.add(jPanel13);
+            jPanel17.add(jPanel13);
 
-        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+            jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel1.setText("Handle - web browser");
-        jPanel14.add(jLabel1);
+            jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+            jLabel4.setText("Carpeta de propiedades");
+            jPanel6.add(jLabel4);
 
-        txtHandle.setColumns(25);
-        txtHandle.setText("http://localhot:8080/xmlui/handle/");
-        jPanel14.add(txtHandle);
+            txtFolderProperty.setColumns(25);
+            txtFolderProperty.setText("E:\\Temp\\propiedades\\");
+                txtFolderProperty.setEnabled(false);
+                jPanel6.add(txtFolderProperty);
 
-        btnGuardarHandle.setText("Guardar cambios");
-        btnGuardarHandle.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarHandleActionPerformed(evt);
-            }
-        });
-        jPanel14.add(btnGuardarHandle);
+                btnPropiedades.setText("Editar");
+                btnPropiedades.setEnabled(false);
+                btnPropiedades.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        btnPropiedadesActionPerformed(evt);
+                    }
+                });
+                jPanel6.add(btnPropiedades);
 
-        jLabel3.setText("ej:  (http://localhot:8080/xmlui)");
-        jPanel14.add(jLabel3);
+                btnSaveFolderProperty.setText("Guardar cambios");
+                btnSaveFolderProperty.setEnabled(false);
+                btnSaveFolderProperty.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        btnSaveFolderPropertyActionPerformed(evt);
+                    }
+                });
+                jPanel6.add(btnSaveFolderProperty);
 
-        jPanel17.add(jPanel14);
+                jPanel17.add(jPanel6);
 
-        generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
+                jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
-        jTabbedPane1.addTab("Datos generales", generalPanel);
+                jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+                jLabel1.setText("Handle - web browser");
+                jPanel14.add(jLabel1);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+                txtHandle.setColumns(25);
+                txtHandle.setText("http://localhot:8080/xmlui/handle/");
+                jPanel14.add(txtHandle);
 
-        panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
+                btnGuardarHandle.setText("Guardar cambios");
+                btnGuardarHandle.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        btnGuardarHandleActionPerformed(evt);
+                    }
+                });
+                jPanel14.add(btnGuardarHandle);
 
-        btnConectar.setText("Conectar");
-        btnConectar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConectarActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(btnConectar);
+                jLabel3.setText("ej:  (http://localhot:8080/xmlui)");
+                jPanel14.add(jLabel3);
 
-        btnCancelar.setText("Cancelar");
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarActionPerformed(evt);
-            }
-        });
-        panel_inferior.add(btnCancelar);
+                jPanel17.add(jPanel14);
 
-        getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+                generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+                jTabbedPane1.addTab("Datos generales", generalPanel);
+
+                getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+                panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
+
+                btnConectar.setText("Conectar");
+                btnConectar.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        btnConectarActionPerformed(evt);
+                    }
+                });
+                panel_inferior.add(btnConectar);
+
+                btnCancelar.setText("Cancelar");
+                btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        btnCancelarActionPerformed(evt);
+                    }
+                });
+                panel_inferior.add(btnCancelar);
+
+                getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
+
+                pack();
+            }// </editor-fold>//GEN-END:initComponents
 
     private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
         DialogWaitControl wait = new DialogWaitControl(2);
@@ -486,21 +534,19 @@ public class Configurando extends javax.swing.JDialog {
                     config.setPassRest(new String(sw_pass.getPassword()));    //private String passw = "";
                     // conectamos
                     restlogin = rest.conectar();
-
                     // -----------------------------------------------------------------
                     //conectar a DSpace a traves de Stardog api
                     // seteamos las variables primero
-                    config.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";           
+                    config.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";
                     config.setUserst(st_usuario.getText());    //private String userst = "";
                     config.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
                     config.setBase(st_bd.getText());    //private String base = "";
-                    // conectar a Stardog 
-
+                    
+                    // conectar a Stardog
                     publish(">> Conectando a Stardog...\n", "1");
                     stardog.conectar();
-
                     stardoglogin = stardog.estatus();
-
+                    
                     publish(">> Autenticación finalizada.\n", "2");
                     System.out.println("restLogin : " + restlogin);
                     System.out.println("Stardog Login : " + stardoglogin);
@@ -516,13 +562,18 @@ public class Configurando extends javax.swing.JDialog {
                 setVisible(false);
                 return null;
             }
-
+            
             @Override
             protected void process(List<String> chunks) {
-                wait.incrementarProBar(Integer.parseInt(chunks.get(1)));
+                wait.incrementar(Integer.parseInt(chunks.get(1)));
                 consola.append(chunks.get(0));
             }
         };
+        //
+        //config.setup_stardog();
+        //config.setup_dspace();
+        //this.setConfiguracion();
+        // volvemos a traer los datos de conexion ?
         mySwingWorker.execute();
         wait.makeWait("Conectando...", evt, 0);
     }//GEN-LAST:event_btnConectarActionPerformed
@@ -606,7 +657,7 @@ public class Configurando extends javax.swing.JDialog {
     }//GEN-LAST:event_sw_passActionPerformed
 
     private void btnGuardarUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarUTActionPerformed
-        int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);        
+        int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);
         if (result == 0) {
             if (!txtWorkFolder.getText().isEmpty()) {
                 config.grabarFolder(txtWorkFolder.getText());
@@ -616,9 +667,13 @@ public class Configurando extends javax.swing.JDialog {
                 btnConectar.setEnabled(false);
             }
         } else {
-            this.txtWorkFolder.setText(config.getFolderWork());
+            Properties miConfig = null;
+            config.getConfigInicio();
+            miConfig = config.getProperties();
+            if (miConfig != null) {
+                this.txtWorkFolder.setText(config.getFolderWork());
+            }
         }
-
     }//GEN-LAST:event_btnGuardarUTActionPerformed
 
     private void btnGuardarHandleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarHandleActionPerformed
@@ -641,15 +696,44 @@ public class Configurando extends javax.swing.JDialog {
     }//GEN-LAST:event_btnGuardarBaseActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        FicheroControl unFichero = FicheroControl.getInstancia();
+        Properties p = new Properties();
+        config.getConfigInicio();
+        p = config.getProperties();
+        if (p != null) {
+            config.setFolderWork(unFichero.getCarpeta(this).getAbsolutePath());
+            txtWorkFolder.setText(config.getFolderWork());
+        }
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnPropiedadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPropiedadesActionPerformed
         try {
             FicheroControl unFichero = FicheroControl.getInstancia();
             ConfigControl config = ConfigControl.getInstancia();
-            config.setFolderWork(unFichero.getCarpeta(this).getAbsolutePath());
-            txtWorkFolder.setText(config.getFolderWork());
+            if (config.getProperties() != null) {
+                config.setFolderPropiedades(unFichero.getCarpeta(this).getAbsolutePath());
+                txtFolderProperty.setText(config.getFolderPropiedades());
+            }
         } catch (IOException ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configurando.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnEditarActionPerformed
+    }//GEN-LAST:event_btnPropiedadesActionPerformed
+
+    private void btnSaveFolderPropertyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveFolderPropertyActionPerformed
+        int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);
+        if (result == 0) {
+            if (!txtFolderProperty.getText().isEmpty()) {
+                config.grabarFolderProperty(txtFolderProperty.getText());
+                config.setup_general();// VOLVEMOS A SETEAR
+                btnConectar.setEnabled(true);
+            } else {
+                btnConectar.setEnabled(false);
+            }
+        } else if (config.getProperties() != null) {
+            this.txtWorkFolder.setText(config.getFolderWork());
+        }
+    }//GEN-LAST:event_btnSaveFolderPropertyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -668,13 +752,17 @@ public class Configurando extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Configurando.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -703,6 +791,8 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JButton btnGuardarBase;
     private javax.swing.JButton btnGuardarHandle;
     private javax.swing.JButton btnGuardarUT;
+    private javax.swing.JButton btnPropiedades;
+    private javax.swing.JButton btnSaveFolderProperty;
     private javax.swing.JButton btn_agregar_st;
     private javax.swing.JButton btn_agregar_sw;
     private javax.swing.JPanel cont_stardog;
@@ -711,6 +801,7 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -723,6 +814,7 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -745,6 +837,7 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPasswordField sw_pass;
     private javax.swing.JComboBox<String> sw_url;
     private javax.swing.JTextField sw_usuario;
+    private javax.swing.JTextField txtFolderProperty;
     private javax.swing.JTextField txtHandle;
     private javax.swing.JTextField txtWorkFolder;
     private javax.swing.JLabel userStardogLabel;

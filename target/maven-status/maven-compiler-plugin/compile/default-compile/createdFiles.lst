@@ -14,7 +14,6 @@ Modelo\ComunidadRest.class
 Vista\Filtrando$3.class
 Vista\Depositando$13.class
 Vista\Filtrando.class
-Control\RestControl$11.class
 Modelo\ColeccionRest.class
 Vista\Configurando$14.class
 Vista\Configurando$5.class
@@ -28,13 +27,14 @@ Vista\Configurando$7.class
 Control\RestControl.class
 Vista\Configurando$11.class
 Vista\Depositando$3.class
-Control\RestControl$10.class
+Vista\Configurando$23$1.class
 Control\RestControl$2.class
 Vista\Depositando$1.class
 Modelo\Fichero.class
 Modelo\JLabelLink$1.class
 Vista\Depositando$15.class
 Vista\Configurando$4.class
+Vista\Depositando$19.class
 Vista\Depositando.class
 Vista\Filtrando$4.class
 Vista\Filtrando$11$1.class
@@ -43,7 +43,7 @@ Modelo\JLabelLink.class
 Vista\Depositando$12.class
 Vista\Filtrando$7.class
 Control\RestControl$9.class
-Vista\Configurando$21$1.class
+Vista\Configurando$23.class
 Vista\Depositando$7.class
 Vista\Depositando$9.class
 Control\RestControl$6.class
@@ -57,7 +57,9 @@ Vista\Configurando$19.class
 Vista\Filtrando$1.class
 Vista\Configurando$15.class
 Control\RestControl$3.class
+Vista\Depositando$18.class
 Vista\Depositando$6.class
+Vista\Configurando$22.class
 Vista\Filtrando$8.class
 Vista\Configurando$2.class
 Vista\Filtrando$10.class
@@ -75,7 +77,9 @@ Vista\Filtrando$5.class
 Vista\Filtrando$11.class
 Vista\Filtrando$9.class
 Vista\Configurando$3.class
+Control\StardogControl$2.class
 Vista\Filtrando$2.class
 Control\RestControl$4.class
 Vista\Configurando$13.class
+Vista\Depositando$17.class
 Vista\Configurando$6.class

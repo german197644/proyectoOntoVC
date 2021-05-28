@@ -588,7 +588,8 @@ public final class RestControl {
                     //String comando = "curl -X GET -H \"accept: application/json\" "
                     //        + conn.getUri().trim() + "/rest/communities";
                     String comando = "curl \"" + conn.getUri().trim() + "/rest/communities\"";
-                    Process process = Runtime.getRuntime().exec(comando);
+                    //System.out.println(".doInBackground(): " + comando);
+                    Process process = Runtime.getRuntime().exec(comando);                    
                     //
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);

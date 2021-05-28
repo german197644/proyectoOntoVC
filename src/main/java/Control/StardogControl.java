@@ -237,9 +237,14 @@ public final class StardogControl {
     private int setOrdenMetadatos(Metadato m) throws Exception {
         String pos = null;
         int ret = 0;
-        //Properties properties = new Properties();
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-        properties.load(propertiesStream);
+
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();        
+        //Properties properties = new Properties();        
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        //propertiesStream = new FileInputStream(folder + "configMetadatos.properties");
+        //properties.load(propertiesStream);        
+        properties = config.getConfigMetadatos();
         pos = properties.getProperty(m.getTipo().trim().toLowerCase() + ".orden");
         if (pos == null) {
             pos = properties.getProperty("default");
@@ -316,9 +321,13 @@ public final class StardogControl {
 
     private boolean obligatorioMetadato(String aString) throws Exception {
         boolean obligatorio = false;
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-
-        properties.load(propertiesStream);
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades(); 
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        //propertiesStream = new FileInputStream(folder+"configMetadatos.properties");
+        //
+        //properties.load(propertiesStream);
+        properties = config.getConfigMetadatos();
         //String cadena = aString + ".obligatorio";
         String aValue = properties.getProperty(aString + ".obligatorio");
         //System.out.println("metadato obligatorio: " + cadena + "  | " + aValue);
@@ -331,9 +340,13 @@ public final class StardogControl {
 
     private boolean repiteMetadato(String aString) throws Exception {
         boolean repite = false;
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-
-        properties.load(propertiesStream);
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();        
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        //propertiesStream = new FileInputStream(folder+"configMetadatos.properties");
+        //
+        //properties.load(propertiesStream);
+        properties = config.getConfigMetadatos();
         String aValue = properties.getProperty(aString.trim().toLowerCase() + ".repite");
         if ((aValue != null) && (aValue.trim().equals("1"))) {
             //System.out.println("metadato que repite: " + aString);
@@ -344,8 +357,10 @@ public final class StardogControl {
 
     private String rotuloMetadato(String aString) throws Exception {
         String rot = "";
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-        properties.load(propertiesStream);
+        ConfigControl config = ConfigControl.getInstancia();
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigMetadatos();
 
         String aValue = properties.getProperty(aString + ".rotulo");
 
@@ -842,8 +857,7 @@ public final class StardogControl {
         ArrayList<String> auxMetadatos = new ArrayList<>();
         BindingSet fila;
         TupleQueryResult aResult;
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-        properties.load(propertiesStream);
+        //
         listaMetadados.clear();
         IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#" + "snrd");
         IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "isSnrdTypeOf");
@@ -928,8 +942,7 @@ public final class StardogControl {
         //ArrayList<String> auxMetadatos = new ArrayList<>();
         BindingSet fila;
         TupleQueryResult aResult;
-        propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-        properties.load(propertiesStream);
+        //
         listaMetadados.clear();
         IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#" + "snrd");
         IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "isSnrdTypeOf");
@@ -1589,9 +1602,7 @@ public final class StardogControl {
         try {
             BindingSet fila;
             TupleQueryResult aResult;
-            //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-            //properties.load(propertiesStream);
-            // obtenemos los metadatos de Content.
+            //
             listaMetadados.clear();
             IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#" + "Content");
             IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
@@ -1891,9 +1902,7 @@ public final class StardogControl {
         try {
             BindingSet fila;
             TupleQueryResult aResult;
-            //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-            //properties.load(propertiesStream);
-            // obtenemos los metadatos de Content.
+
             listaMetadados.clear();
             IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
                     + "");
@@ -1928,11 +1937,12 @@ public final class StardogControl {
         return listaMetadados;
     }
 
-    public DefaultListModel getMetadatos_v5(JTextArea ta, ActionEvent evt) 
+    public void getMetadatos_v5(JTextArea ta, ActionEvent evt)
             throws InterruptedException, ExecutionException {
-        SwingWorker<DefaultListModel, String> mySwingWorker = new SwingWorker<DefaultListModel, String>() {
+        DialogWaitControl wait = new DialogWaitControl(50);
+        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
             @Override
-            protected DefaultListModel doInBackground() throws Exception {                
+            protected Void doInBackground() throws Exception {
                 try {
                     BindingSet fila;
                     TupleQueryResult aResult;
@@ -1980,10 +1990,19 @@ public final class StardogControl {
                     aQuery.parameter("predicado", iri3);
                     aQuery.parameter("metadata", iri2);
                     //aQuery.parameter("buscar", filtro.getTipo());
-                    aResult = aQuery.execute();                    
-                    DialogWaitControl wait = new DialogWaitControl(aResult.getBindingNames().size());
-                    wait.makeWait("Procesando metadatos. Aguarde", evt);
+                    aResult = aQuery.execute();
+                    //                    
+                    //DialogWaitControl wait = new DialogWaitControl(100);
+                    //wait.makeWait("Procesando metadatos. Aguarde", evt);
                     publish("Procesando metadatos. Aguarde. \n");
+                    int cantTuplas = 0;
+                    TupleQueryResult aResult2 = aResult;
+                    while (aResult2.hasNext()) {
+                        fila = aResult2.next();
+                        cantTuplas += 1;
+                    }
+                    System.out.println("cantidad de tuplas :" + cantTuplas);
+                    wait.setearProgressBar(cantTuplas);
                     int intProgressBar = 0;
                     while (aResult.hasNext()) {
                         fila = aResult.next();
@@ -1996,32 +2015,32 @@ public final class StardogControl {
                             m1.setObligatorio(obligatorio);
                             m1.setRepite(repite);
                             m1.setRotulo(rotulo);
-                            listaMetadados.addElement(m1);                            
+                            listaMetadados.addElement(m1);
                         }
                         intProgressBar += 1;
-                        wait.setearProgressBar(intProgressBar);
+                        wait.incrementar(intProgressBar);
                     }
-                    wait.close();
                     publish("Proceso de extracción de metadatos terminada.\n");
                 } catch (Exception ex) {
                     Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return listaMetadados;
+                //return listaMetadados;
+                wait.close();
+                return null;
             }
 
             @Override
             protected void process(List<String> chunks) {
                 ta.append(chunks.get(0));
-            }                                    
+            }
         };
 
         // ordenamos
-        
         mySwingWorker.execute();
-        
+        wait.makeWait("Procesando metadatos. Aguarde", evt);
         this.ordenarMetadatos();
-        
-        return mySwingWorker.get();
+
+        //return mySwingWorker.get();
     }
 
 }

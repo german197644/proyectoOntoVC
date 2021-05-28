@@ -930,7 +930,8 @@ public class Depositando extends javax.swing.JFrame {
         try {
             mistMetadatos.removeAllElements();
             StardogControl base = StardogControl.getInstancia();
-            mistMetadatos = base.getMetadatos_v5(taConsola,evt); // mejorado.            
+            base.getMetadatos_v5(taConsola,evt); // mejorado.
+            mistMetadatos = base.getListaMetadados();
             //seteamos los metadatos a cargar
             base.clearCapturaMetadatos();
             DefaultListModel misMetas = base.getListaMetadados();

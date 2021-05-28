@@ -5,13 +5,12 @@
  */
 package Modelo;
 
+import Control.ConfigControl;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Component;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Properties;
@@ -38,12 +37,11 @@ public class Metadato {
     private boolean obligatorio; //indica si el metadato es obligatorio.
     private boolean repite; //indica si el metadato es cargado mas de una vez.
     Properties properties = new Properties();
-    
+
     //private String data = null; //descripcion del mismo
     //private IRI iriMeta = null; //la IRI
     //private boolean selected = false; //para el arbol
     //private String manejador = null; //driver del metadato
-
     public Component getEtiqueta() {
         return etiqueta;
     }
@@ -158,7 +156,6 @@ public class Metadato {
         }
 
         //System.out.println("salimos ...");
-
         if (!aValue.equals("")) {
             this.etiqueta.setForeground(Color.red);
         } else {
@@ -173,9 +170,9 @@ public class Metadato {
         String aValue = "";
         Component[] components = jp.getComponents();
         //System.out.println("es un jpanel ");
-        for (Component component : components) {        
+        for (Component component : components) {
             if (component instanceof JTextField) {
-                String jt = component.getName();                
+                String jt = component.getName();
                 if (jt != null) {
                     jt = component.getName().trim().toLowerCase();
                     switch (jt) {
@@ -196,10 +193,12 @@ public class Metadato {
 
     private String validateTextField(JTextField txt) throws FileNotFoundException, IOException {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
-
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
         final String cadenaValidacion = properties.getProperty(this.tipo.toLowerCase().trim() + ".validacion");
 
         if ((cadenaValidacion == null) || cadenaValidacion.equals("default")) {
@@ -218,9 +217,12 @@ public class Metadato {
 
     private String validateTextArea(JTextArea txt) throws FileNotFoundException, IOException {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         final String cadenaValidacion = properties.getProperty(this.tipo.toLowerCase() + ".validacion").trim();
 
@@ -314,9 +316,12 @@ public class Metadato {
     //por defecto el componente debe ser un JTextField, JTextArea.
     private String validarXdefecto() throws FileNotFoundException, IOException {
         String auxValue = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
@@ -339,9 +344,12 @@ public class Metadato {
 
     private String validarDcmiperiod() throws FileNotFoundException, IOException {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
@@ -365,9 +373,12 @@ public class Metadato {
 
     private String validarNombre() throws Exception {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
@@ -391,10 +402,13 @@ public class Metadato {
 
     private String validarIdentifier() throws Exception {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
-
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
+        
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
             //Ej: Gaston Paul      
@@ -417,9 +431,12 @@ public class Metadato {
 
     private String validarPublished() throws Exception {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
@@ -443,9 +460,12 @@ public class Metadato {
 
     private String validarTitulo() throws FileNotFoundException, IOException {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
 
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
@@ -501,10 +521,12 @@ public class Metadato {
 
     private String validarTextArea() throws FileNotFoundException, IOException {
         String aux = "";
-        //Properties properties = new Properties();
-        InputStream propertiesStream = new FileInputStream("src/main/java/propiedades/configValidacion.properties");
-        properties.load(propertiesStream);
-
+        //
+        ConfigControl config = ConfigControl.getInstancia();
+        //String folder = config.getFolderPropiedades();
+        //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigValidacion();
         if (colector instanceof JTextArea) {
             JTextArea txt = (JTextArea) colector;
             //Ej: El arte de la guerra.
@@ -535,12 +557,12 @@ public class Metadato {
      * @return Retorna los valores captados por el contenedor de la clase.
      * @throws java.lang.Exception
      */
-    public String getContenidoMetadato() 
+    public String getContenidoMetadato()
             throws Exception {
-        String aValue = "";        
+        String aValue = "";
         if (colector instanceof JTextField) {
             aValue = ((JTextField) colector).getText();
-        } else if (colector instanceof JTextArea) {            
+        } else if (colector instanceof JTextArea) {
             aValue = ((JTextArea) colector).getText();
         } else if (colector instanceof JDateChooser) {
             Calendar fecha = ((JDateChooser) colector).getCalendar();
@@ -553,7 +575,7 @@ public class Metadato {
             if (obj instanceof String) {
                 aValue = (String) obj;
             }
-        } else if (colector instanceof JScrollPane) {           
+        } else if (colector instanceof JScrollPane) {
             JViewport viewport = ((JScrollPane) colector).getViewport();
             Component[] components = viewport.getComponents();
             Object obj = components[0];
@@ -561,11 +583,11 @@ public class Metadato {
                 aValue = ((JTextArea) obj).getText();
             }
         } else if (colector instanceof JPanel) {
-            Component[] components = ((JPanel) colector).getComponents();            
-            for (Component component : components) {                
-                if (component instanceof JTextField) {                    
+            Component[] components = ((JPanel) colector).getComponents();
+            for (Component component : components) {
+                if (component instanceof JTextField) {
                     Object o = component;
-                    String jt = ((JTextField) o).getName().trim().toLowerCase();                    
+                    String jt = ((JTextField) o).getName().trim().toLowerCase();
                     switch (jt) {
                         case "apellido":
                             if (aValue.equals("")) {
