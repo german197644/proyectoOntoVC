@@ -48,7 +48,7 @@ public final class ConfigControl {
     private Integer nrourl = 0;
     private Vector<String> servidores_st = new Vector<>();
 
-    //Config general
+    // Configuracion general.
     private String folderWork = "";
     //private String folderPropiedades = "E:\\Temp\\propiedades\\";
     private String folderPropiedades = "";
@@ -85,8 +85,7 @@ public final class ConfigControl {
             }
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //return properties;
+        }        
     }
 
     public Properties getConfigMetadatos() {

@@ -55,9 +55,9 @@ public class Depositando extends javax.swing.JFrame {
         try {
             // rest api                
             RestControl rest = RestControl.getInstancia();
-            //if (rest.estatus()) {
+            if (rest.estatus()) {
             rest.estructuraRepositorio(taConsola, jTree1);
-            //}
+            }
 
             // stardog
             StardogControl baseGrafica = StardogControl.getInstancia();
