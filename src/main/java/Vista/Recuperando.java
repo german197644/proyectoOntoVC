@@ -13,9 +13,12 @@ import Modelo.ComunidadRest;
 import Modelo.JLabelLink;
 import Modelo.Metadato;
 import Modelo.TextAreaRenderer;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
@@ -28,7 +31,7 @@ import javax.swing.tree.TreePath;
  *
  * @author germa
  */
-public class Filtrando extends javax.swing.JDialog {
+public class Recuperando extends javax.swing.JDialog {
 
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
@@ -40,12 +43,16 @@ public class Filtrando extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public Filtrando(java.awt.Frame parent, boolean modal) {
+    public Recuperando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         try {
-            initComponents();
+            initComponents();            
             this.setLocationRelativeTo(null);
-
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            Dimension screenSize = toolkit.getScreenSize();
+            int height = screenSize.height - 30;
+            this.setBounds(0, 0, screenSize.width, height);
+            //
             tablaFiltro.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
             tablaFiltro.setRowHeight(50); // con 50 anda
 
@@ -59,7 +66,7 @@ public class Filtrando extends javax.swing.JDialog {
             jPanel17.add(link);
             //jPanel16.repaint();
         } catch (IOException ex) {
-            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -124,8 +131,6 @@ public class Filtrando extends javax.swing.JDialog {
         jPanel17 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
@@ -135,6 +140,8 @@ public class Filtrando extends javax.swing.JDialog {
         jLabel14 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         tablaFiltro = new javax.swing.JTable();
+        base = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Filtrado de Items");
@@ -166,6 +173,8 @@ public class Filtrando extends javax.swing.JDialog {
 
         jPanel8.add(jScrollPane1);
 
+        jPanel11.setBackground(new java.awt.Color(0, 153, 153));
+
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
@@ -178,6 +187,9 @@ public class Filtrando extends javax.swing.JDialog {
         );
 
         jPanel8.add(jPanel11);
+
+        jPanel13.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel13.setAutoscrolls(true);
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
@@ -361,22 +373,12 @@ public class Filtrando extends javax.swing.JDialog {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        jButton2.setText("Cancelar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel2.add(jButton2);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
-
         jPanel3.setLayout(new java.awt.GridLayout(1, 0));
 
+        jPanel4.setPreferredSize(new java.awt.Dimension(480, 230));
         jPanel4.setLayout(new java.awt.BorderLayout(5, 5));
 
+        jPanel15.setBackground(new java.awt.Color(0, 153, 153));
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
 
         jLabel15.setText("     ");
@@ -431,6 +433,19 @@ public class Filtrando extends javax.swing.JDialog {
 
         getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
 
+        base.setBackground(new java.awt.Color(0, 102, 204));
+        base.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jButton2.setText("Cancelar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        base.add(jButton2);
+
+        getContentPane().add(base, java.awt.BorderLayout.PAGE_END);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -440,7 +455,7 @@ public class Filtrando extends javax.swing.JDialog {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         RestControl rest = RestControl.getInstancia();
-        rest.unFiltro(coleccion, evt, tablaFiltro, jTable1, 
+        rest.unFiltro2(coleccion, evt, tablaFiltro, jTable1, 
                 Integer.parseInt(fTextLimite.getText()), Integer.parseInt(txtOffSet.getText()));
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -481,7 +496,7 @@ public class Filtrando extends javax.swing.JDialog {
                 dtm.addRow(new Object[]{equivalente, txtMetadato.getText()});
             }
         } catch (Exception ex) {
-            Logger.getLogger(Filtrando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -518,21 +533,23 @@ public class Filtrando extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Filtrando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Filtrando dialog = new Filtrando(new javax.swing.JFrame(), true);
+                Recuperando dialog = new Recuperando(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -545,6 +562,7 @@ public class Filtrando extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel base;
     private javax.swing.JPanel center;
     private javax.swing.JFormattedTextField fTextLimite;
     private javax.swing.JButton jButton1;
@@ -580,7 +598,6 @@ public class Filtrando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;

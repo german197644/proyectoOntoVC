@@ -10,6 +10,9 @@ package Control;
  * @author Pogliani, German
  *
  */
+import java.awt.HeadlessException;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,14 +27,15 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public final class ConfigControl {
 
     Properties properties = new Properties();
-
     InputStream propertiesStream = null;
     OutputStream output = null;
-
     // Rest - variables de seteo
     private int nrouri = 0;
     private String uri = "";
@@ -57,7 +61,7 @@ public final class ConfigControl {
     private static ConfigControl instancia = null;
 
     private ConfigControl() {
-        getConfigInicio();        
+        //getConfigInicio();
     }
 
     public static synchronized ConfigControl getInstancia() throws IOException {
@@ -68,24 +72,38 @@ public final class ConfigControl {
     }
 
     public void getConfigInicio() {
+        URL inputURL = null;
+        URI uri = null;
+        ClassLoader classLoader = null;
+        //properties = null;
         try {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
             }
-            URL inputURL = classLoader.getResource("propiedades/config.properties");
-            URI uri = new URI(inputURL.toString());
-            // No fijamos si existe el archivo de configuracion.
+            //System.out.println("1");            
+            inputURL = classLoader.getResource("propiedades/config.properties");
+            //System.out.println("2");
+            if (inputURL != null) {
+                uri = new URI(inputURL.toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encuentra el archivo.\n");
+                properties = null;
+                return;
+            }
+            // No fijamos si existe el archivo de configuracion.            
             File file = new File(uri.getPath());
             if (file.exists()) {
+                //System.out.println("PATH: " + uri.getPath());
+                properties = new Properties();
                 propertiesStream = new FileInputStream(uri.getPath());
                 properties.load(propertiesStream);
             } else {
                 properties = null;
             }
-        } catch (URISyntaxException | IOException ex) {
+        } catch (HeadlessException | IOException | URISyntaxException ex) {
             Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
     }
 
     public Properties getConfigMetadatos() {
@@ -97,8 +115,9 @@ public final class ConfigControl {
             URL inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
             URI uri = new URI(inputURL.toString());
             File file = new File(uri.getPath());
-            if (file.exists()) {
+            if (file.exists()) {                
                 propertiesStream = new FileInputStream(uri.getPath());
+                properties = new Properties();
                 properties.load(propertiesStream);
             } else {
                 properties = null;
@@ -120,9 +139,11 @@ public final class ConfigControl {
             File file = new File(uri.getPath());
             if (file.exists()) {
                 propertiesStream = new FileInputStream(uri.getPath());
+                properties = new Properties();
                 properties.load(propertiesStream);
             } else {
                 properties = null;
+
             }
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,6 +162,7 @@ public final class ConfigControl {
             File file = new File(uri.getPath());
             if (file.exists()) {
                 propertiesStream = new FileInputStream(uri.getPath());
+                properties = new Properties();
                 properties.load(propertiesStream);
             } else {
                 properties = null;
@@ -155,39 +177,53 @@ public final class ConfigControl {
      * Setea las variables de conexion de la base grafica.
      */
     public void setup_stardog() {
-        getConfigInicio();
-        if (properties == null) {                        
-            return;
-        }
-        this.servidores_st.removeAllElements();
-        this.nrourl = Integer.parseInt(properties.getProperty("nrourl").trim());
-        for (int i = 1; i <= this.nrourl; i++) {
-            servidores_st.addElement(properties.getProperty("url_" + String.valueOf(i).trim()).trim());
-        }
-        this.url = properties.getProperty("url").trim();
-        this.userst = properties.getProperty("stuser").trim();
-        this.passst = properties.getProperty("stpass").trim();
-        this.base = properties.getProperty("base").trim();
-    }
-
-    public void setup_dspace() throws IOException {
-        getConfigInicio();
+        //getConfigInicio();
         if (properties == null) {
             return;
         }
-        this.servidores_rest.removeAllElements();
-        this.nrouri = Integer.parseInt(properties.getProperty("nrouri").trim());
-        for (int i = 1; i <= this.nrouri; i++) {
-            servidores_rest.addElement(properties.getProperty("uri" + "_" + String.valueOf(i).trim()).trim());
+        String auxnro = properties.getProperty("nrourl").trim();
+        if ((auxnro != null) && !(auxnro.isEmpty())) {
+            this.servidores_st.removeAllElements();
+            this.nrourl = Integer.parseInt(auxnro);
+            for (int i = 1; i <= this.nrourl; i++) {
+                String indice = "url_" + String.valueOf(i).trim();
+                String dato = properties.getProperty(indice).trim();
+                if ((dato != null) && (!dato.isEmpty())) {
+                    servidores_st.addElement(dato);
+                }
+            }
+            this.url = properties.getProperty("url").trim();
+            this.userst = properties.getProperty("stuser").trim();
+            this.passst = properties.getProperty("stpass").trim();
+            this.base = properties.getProperty("base").trim();
         }
-        this.uri = properties.getProperty("uri").trim();
-        this.useRest = properties.getProperty("restUser").trim();
-        this.passRest = properties.getProperty("restPass").trim();
-        //this.obo = properties.getProperty("obo").trim();
+    }
+
+    public void setup_dspace() throws IOException {
+        //getConfigInicio();
+        if (properties == null) {
+            return;
+        }
+        String auxnro = properties.getProperty("nrouri").trim();
+        if ((auxnro != null) && !(auxnro.isEmpty())) {
+            this.servidores_rest.removeAllElements();
+            this.nrouri = Integer.parseInt(auxnro);
+            for (int i = 1; i <= this.nrouri; i++) {
+                String indice = "uri_" + String.valueOf(i).trim();
+                String dato = properties.getProperty(indice).trim();
+                if ((dato != null) && (!dato.isEmpty())) {
+                    servidores_rest.addElement(dato);
+                }
+            }
+            this.uri = properties.getProperty("uri").trim();
+            this.useRest = properties.getProperty("restUser").trim();
+            this.passRest = properties.getProperty("restPass").trim();
+            //this.obo = properties.getProperty("obo").trim();
+        }
     }
 
     public void setup_general() {
-        getConfigInicio();
+        //getConfigInicio();
         if (properties == null) {
             return;
         }
@@ -197,8 +233,14 @@ public final class ConfigControl {
     }
 
     //public void grabar_url_st(String aSdIRI, String aUser, String aPass, String aObo) 
-    public void grabarUrlSt(String url) throws Exception {
+    /**
+     *
+     * @param url Nueva URL que aloja el servicio de Stardog.
+     * @param evt Evento que llama al método.
+     */
+    public void grabarUrlSt(String url, ActionEvent evt) {
         try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
@@ -213,10 +255,13 @@ public final class ConfigControl {
                 OutputStream fos = new FileOutputStream(uri.getPath());
                 //
                 nrourl = Integer.parseInt(properties.getProperty("nrourl"));
-                properties.setProperty("nrourl", String.valueOf(nrourl + 1));
-                properties.setProperty("url_" + (nrourl + 1), url);
+                String indice = String.valueOf(nrourl + 1);
+                properties.setProperty("nrourl", indice);
+                properties.setProperty("url_" + indice, url);
                 properties.store(fos, "Parámetros de la Configuración general");
                 fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
             } else {
                 properties = null;
             }
@@ -225,8 +270,138 @@ public final class ConfigControl {
         }
     }
 
-    public void grabarUriSw(String miuri) throws Exception {
+    public void refrescar_url_stardog(ActionEvent evt) {
         try {
+            //Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.                        
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                // cantidad de servidores actuales despues de eliminar.
+                try (OutputStream fos = new FileOutputStream(uri.getPath())) {
+                    // cantidad de servidores actuales despues de eliminar.
+                    int cantURL = this.servidores_st.size();
+                    properties.setProperty("nrourl", String.valueOf(cantURL));
+                    for (int i = 1; i <= cantURL; i++) {
+                        String clave = "url_" + String.valueOf(i);
+                        String valor = this.servidores_st.get(i - 1);
+                        properties.setProperty(clave, valor);
+                    }
+                    properties.store(fos, "Parámetros de la Configuración general");
+                    fos.flush();
+                    //JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+                }
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void refrescar_uri_dspace(ActionEvent evt) {
+        try {
+            //Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.                        
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                // cantidad de servidores actuales despues de eliminar.
+                try (OutputStream fos = new FileOutputStream(uri.getPath())) {
+                    // cantidad de servidores actuales despues de eliminar.
+                    int cantURI = this.servidores_rest.size();
+                    properties.setProperty("nrouri", String.valueOf(cantURI));
+                    for (int i = 1; i <= cantURI; i++) {
+                        String clave = "uri_" + String.valueOf(i);
+                        String valor = this.servidores_rest.get(i - 1);
+                        properties.setProperty(clave, valor);
+                    }
+                    properties.store(fos, "Parámetros de la Configuración general");
+                    fos.flush();
+                    fos.close();
+                    //JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+                }
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void quitarUrlSt(int indice, ActionEvent evt) {
+        try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                String id = String.valueOf(indice);
+                properties.setProperty("url_" + id, "");
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void quitarUriSw(int indice, ActionEvent evt) {
+        try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                String id = String.valueOf(indice);
+                properties.setProperty("uri_" + id, "");
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                fos.close();
+                //JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void grabarUriSw(String miuri, ActionEvent evt) throws Exception {
+        try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
@@ -241,11 +416,17 @@ public final class ConfigControl {
                 OutputStream fos = new FileOutputStream(uri.getPath());
                 //
                 nrouri = Integer.parseInt(properties.getProperty("nrouri"));
-                properties.setProperty("nrouri", String.valueOf(nrouri + 1));
-                properties.setProperty("uri_" + (nrourl + 1), miuri);
+                String NewUriValor = String.valueOf(nrouri + 1);
+                //System.out.println("NewUriValor : " + NewUriValor);
+                properties.setProperty("nrouri", NewUriValor);
+                String uri_aux = "uri_" + NewUriValor;
+                //System.out.println("uri_aux : " + uri_aux + "    MiURI: " + miuri);
+                properties.setProperty(uri_aux, miuri);
                 // Grabamos en la propiedad.
                 properties.store(fos, "Parámetros de la Configuración general");
                 fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
             } else {
                 properties = null;
             }
@@ -254,8 +435,9 @@ public final class ConfigControl {
         }
     }
 
-    public void grabarFolder(String folder) {
+    public void grabarFolder(String folder, ActionEvent evt) {
         try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
@@ -272,6 +454,8 @@ public final class ConfigControl {
                 properties.setProperty("folderwork", folder);
                 properties.store(fos, "Parametros de la Configuración general");
                 fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
             } else {
                 properties = null;
             }
@@ -301,8 +485,9 @@ public final class ConfigControl {
         }
     }
 
-    public void grabarHandle(String unHandle) {
+    public void grabarHandle(String unHandle, ActionEvent evt) {
         try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
@@ -319,6 +504,8 @@ public final class ConfigControl {
                 properties.setProperty("handle", unHandle);
                 properties.store(fos, "Parámetros de la Configuración general");
                 fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
             } else {
                 properties = null;
             }
@@ -327,8 +514,9 @@ public final class ConfigControl {
         }
     }
 
-    public void grabarBase(String miBase) {
+    public void grabarBase(String miBase, ActionEvent evt) {
         try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
@@ -345,6 +533,8 @@ public final class ConfigControl {
                 properties.setProperty("base", miBase);
                 properties.store(fos, "Parámetros de la Configuración general");
                 fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
             } else {
                 properties = null;
             }
@@ -360,7 +550,6 @@ public final class ConfigControl {
         } else {
             folderWork = path.trim();
         }
-        //System.out.println("Control.ConfigControl.getFolderWork(): " + folderWork);
     }
 
     public String getFolderWork() {

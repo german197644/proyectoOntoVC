@@ -366,12 +366,10 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+            <Container class="javax.swing.JScrollPane" name="jScrollPane8">
               <Properties>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Consola"/>
-                  </Border>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[166, 130]"/>
                 </Property>
               </Properties>
               <AuxValues>
@@ -392,16 +390,7 @@
                       <Color blue="99" green="cc" red="ff" type="rgb"/>
                     </Property>
                     <Property name="columns" type="int" value="20"/>
-                    <Property name="lineWrap" type="boolean" value="true"/>
                     <Property name="rows" type="int" value="5"/>
-                    <Property name="toolTipText" type="java.lang.String" value=""/>
-                    <Property name="wrapStyleWord" type="boolean" value="true"/>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder/>
-                      </Border>
-                    </Property>
-                    <Property name="debugGraphicsOptions" type="int" value="-1"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -409,6 +398,11 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">
+          <Properties>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[300, 281]"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
               <BorderConstraints direction="Center"/>
@@ -468,6 +462,9 @@
                             <TitledBorder title="Objetos de Aprendizajes"/>
                           </Border>
                         </Property>
+                        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                          <Dimension value="[300, 103]"/>
+                        </Property>
                       </Properties>
                       <AuxValues>
                         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -503,7 +500,7 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="btnObtenerMetas">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="Obtener Metadatos del Objeto de Aprendizaje"/>
+                            <Property name="text" type="java.lang.String" value="Obtener Metadatos para el O.A. seleccionado"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnObtenerMetasActionPerformed"/>
@@ -533,7 +530,7 @@
                             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                               <StringArray count="0"/>
                             </Property>
-                            <Property name="selectionMode" type="int" value="0"/>
+                            <Property name="selectionMode" type="int" value="1"/>
                             <Property name="opaque" type="boolean" value="false"/>
                             <Property name="visibleRowCount" type="int" value="5"/>
                           </Properties>
@@ -551,7 +548,7 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="btnAgregarMetadato">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="Anexar Metadato"/>
+                            <Property name="text" type="java.lang.String" value="Describir Metadato"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAgregarMetadatoActionPerformed"/>
@@ -670,6 +667,11 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel10">
+          <Properties>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[800, 130]"/>
+            </Property>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
               <BorderConstraints direction="North"/>
@@ -712,6 +714,9 @@
                         <TitledBorder title="Estructura del Repositorio"/>
                       </Border>
                     </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[89, 125]"/>
+                    </Property>
                   </Properties>
                   <AuxValues>
                     <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -722,7 +727,7 @@
                     <Component class="javax.swing.JTree" name="jTree1">
                       <Properties>
                         <Property name="model" type="javax.swing.tree.TreeModel" editor="org.netbeans.modules.form.editors2.TreeModelEditor">
-                          <TreeModel code=""/>
+                          <TreeModel code="Repositorio"/>
                         </Property>
                         <Property name="componentPopupMenu" type="javax.swing.JPopupMenu" editor="org.netbeans.modules.form.ComponentChooserEditor">
                           <ComponentRef name="miMenu"/>
@@ -736,9 +741,17 @@
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="jPanel17">
+                  <Properties>
+                    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[60, 100]"/>
+                    </Property>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[50, 100]"/>
+                    </Property>
+                  </Properties>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-                    <Property name="columns" type="int" value="1"/>
+                    <Property name="columns" type="int" value="2"/>
                     <Property name="horizontalGap" type="int" value="5"/>
                     <Property name="rows" type="int" value="5"/>
                     <Property name="verticalGap" type="int" value="5"/>
@@ -748,7 +761,7 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="btnObtenerItems">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Extraer Items"/>
+                        <Property name="text" type="java.lang.String" value="Extraer los &#xed;tems"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnObtenerItemsActionPerformed"/>

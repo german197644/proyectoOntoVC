@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 
+ * 
+ * 
  */
 package Vista;
 
@@ -55,8 +55,8 @@ public class Configurando extends javax.swing.JDialog {
         super(parent, modal);
         //
         initComponents();
-        this.setTitle("Preferencias");
-        this.setLocationRelativeTo(null);
+        //this.setTitle("Preferencias");
+        //this.setLocationRelativeTo(null);
         //
         restlogin = false;
         stardoglogin = false;
@@ -64,6 +64,7 @@ public class Configurando extends javax.swing.JDialog {
         try {
             // Seteamos los campos de la ventana.
             config = ConfigControl.getInstancia();
+            config.getConfigInicio();
             config.setup_stardog();
             config.setup_dspace();
         } catch (IOException ex) {
@@ -74,11 +75,12 @@ public class Configurando extends javax.swing.JDialog {
         //
         // Seteamos la configracion de la ventana.
         this.setConfiguracion();
+
     }
 
     /**
      *
-     * @param consola
+     * @param consola Se muestran las novedades de la ejecucion.
      */
     public void setConsola(JTextArea consola) {
         this.consola = consola;
@@ -86,11 +88,18 @@ public class Configurando extends javax.swing.JDialog {
 
     private void setConfiguracion() {
         try {
+            this.setTitle("Preferencias");
+            this.setLocationRelativeTo(null);
             if (config.getProperties() != null) {
                 // STARDOG
                 //this.st_url.removeAllItems();
                 this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
-                this.st_url.updateUI();
+                //this.st_url.updateUI();
+                if (st_url.getSelectedIndex() >= 0) {
+                    st_otro.setText((String) st_url.getSelectedItem());
+                } else {
+                    st_otro.setText("");
+                }
                 this.st_bd.setText(config.getBase());
                 this.st_usuario.setText(config.getUserst());
                 this.st_pass.setText(config.getPassst());
@@ -100,7 +109,12 @@ public class Configurando extends javax.swing.JDialog {
                 // DSpace
                 //this.sw_url.removeAllItems();
                 this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
-                this.sw_url.updateUI();
+                //this.sw_url.updateUI();
+                if (sw_url.getSelectedIndex() >= 0) {
+                    sw_otro.setText((String) this.sw_url.getSelectedItem());
+                } else {
+                    sw_otro.setText("");
+                }
                 this.sw_usuario.setText(config.getUseRest());
                 this.sw_pass.setText(config.getPassRest());
                 //this.sw_obo.setText(login.getObo()); // ya no aplica.
@@ -111,6 +125,8 @@ public class Configurando extends javax.swing.JDialog {
                 this.txtWorkFolder.setText(config.getFolderWork());
                 this.txtHandle.setText(config.getHandle());
             }
+            // Visualizamos el panel.
+            this.loginPanel.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -132,6 +148,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         nombreBDStardogLabel = new javax.swing.JLabel();
         st_url = new javax.swing.JComboBox<>();
+        btnQuitarURL = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         nombreBDStardogLabel4 = new javax.swing.JLabel();
         st_otro = new javax.swing.JTextField();
@@ -149,6 +166,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel4 = new javax.swing.JPanel();
         nombreBDStardogLabel2 = new javax.swing.JLabel();
         sw_url = new javax.swing.JComboBox<>();
+        btnQuitarURI = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         nombreBDStardogLabel5 = new javax.swing.JLabel();
         sw_otro = new javax.swing.JTextField();
@@ -169,11 +187,6 @@ public class Configurando extends javax.swing.JDialog {
         txtWorkFolder = new javax.swing.JTextField();
         btnEditar = new javax.swing.JButton();
         btnGuardarUT = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        txtFolderProperty = new javax.swing.JTextField();
-        btnPropiedades = new javax.swing.JButton();
-        btnSaveFolderProperty = new javax.swing.JButton();
         jPanel14 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtHandle = new javax.swing.JTextField();
@@ -204,7 +217,20 @@ public class Configurando extends javax.swing.JDialog {
         st_url.setEditor(null);
         st_url.setFocusTraversalPolicyProvider(true);
         st_url.setMaximumSize(new java.awt.Dimension(56, 20));
+        st_url.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                st_urlActionPerformed(evt);
+            }
+        });
         jPanel1.add(st_url);
+
+        btnQuitarURL.setText("Borrar URL");
+        btnQuitarURL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuitarURLActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnQuitarURL);
 
         cont_stardog.add(jPanel1);
 
@@ -254,8 +280,6 @@ public class Configurando extends javax.swing.JDialog {
         passStardogLabel.setName(""); // NOI18N
         jPanel2.add(passStardogLabel);
 
-        st_pass.setEditable(false);
-        st_pass.setBackground(new java.awt.Color(255, 255, 255));
         st_pass.setColumns(30);
         st_pass.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -314,7 +338,20 @@ public class Configurando extends javax.swing.JDialog {
         jPanel4.add(nombreBDStardogLabel2);
 
         sw_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        sw_url.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sw_urlActionPerformed(evt);
+            }
+        });
         jPanel4.add(sw_url);
+
+        btnQuitarURI.setText("Borrar URL");
+        btnQuitarURI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuitarURIActionPerformed(evt);
+            }
+        });
+        jPanel4.add(btnQuitarURI);
 
         cont_sword.add(jPanel4);
 
@@ -436,88 +473,57 @@ public class Configurando extends javax.swing.JDialog {
 
             jPanel17.add(jPanel13);
 
-            jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+            jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
-            jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-            jLabel4.setText("Carpeta de propiedades");
-            jPanel6.add(jLabel4);
+            jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+            jLabel1.setText("Handle - web browser");
+            jPanel14.add(jLabel1);
 
-            txtFolderProperty.setColumns(25);
-            txtFolderProperty.setText("E:\\Temp\\propiedades\\");
-                txtFolderProperty.setEnabled(false);
-                jPanel6.add(txtFolderProperty);
+            txtHandle.setColumns(25);
+            txtHandle.setText("http://localhot:8080/xmlui/handle/");
+            jPanel14.add(txtHandle);
 
-                btnPropiedades.setText("Editar");
-                btnPropiedades.setEnabled(false);
-                btnPropiedades.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnPropiedadesActionPerformed(evt);
-                    }
-                });
-                jPanel6.add(btnPropiedades);
+            btnGuardarHandle.setText("Guardar cambios");
+            btnGuardarHandle.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnGuardarHandleActionPerformed(evt);
+                }
+            });
+            jPanel14.add(btnGuardarHandle);
 
-                btnSaveFolderProperty.setText("Guardar cambios");
-                btnSaveFolderProperty.setEnabled(false);
-                btnSaveFolderProperty.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnSaveFolderPropertyActionPerformed(evt);
-                    }
-                });
-                jPanel6.add(btnSaveFolderProperty);
+            jLabel3.setText("Ej.: http://localhot:8080/xmlui");
+            jPanel14.add(jLabel3);
 
-                jPanel17.add(jPanel6);
+            jPanel17.add(jPanel14);
 
-                jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+            generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
 
-                jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-                jLabel1.setText("Handle - web browser");
-                jPanel14.add(jLabel1);
+            jTabbedPane1.addTab("Datos generales", generalPanel);
 
-                txtHandle.setColumns(25);
-                txtHandle.setText("http://localhot:8080/xmlui/handle/");
-                jPanel14.add(txtHandle);
+            getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-                btnGuardarHandle.setText("Guardar cambios");
-                btnGuardarHandle.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnGuardarHandleActionPerformed(evt);
-                    }
-                });
-                jPanel14.add(btnGuardarHandle);
+            panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
 
-                jLabel3.setText("ej:  (http://localhot:8080/xmlui)");
-                jPanel14.add(jLabel3);
+            btnConectar.setText("Conectar");
+            btnConectar.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnConectarActionPerformed(evt);
+                }
+            });
+            panel_inferior.add(btnConectar);
 
-                jPanel17.add(jPanel14);
+            btnCancelar.setText("Cancelar");
+            btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnCancelarActionPerformed(evt);
+                }
+            });
+            panel_inferior.add(btnCancelar);
 
-                generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
+            getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
 
-                jTabbedPane1.addTab("Datos generales", generalPanel);
-
-                getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
-
-                panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
-
-                btnConectar.setText("Conectar");
-                btnConectar.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnConectarActionPerformed(evt);
-                    }
-                });
-                panel_inferior.add(btnConectar);
-
-                btnCancelar.setText("Cancelar");
-                btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-                    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                        btnCancelarActionPerformed(evt);
-                    }
-                });
-                panel_inferior.add(btnCancelar);
-
-                getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
-
-                pack();
-            }// </editor-fold>//GEN-END:initComponents
+            pack();
+        }// </editor-fold>//GEN-END:initComponents
 
     private void btnConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConectarActionPerformed
         DialogWaitControl wait = new DialogWaitControl(2);
@@ -525,34 +531,40 @@ public class Configurando extends javax.swing.JDialog {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    conn = false;
-                    //conectar a DSpace a traves de rest api
-                    // seteamos las variables primero
-                    publish(">> Conectando a DSpace...\n", "0");
-                    config.setUri((String) sw_url.getSelectedItem());    //private String uri = "";
-                    config.setUseRest(sw_usuario.getText());    //private String usesw = "";
-                    config.setPassRest(new String(sw_pass.getPassword()));    //private String passw = "";
+                    // Conectar a DSpace a traves de rest api. Seteamos las variables primero
+                    publish(">> Conectando con los servicios, Por favor espere. \n", "0");
+                    //config.setUri((String) sw_url.getSelectedItem());    //private String uri = "";                    
+                    config.setUri(sw_otro.getText().trim());
+                    config.setUseRest(sw_usuario.getText().trim());
+                    config.setPassRest(new String(sw_pass.getPassword()));
                     // conectamos
                     restlogin = rest.conectar();
+                    if (restlogin) {
+                        publish("Servicio DSpace: OK!.\n", "1");
+                    } else {
+                        publish("Servicio DSpace: DOWN!.\n", "1");
+                    }
                     // -----------------------------------------------------------------
                     //conectar a DSpace a traves de Stardog api
                     // seteamos las variables primero
-                    config.setUrl_st((String) st_url.getSelectedItem());    //private String url = "";
-                    config.setUserst(st_usuario.getText());    //private String userst = "";
-                    config.setPassst(new String(st_pass.getPassword()));    //private String passst = "";
-                    config.setBase(st_bd.getText());    //private String base = "";
-                    
+                    //config.setUrl_st((String) st_url.getSelectedItem());    
+                    config.setUrl_st(st_otro.getText().trim());
+                    config.setUserst(st_usuario.getText());
+                    config.setPassst(new String(st_pass.getPassword()));
+                    config.setBase(st_bd.getText());
                     // conectar a Stardog
-                    publish(">> Conectando a Stardog...\n", "1");
+                    publish(">> Conectando con el servicio de Stardog...\n", "1");
                     stardog.conectar();
                     stardoglogin = stardog.estatus();
-                    
-                    publish(">> Autenticación finalizada.\n", "2");
-                    System.out.println("restLogin : " + restlogin);
-                    System.out.println("Stardog Login : " + stardoglogin);
-                    if (restlogin && stardoglogin) {
-                        conn = true;
+                    if (stardoglogin) {
+                        publish("Servicio Stardog: OK!.\n", "2");
                     } else {
+                        publish("Servicio Stardog: DOWN!.\n", "2");
+                    }
+                    publish(">> Autenticación finalizada.\n", "3");
+                    //System.out.println("restLogin : " + restlogin);
+                    //System.out.println("Stardog Login : " + stardoglogin);
+                    if (!restlogin && !stardoglogin) {
                         JOptionPane.showMessageDialog(null, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (StardogException ex) {
@@ -562,20 +574,18 @@ public class Configurando extends javax.swing.JDialog {
                 setVisible(false);
                 return null;
             }
-            
+
             @Override
             protected void process(List<String> chunks) {
-                wait.incrementar(Integer.parseInt(chunks.get(1)));
                 consola.append(chunks.get(0));
+                //System.out.println(".process(): incremento: " + chunks.get(1));
+                if (Integer.parseInt(chunks.get(1)) != 3) {
+                    wait.incrementar(Integer.parseInt(chunks.get(1)));
+                }
             }
         };
-        //
-        //config.setup_stardog();
-        //config.setup_dspace();
-        //this.setConfiguracion();
-        // volvemos a traer los datos de conexion ?
         mySwingWorker.execute();
-        wait.makeWait("Conectando...", evt, 0);
+        wait.makeWait("Conectando...", evt);
     }//GEN-LAST:event_btnConectarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -592,7 +602,7 @@ public class Configurando extends javax.swing.JDialog {
             if (st_otro.getText().isEmpty()) {
                 return;
             }
-            config.grabarUrlSt(this.st_otro.getText());
+            config.grabarUrlSt(this.st_otro.getText(), evt);
             config.setup_stardog();
             this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
             this.st_otro.setText("");
@@ -630,10 +640,9 @@ public class Configurando extends javax.swing.JDialog {
             if (sw_otro.getText().isEmpty()) {
                 return;
             }
-            config.grabarUriSw(this.sw_otro.getText());
+            config.grabarUriSw(this.sw_otro.getText(), evt);
             config.setup_dspace();
             this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
-            //this.sw_url.updateUI();
             this.sw_otro.setText("");
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -660,7 +669,7 @@ public class Configurando extends javax.swing.JDialog {
         int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);
         if (result == 0) {
             if (!txtWorkFolder.getText().isEmpty()) {
-                config.grabarFolder(txtWorkFolder.getText());
+                config.grabarFolder(txtWorkFolder.getText(), evt);
                 config.setup_general();// VOLVEMOS A SETEAR
                 btnConectar.setEnabled(true);
             } else {
@@ -678,14 +687,14 @@ public class Configurando extends javax.swing.JDialog {
 
     private void btnGuardarHandleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarHandleActionPerformed
         if (!txtHandle.getText().isEmpty()) {
-            config.grabarHandle(txtHandle.getText());
+            config.grabarHandle(txtHandle.getText(), evt);
         }
     }//GEN-LAST:event_btnGuardarHandleActionPerformed
 
     private void btnGuardarBaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarBaseActionPerformed
         try {
             if (!st_bd.getText().isEmpty()) {
-                config.grabarBase(st_bd.getText());
+                config.grabarBase(st_bd.getText(), evt);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
@@ -706,34 +715,51 @@ public class Configurando extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
-    private void btnPropiedadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPropiedadesActionPerformed
+    private void btnQuitarURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarURLActionPerformed
         try {
-            FicheroControl unFichero = FicheroControl.getInstancia();
-            ConfigControl config = ConfigControl.getInstancia();
-            if (config.getProperties() != null) {
-                config.setFolderPropiedades(unFichero.getCarpeta(this).getAbsolutePath());
-                txtFolderProperty.setText(config.getFolderPropiedades());
+            if (st_url.getSelectedIndex() >= 0) {
+                int indice = st_url.getSelectedIndex() + 1;
+                //System.out.println("Vista.Configurando.btnQuitarURLActionPerformed()" + indice);
+                ConfigControl config = ConfigControl.getInstancia();
+                config.quitarUrlSt(indice, evt);
+                config.setup_stardog();
+                config.refrescar_url_stardog(evt);
+                this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
             }
         } catch (IOException ex) {
-            Logger.getLogger(Configurando.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnPropiedadesActionPerformed
+    }//GEN-LAST:event_btnQuitarURLActionPerformed
 
-    private void btnSaveFolderPropertyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveFolderPropertyActionPerformed
-        int result = JOptionPane.showConfirmDialog(this, "Desea Guardar?", "Confirme", JOptionPane.YES_NO_OPTION);
-        if (result == 0) {
-            if (!txtFolderProperty.getText().isEmpty()) {
-                config.grabarFolderProperty(txtFolderProperty.getText());
-                config.setup_general();// VOLVEMOS A SETEAR
-                btnConectar.setEnabled(true);
-            } else {
-                btnConectar.setEnabled(false);
+    private void btnQuitarURIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarURIActionPerformed
+        try {
+            if (sw_url.getSelectedIndex() >= 0) {
+                int indice = sw_url.getSelectedIndex() + 1;
+                //System.out.println("Vista.Configurando.btnQuitarURLActionPerformed()" + indice);
+                ConfigControl config = ConfigControl.getInstancia();
+                config.quitarUriSw(indice, evt);
+                config.setup_dspace();;
+                config.refrescar_uri_dspace(evt);
+                this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
             }
-        } else if (config.getProperties() != null) {
-            this.txtWorkFolder.setText(config.getFolderWork());
+        } catch (IOException ex) {
+            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnSaveFolderPropertyActionPerformed
+    }//GEN-LAST:event_btnQuitarURIActionPerformed
+
+    private void st_urlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_st_urlActionPerformed
+        if (st_url.getSelectedIndex() >= 0) {
+            st_otro.setText((String) st_url.getSelectedItem());
+            st_otro.updateUI();
+        }
+    }//GEN-LAST:event_st_urlActionPerformed
+
+    private void sw_urlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sw_urlActionPerformed
+        if (sw_url.getSelectedIndex() >= 0) {
+            sw_otro.setText((String) sw_url.getSelectedItem());
+            sw_otro.updateUI();
+        }
+    }//GEN-LAST:event_sw_urlActionPerformed
 
     /**
      * @param args the command line arguments
@@ -791,8 +817,8 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JButton btnGuardarBase;
     private javax.swing.JButton btnGuardarHandle;
     private javax.swing.JButton btnGuardarUT;
-    private javax.swing.JButton btnPropiedades;
-    private javax.swing.JButton btnSaveFolderProperty;
+    private javax.swing.JButton btnQuitarURI;
+    private javax.swing.JButton btnQuitarURL;
     private javax.swing.JButton btn_agregar_st;
     private javax.swing.JButton btn_agregar_sw;
     private javax.swing.JPanel cont_stardog;
@@ -801,7 +827,6 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -814,7 +839,6 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -837,7 +861,6 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPasswordField sw_pass;
     private javax.swing.JComboBox<String> sw_url;
     private javax.swing.JTextField sw_usuario;
-    private javax.swing.JTextField txtFolderProperty;
     private javax.swing.JTextField txtHandle;
     private javax.swing.JTextField txtWorkFolder;
     private javax.swing.JLabel userStardogLabel;
