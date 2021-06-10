@@ -101,8 +101,9 @@ public class ComunidadRest {
                     JsonObject jsonColeccion = (JsonObject) iter.next();
                     JsonElement linkColeccion = jsonColeccion.get("link");
                     JsonElement nameColeccion = jsonColeccion.get("name");
+                    JsonElement uuidColeccion = jsonColeccion.get("uuid");
                     //creamos la comunidad
-                    ColeccionRest coleccion = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString());
+                    ColeccionRest coleccion = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString(), uuidColeccion.getAsString());
                     DefaultMutableTreeNode objTree = new DefaultMutableTreeNode(coleccion);
                     nodo.add(objTree);
                 }

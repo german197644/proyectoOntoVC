@@ -13,13 +13,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author german, Pogliani
  */
 public class ColeccionRest {
-    
+
     private String nombre;
     private String link;
+    private String uuid;
 
-    public ColeccionRest(String nombre, String link) {
+    public ColeccionRest(String nombre, String link, String uuid) {
         this.nombre = nombre;
         this.link = link;
+        this.uuid = uuid;
     }
 
     public ColeccionRest(JsonElement nameColeccion, JsonElement linkColeccion) {
@@ -41,31 +43,38 @@ public class ColeccionRest {
     public void setLink(String link) {
         this.link = link;
     }
-    
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     /**
      *
      * @return Retorna el nombre de la coleccion asociada.
      */
     @Override
-    public String toString(){
+    public String toString() {
         return nombre;
     }
-    
-    public boolean isColeccion(){
-        return true;       
+
+    public boolean isColeccion() {
+        return true;
     }
-    
-    public boolean isComunidad(){
+
+    public boolean isComunidad() {
         return false;
     }
-    
-    public boolean isItem(){
+
+    public boolean isItem() {
         return false;
     }
-    
-    public DefaultMutableTreeNode getComunidad(String url, DefaultMutableTreeNode nodo){
+
+    public DefaultMutableTreeNode getComunidad(String url, DefaultMutableTreeNode nodo) {
         return null;
     }
-       
-      
+
 }

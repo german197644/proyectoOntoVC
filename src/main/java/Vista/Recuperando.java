@@ -8,8 +8,10 @@ package Vista;
 import Control.DublinCoreControl;
 import Control.ConfigControl;
 import Control.RestControl;
+import Modelo.BitstreamsRest;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
+import Modelo.ItemRest;
 import Modelo.JLabelLink;
 import Modelo.Metadato;
 import Modelo.TextAreaRenderer;
@@ -18,6 +20,7 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
@@ -46,7 +49,7 @@ public class Recuperando extends javax.swing.JDialog {
     public Recuperando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         try {
-            initComponents();            
+            initComponents();
             this.setLocationRelativeTo(null);
             Toolkit toolkit = Toolkit.getDefaultToolkit();
             Dimension screenSize = toolkit.getScreenSize();
@@ -87,17 +90,27 @@ public class Recuperando extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        panelCabecera = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
+        jPanel18 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         jListMetadatos = new javax.swing.JList<>();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -111,7 +124,6 @@ public class Recuperando extends javax.swing.JDialog {
         center = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        sur = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
@@ -129,25 +141,34 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
+        panelSur = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        panelCentral = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        jPanel24 = new javax.swing.JPanel();
+        jPanel27 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listaRecursos = new javax.swing.JList<>();
+        jLabel24 = new javax.swing.JLabel();
+        btnDescargar = new javax.swing.JButton();
+        jPanel19 = new javax.swing.JPanel();
+        jButton6 = new javax.swing.JButton();
+        jPanel22 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         tablaFiltro = new javax.swing.JTable();
-        base = new javax.swing.JPanel();
+        panelBase = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Filtrado de Items");
+        setTitle("Filtrado y recupero de Items");
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(670, 220));
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        panelCabecera.setPreferredSize(new java.awt.Dimension(670, 220));
+        panelCabecera.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setMaximumSize(new java.awt.Dimension(492, 122));
         jPanel5.setLayout(new java.awt.GridLayout(1, 0));
@@ -155,7 +176,11 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel8.setMaximumSize(new java.awt.Dimension(400, 122));
         jPanel8.setLayout(new java.awt.GridLayout(1, 0));
 
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        jPanel2.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jTree1.setBorder(javax.swing.BorderFactory.createTitledBorder("Repositorio"));
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Repositorio");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.setPreferredSize(new java.awt.Dimension(400, 64));
         jTree1.setVisibleRowCount(8);
@@ -171,7 +196,21 @@ public class Recuperando extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(jTree1);
 
-        jPanel8.add(jScrollPane1);
+        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jLabel21.setText(" ");
+        jPanel2.add(jLabel21, java.awt.BorderLayout.PAGE_START);
+
+        jLabel22.setText(" ");
+        jPanel2.add(jLabel22, java.awt.BorderLayout.PAGE_END);
+
+        jLabel23.setText(" ");
+        jPanel2.add(jLabel23, java.awt.BorderLayout.LINE_END);
+
+        jLabel20.setText(" ");
+        jPanel2.add(jLabel20, java.awt.BorderLayout.LINE_START);
+
+        jPanel8.add(jPanel2);
 
         jPanel11.setBackground(new java.awt.Color(0, 153, 153));
 
@@ -179,7 +218,7 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 282, Short.MAX_VALUE)
+            .addGap(0, 303, Short.MAX_VALUE)
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,7 +234,7 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 282, Short.MAX_VALUE)
+            .addGap(0, 303, Short.MAX_VALUE)
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,15 +250,34 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel6.setPreferredSize(new java.awt.Dimension(532, 0));
         jPanel6.setLayout(new java.awt.GridLayout(1, 0));
 
+        jPanel18.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel18.setLayout(new java.awt.BorderLayout());
+
+        jListMetadatos.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
         jListMetadatos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Items" };
+            String[] strings = { "Metadatos" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         jScrollPane5.setViewportView(jListMetadatos);
 
-        jPanel6.add(jScrollPane5);
+        jPanel18.add(jScrollPane5, java.awt.BorderLayout.CENTER);
 
+        jLabel25.setText(" ");
+        jPanel18.add(jLabel25, java.awt.BorderLayout.LINE_START);
+
+        jLabel26.setText(" ");
+        jPanel18.add(jLabel26, java.awt.BorderLayout.PAGE_START);
+
+        jLabel27.setText(" ");
+        jPanel18.add(jLabel27, java.awt.BorderLayout.LINE_END);
+
+        jLabel28.setText(" ");
+        jPanel18.add(jLabel28, java.awt.BorderLayout.PAGE_END);
+
+        jPanel6.add(jPanel18);
+
+        jPanel10.setBackground(new java.awt.Color(0, 153, 153));
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         jLabel1.setText("   ");
@@ -234,8 +292,10 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel4.setText("     ");
         jPanel10.add(jLabel4, java.awt.BorderLayout.LINE_END);
 
+        jPanel12.setOpaque(false);
         jPanel12.setLayout(new java.awt.BorderLayout());
 
+        norte.setOpaque(false);
         norte.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         txtMetadato.setColumns(30);
@@ -280,7 +340,6 @@ public class Recuperando extends javax.swing.JDialog {
         center.add(jScrollPane3);
 
         jPanel12.add(center, java.awt.BorderLayout.CENTER);
-        jPanel12.add(sur, java.awt.BorderLayout.SOUTH);
 
         jPanel10.add(jPanel12, java.awt.BorderLayout.CENTER);
 
@@ -288,6 +347,7 @@ public class Recuperando extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Metadatos", jPanel6);
 
+        jPanel7.setBackground(new java.awt.Color(0, 153, 153));
         jPanel7.setPreferredSize(new java.awt.Dimension(650, 0));
         jPanel7.setLayout(new java.awt.BorderLayout());
 
@@ -297,6 +357,7 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel11.setText("    ");
         jPanel7.add(jLabel11, java.awt.BorderLayout.PAGE_END);
 
+        jPanel14.setBackground(new java.awt.Color(0, 153, 153));
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jLabel5.setText("Límite: ");
@@ -327,6 +388,7 @@ public class Recuperando extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Limites", jPanel7);
 
+        jPanel16.setBackground(new java.awt.Color(0, 153, 153));
         jPanel16.setLayout(new java.awt.BorderLayout());
 
         jLabel12.setText("   ");
@@ -341,11 +403,13 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel19.setText("     ");
         jPanel16.add(jLabel19, java.awt.BorderLayout.LINE_END);
 
+        jPanel17.setOpaque(false);
+
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 816, Short.MAX_VALUE)
+            .addGap(0, 880, Short.MAX_VALUE)
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -354,12 +418,14 @@ public class Recuperando extends javax.swing.JDialog {
 
         jPanel16.add(jPanel17, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("Búsqueda especializada", jPanel16);
+        jTabbedPane1.addTab("Búsqueda avanzada", jPanel16);
 
-        jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        panelCabecera.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel9.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        panelSur.setBackground(new java.awt.Color(204, 255, 204));
+        panelSur.setAutoscrolls(true);
+        panelSur.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        panelSur.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jButton3.setText("Ejecutar consulta de elementos");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -367,16 +433,14 @@ public class Recuperando extends javax.swing.JDialog {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel9.add(jButton3);
+        panelSur.add(jButton3);
 
-        jPanel1.add(jPanel9, java.awt.BorderLayout.SOUTH);
+        panelCabecera.add(panelSur, java.awt.BorderLayout.SOUTH);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(panelCabecera, java.awt.BorderLayout.PAGE_START);
 
-        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel4.setPreferredSize(new java.awt.Dimension(480, 230));
-        jPanel4.setLayout(new java.awt.BorderLayout(5, 5));
+        panelCentral.setBackground(new java.awt.Color(204, 255, 204));
+        panelCentral.setLayout(new java.awt.BorderLayout(0, 2));
 
         jPanel15.setBackground(new java.awt.Color(0, 153, 153));
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
@@ -387,13 +451,67 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel16.setText("Resultados");
         jPanel15.add(jLabel16);
 
-        jPanel4.add(jPanel15, java.awt.BorderLayout.PAGE_START);
+        panelCentral.add(jPanel15, java.awt.BorderLayout.PAGE_START);
 
         jLabel13.setText("   ");
-        jPanel4.add(jLabel13, java.awt.BorderLayout.LINE_START);
+        panelCentral.add(jLabel13, java.awt.BorderLayout.LINE_START);
 
         jLabel14.setText("   ");
-        jPanel4.add(jLabel14, java.awt.BorderLayout.LINE_END);
+        panelCentral.add(jLabel14, java.awt.BorderLayout.LINE_END);
+
+        jPanel24.setOpaque(false);
+        jPanel24.setLayout(new java.awt.BorderLayout());
+
+        jPanel27.setOpaque(false);
+        jPanel27.setLayout(new java.awt.BorderLayout());
+
+        jPanel26.setOpaque(false);
+        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 5));
+
+        listaRecursos.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos del ítem"));
+        listaRecursos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "material de estudio" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaRecursos.setPreferredSize(new java.awt.Dimension(300, 16));
+        listaRecursos.setVisibleRowCount(5);
+        jScrollPane2.setViewportView(listaRecursos);
+
+        jPanel26.add(jScrollPane2);
+
+        jLabel24.setText("   ");
+        jPanel26.add(jLabel24);
+
+        btnDescargar.setText("Descargar recurso");
+        btnDescargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDescargarActionPerformed(evt);
+            }
+        });
+        jPanel26.add(btnDescargar);
+
+        jPanel27.add(jPanel26, java.awt.BorderLayout.CENTER);
+
+        jPanel19.setOpaque(false);
+        jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 5));
+
+        jButton6.setText("Examinar ìtem en el navegador");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jPanel19.add(jButton6);
+
+        jPanel27.add(jPanel19, java.awt.BorderLayout.PAGE_START);
+
+        jPanel24.add(jPanel27, java.awt.BorderLayout.PAGE_END);
+
+        jPanel22.setLayout(new java.awt.GridLayout());
+
+        jScrollPane4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane4.setPreferredSize(new java.awt.Dimension(452, 30));
 
         tablaFiltro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -404,7 +522,7 @@ public class Recuperando extends javax.swing.JDialog {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Nro.", "Id", "Colección", "Ítem", "Titulo"
+                "Nro.", "Id", "Colección", "Handle", "Titulo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -415,6 +533,10 @@ public class Recuperando extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tablaFiltro.setSelectionBackground(new java.awt.Color(255, 255, 204));
+        tablaFiltro.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tablaFiltro.setShowVerticalLines(false);
+        tablaFiltro.getTableHeader().setReorderingAllowed(false);
         tablaFiltro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tablaFiltroMousePressed(evt);
@@ -427,14 +549,16 @@ public class Recuperando extends javax.swing.JDialog {
             tablaFiltro.getColumnModel().getColumn(0).setMaxWidth(90);
         }
 
-        jPanel4.add(jScrollPane4, java.awt.BorderLayout.CENTER);
+        jPanel22.add(jScrollPane4);
 
-        jPanel3.add(jPanel4);
+        jPanel24.add(jPanel22, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
+        panelCentral.add(jPanel24, java.awt.BorderLayout.CENTER);
 
-        base.setBackground(new java.awt.Color(0, 102, 204));
-        base.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        getContentPane().add(panelCentral, java.awt.BorderLayout.CENTER);
+
+        panelBase.setBackground(new java.awt.Color(0, 153, 153));
+        panelBase.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jButton2.setText("Cancelar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -442,9 +566,9 @@ public class Recuperando extends javax.swing.JDialog {
                 jButton2ActionPerformed(evt);
             }
         });
-        base.add(jButton2);
+        panelBase.add(jButton2);
 
-        getContentPane().add(base, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(panelBase, java.awt.BorderLayout.PAGE_END);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -455,7 +579,7 @@ public class Recuperando extends javax.swing.JDialog {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         RestControl rest = RestControl.getInstancia();
-        rest.unFiltro2(coleccion, evt, tablaFiltro, jTable1, 
+        rest.unFiltro(coleccion, evt, tablaFiltro, jTable1,
                 Integer.parseInt(fTextLimite.getText()), Integer.parseInt(txtOffSet.getText()));
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -512,9 +636,56 @@ public class Recuperando extends javax.swing.JDialog {
         RestControl rest = RestControl.getInstancia();
         int fila = tablaFiltro.rowAtPoint(evt.getPoint());
         int columna = tablaFiltro.columnAtPoint(evt.getPoint());
-        String unHandle = tablaFiltro.getModel().getValueAt(fila, columna).toString().trim();
-        rest.miHandle(fila, columna, unHandle);
+        //String unHandle = tablaFiltro.getModel().getValueAt(fila, columna).toString().trim();
+        //rest.miHandle(fila, columna, unHandle);
+        //
+        // Recuperar los recursos del item        
+        //
+        if ((fila < 0) && (columna < 0)) {
+            return;
+        }
+        String unLink = tablaFiltro.getModel().getValueAt(fila, 1).toString().trim();
+        String unNombre = tablaFiltro.getModel().getValueAt(fila, 3).toString().trim();
+        ItemRest miItem = new ItemRest(unNombre, unLink);
+        DefaultListModel misItems = rest.obtenerBitstreams(miItem);
+        if (misItems.size() > 0) {
+            System.out.println("entre....................");
+            listaRecursos.setModel(misItems);
+        } else {
+            System.out.println("no entre)");
+            DefaultListModel<String> dlm = new DefaultListModel();
+            dlm.addElement("sin recursos");
+            listaRecursos.setModel(dlm);
+        }
     }//GEN-LAST:event_tablaFiltroMousePressed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        RestControl rest = RestControl.getInstancia();
+        int fila = tablaFiltro.getSelectedRow();
+        int colu = tablaFiltro.getSelectedColumn();
+        System.out.println("Fila: " + fila + " - Columna: " + colu);
+        //int fila = tablaFiltro.rowAtPoint(evt.getPoint());
+        //int columna = tablaFiltro.columnAtPoint(evt.getPoint());
+        String unHandle = tablaFiltro.getModel().getValueAt(fila, colu).toString().trim();
+        rest.miHandle(fila, colu, unHandle);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void btnDescargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDescargarActionPerformed
+        try {
+            ConfigControl login = ConfigControl.getInstancia();
+            if (listaRecursos.getModel().getSize() > 0) {
+                if (!(((Object) listaRecursos.getSelectedValue())instanceof BitstreamsRest)) {
+                    return;
+                }
+                BitstreamsRest bs = (BitstreamsRest) ((Object) listaRecursos.getSelectedValue());
+                String dir = login.getUri().trim() + bs.getLink() + "/retrieve";
+                System.out.println("Recuso: " + dir);
+                Runtime.getRuntime().exec("cmd.exe /c start chrome "+ dir);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnDescargarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -562,13 +733,14 @@ public class Recuperando extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel base;
+    private javax.swing.JButton btnDescargar;
     private javax.swing.JPanel center;
     private javax.swing.JFormattedTextField fTextLimite;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -581,6 +753,15 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -589,7 +770,6 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jListMetadatos;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
@@ -598,22 +778,31 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTree jTree1;
+    private javax.swing.JList<String> listaRecursos;
     private javax.swing.JPanel norte;
-    private javax.swing.JPanel sur;
+    private javax.swing.JPanel panelBase;
+    private javax.swing.JPanel panelCabecera;
+    private javax.swing.JPanel panelCentral;
+    private javax.swing.JPanel panelSur;
     private javax.swing.JTable tablaFiltro;
     private javax.swing.JTextField txtMetadato;
     private javax.swing.JTextField txtOffSet;

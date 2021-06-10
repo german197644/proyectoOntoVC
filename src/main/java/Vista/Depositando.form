@@ -51,7 +51,7 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+Alt+C"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Preferencias"/>
+                <Property name="text" type="java.lang.String" value="Seteo y conexi&#xf3;n"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuConectarActionPerformed"/>
@@ -162,7 +162,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Verdana" size="16" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="&gt;&gt; Env&#xed;o de &#xed;tems."/>
+                <Property name="text" type="java.lang.String" value="&gt;&gt; Gesti&#xf3;n de &#xed;tem."/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

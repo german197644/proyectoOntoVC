@@ -202,7 +202,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel1.add(jLabel4, java.awt.BorderLayout.LINE_END);
 
         jLabel14.setFont(new java.awt.Font("Verdana", 1, 16)); // NOI18N
-        jLabel14.setText(">> Envío de ítems.");
+        jLabel14.setText(">> Gestión de ítem.");
         jPanel1.add(jLabel14, java.awt.BorderLayout.CENTER);
 
         panel_superior.add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -517,7 +517,7 @@ public class Depositando extends javax.swing.JFrame {
         mnuTool.setText("Herramienta");
 
         mnuConectar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuConectar.setText("Preferencias");
+        mnuConectar.setText("Seteo y conexión");
         mnuConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuConectarActionPerformed(evt);
@@ -558,9 +558,15 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
-        Configurando win = new Configurando(this, true);
+        Configurando win = new Configurando(this, true);        
+        win.setConecto(false); // para saber si volvio a conectar y refrescar.
         win.setConsola(taConsola);
-        win.setVisible(true);
+        win.setVisible(true);        
+        // Verificar si se cancelo o se conecto!               
+        if (!win.isConecto()){
+            win.dispose();
+            return;
+        }
         try {
             // Rest api
             // obtenemos la estructura del repositorio en cuestion.
@@ -786,7 +792,7 @@ public class Depositando extends javax.swing.JFrame {
                     && base.getListaMetadados().getSize() == 0) {
                 JOptionPane.showMessageDialog(this, "La Estructura del repositorio o \n"
                         + "los metadatos no son los esperados.\nPor favor verifique.", "Error", JOptionPane.ERROR_MESSAGE);
-                taConsola.append("Operación de filtrado cnacelada.\n");
+                taConsola.append("Operación de filtrado cancelada.\n");
                 return;
             }
             //

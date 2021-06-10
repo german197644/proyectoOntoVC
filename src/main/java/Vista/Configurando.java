@@ -44,6 +44,9 @@ public class Configurando extends javax.swing.JDialog {
 
     // Salida de los resultados.
     JTextArea consola;
+    
+    //
+    boolean conecto = false;
 
     /**
      * Creates new form Login3
@@ -78,6 +81,14 @@ public class Configurando extends javax.swing.JDialog {
 
     }
 
+    public boolean isConecto() {
+        return conecto;
+    }
+
+    public void setConecto(boolean conecto) {
+        this.conecto = conecto;
+    }
+    
     /**
      *
      * @param consola Se muestran las novedades de la ejecucion.
@@ -571,6 +582,7 @@ public class Configurando extends javax.swing.JDialog {
                     Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
+                setConecto(true);
                 setVisible(false);
                 return null;
             }
@@ -585,10 +597,11 @@ public class Configurando extends javax.swing.JDialog {
             }
         };
         mySwingWorker.execute();
-        wait.makeWait("Conectando...", evt);
+        wait.makeWait("Conectando...", evt);              
     }//GEN-LAST:event_btnConectarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        setConecto(false);
         this.consola.append("Operación de conexión cancelada.\n");
         this.setVisible(false);
     }//GEN-LAST:event_btnCancelarActionPerformed

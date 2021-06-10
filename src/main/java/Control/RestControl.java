@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -404,8 +406,9 @@ public final class RestControl {
                                     JsonObject jsonColeccion = (JsonObject) iterColeccion.next();
                                     JsonElement nameColeccion = jsonColeccion.get("name");
                                     JsonElement linkColeccion = jsonColeccion.get("link");
+                                    JsonElement uuidColeccion = jsonColeccion.get("uuid");
                                     ColeccionRest coleccion
-                                            = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString());
+                                            = new ColeccionRest(nameColeccion.getAsString(), linkColeccion.getAsString(), uuidColeccion.getAsString());
                                     //mostramos la coleccion
                                     //ystem.out.println(miTree + "-- " + coleccion.toString());
                                     //generamos un nodo hoja y la agregamos al arbol.
@@ -659,7 +662,8 @@ public final class RestControl {
                 String queryShows = ""; // que metadatos mostrar ademas del titulo.
                 // Seteo los filtros   
                 if (filtros.getRowCount() == 0) {
-                    queryFields = "&" + comandQueryField + "*";
+                    //queryFields = "&" + comandQueryField + "*";
+                    queryFields = comandQueryField + "*";
                     queryVals = "&" + comandValField + "*";
                     queryOpes = "&query_op%5B%5D=exists";
                 } else {
@@ -673,8 +677,7 @@ public final class RestControl {
                 // Seteo los datos (metadatos) adicionales
                 publish("Iniciando Envio.\n", String.valueOf(0));
                 // Creamos el comando del filtro.
-                String miCole = (miColeccion == null) ? "" : miColeccion.getNombre();
-
+                String miCole = (miColeccion == null) ? "" : miColeccion.getUuid().trim();
                 //System.out.println("URI" + login.getUri().trim());
                 String comando = "curl -g -H \"Accept: application/json\"  "
                         + "\"" + login.getUri().trim() + "/rest/filtered-items?"
@@ -682,6 +685,8 @@ public final class RestControl {
                         + "&limit=" + String.valueOf(limite).trim() + "&offset=" + String.valueOf(offset).trim()
                         + "&expand=parentCollection&collSel%5B%5D=" + miCole.trim() + "\"";
                 //                
+                System.out.println("Comando: " + comando);
+
                 process = Runtime.getRuntime().exec(comando);
                 InputStream is = process.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
@@ -716,18 +721,16 @@ public final class RestControl {
                 while (iter.hasNext()) {
                     JsonObject miFiltro = (JsonObject) iter.next();
                     tabla.getModel().setValueAt(i + 1, i, 0);
-                    tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    //tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    tabla.getModel().setValueAt(miFiltro.get("link").getAsString(), i, 1);
+                    tabla.getModel().setValueAt(miFiltro.get("handle").getAsString(), i, 3);
                     tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
-                    JsonElement objColl = (JsonObject) miFiltro.get("parentCollection");
-                    if (objColl.isJsonObject()) {
-                        if (objColl.isJsonObject()) {
-                            tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 2);
-                        } else {
-                            tabla.getModel().setValueAt("", i, 2);
-                        }
-                        String miHandle = miFiltro.get("handle").getAsString();
-                        tabla.getModel().setValueAt(miHandle, i, 3);
-                    }
+                    //
+                    JsonObject objCole = (JsonObject) miFiltro.get("parentCollection");                                        
+                    tabla.getModel().setValueAt(objCole.get("name").getAsString(), i, 2);                    
+                    //
+                    //String miHandle = miFiltro.get("handle").getAsString();
+                    //tabla.getModel().setValueAt(miHandle, i, 3);
                     i = i + 1;
                     publish("item: " + i + " de " + cantItem);
                 }
@@ -772,10 +775,10 @@ public final class RestControl {
                 ConfigControl login = ConfigControl.getInstancia();
                 int cantItem = 0;
                 Process process = null;
-                String comandQueryField = "query_field =";
-                String comandValField = "query_val =";
-                //String comandOpeField = "query_op =";
-                String comandShowField = "show_fields =";
+                String comandQueryField = "query_field%5B%5D=";
+                String comandValField = "query_val%5B%5D=";
+                //String comandOpeField = "query_op%5B%5D=";
+                String comandShowField = "show_fields%5B%5D=";
                 String queryFields = "";
                 String queryVals = "";
                 String queryOpes = "";
@@ -784,30 +787,36 @@ public final class RestControl {
                 if (filtros.getRowCount() == 0) {
                     queryFields = "&" + comandQueryField + "*";
                     queryVals = "&" + comandValField + "*";
-                    queryOpes = "&query_op =exists";
+                    queryOpes = "&query_op%5B%5D=exists";
                 } else {
                     for (int i = 0; i < filtros.getRowCount(); i++) {
                         queryFields = queryFields + ((i == 0) ? comandQueryField + filtros.getValueAt(i, 0)
                                 : "&" + comandQueryField + filtros.getValueAt(i, 0));
                         queryVals = queryVals + "&" + comandValField + filtros.getValueAt(i, 1);
-                        queryOpes = queryOpes + "&query_op =contains";
+                        queryOpes = queryOpes + "&query_op%5B%5D=contains";
                     }
                 }
                 // Seteo los datos (metadatos) adicionales
-                publish("Iniciando Envio.\n", String.valueOf(0));
+                publish("Iniciando filtro.\n", String.valueOf(0));
                 // Creamos el comando del filtro.
-                String miCole = (miColeccion == null) ? "" : miColeccion.getNombre();
+                String miCole = (miColeccion == null) ? "" : miColeccion.getUuid().trim();
 
                 //System.out.println("URI" + login.getUri().trim());
-                String comando = "curl -g -H \"Accept: application/json\"  "
+                String comando = "curl -g -H \"Accept:application/json\"  "
                         + "\"" + login.getUri().trim() + "/rest/filtered-items?"
                         + queryFields + queryOpes + queryVals
-                        + "&limit=" + String.valueOf(limite).trim() + "&offset=" + String.valueOf(offset).trim()
-                        + "&expand=parentCollection&collSel =" + miCole.trim() + "\"";
-                //
-                URI uri = new URI(comando);
-                //process = Runtime.getRuntime().exec(comando);
-                process = Runtime.getRuntime().exec(uri.getPath());
+                        + "&limit%5B%5D=" + String.valueOf(limite).trim() + "&offset%5B%5D=" + String.valueOf(offset).trim()
+                        + "&expand%5B%5D=parentCollection&collSel%5B%5D=" + miCole + "\"";
+                //                
+                //URI uri = new URI(comando);
+                System.out.println("Comando filtro: " + comando);
+                process = Runtime.getRuntime().exec(comando);
+                int p = process.waitFor();
+                if (p != 0) {
+                    wait.close();
+                    return null;
+                }
+                //process = Runtime.getRuntime().exec(uri.getPath());
                 InputStream is = process.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
@@ -841,7 +850,8 @@ public final class RestControl {
                 while (iter.hasNext()) {
                     JsonObject miFiltro = (JsonObject) iter.next();
                     tabla.getModel().setValueAt(i + 1, i, 0);
-                    tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    //tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    tabla.getModel().setValueAt(miFiltro.get("link").getAsString(), i, 1);
                     tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
                     JsonElement objColl = (JsonObject) miFiltro.get("parentCollection");
                     if (objColl.isJsonObject()) {
@@ -868,7 +878,145 @@ public final class RestControl {
 
         };
         mySwingWorker.execute();
-        wait.makeWait("Filtrando...", evt, 0);
+        wait.makeWait("Ejecutando filtro...", evt);
+    }
+
+    public void unFiltro3(ColeccionRest miColeccion,
+            ActionEvent evt,
+            JTable tabla,
+            JTable filtros,
+            int limite,
+            int offset) {
+
+        DialogWaitControl wait = new DialogWaitControl();
+
+        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+
+                ConfigControl login = ConfigControl.getInstancia();
+                int cantItem = 0;
+                Process process = null;
+                String comandQueryField = "query_field[]=";
+                String comandValField = "query_val[]=";
+                //String comandOpeField = "query_op[]=";
+                String comandShowField = "show_fields[]=";
+                String queryFields = "";
+                String queryVals = "";
+                String queryOpes = "";
+                String queryShows = ""; // que metadatos mostrar ademas del titulo.
+                // Seteo los filtros   
+                if (filtros.getRowCount() == 0) {
+                    queryFields = "&" + comandQueryField + "*";
+                    //queryFields = comandQueryField + "*";
+                    queryVals = "&" + comandValField + "*";
+                    queryOpes = "&query_op[]=exists";
+                } else {
+                    for (int i = 0; i < filtros.getRowCount(); i++) {
+                        queryFields = queryFields + ((i == 0) ? comandQueryField + filtros.getValueAt(i, 0)
+                                : "&" + comandQueryField + filtros.getValueAt(i, 0));
+                        queryVals = queryVals + "&" + comandValField + filtros.getValueAt(i, 1);
+                        queryOpes = queryOpes + "&query_op[]=contains";
+                    }
+                }
+                // Seteo los datos (metadatos) adicionales
+                publish("Iniciando filtro.\n", String.valueOf(0));
+                // Creamos el comando del filtro.
+                String miCole = (miColeccion == null) ? "" : miColeccion.getUuid().trim();
+                //
+                String miCodFiltro = queryFields + queryOpes + queryVals
+                        + "&limit=" + String.valueOf(limite).trim()
+                        + "&offset=" + String.valueOf(offset).trim()
+                        + "&expand=parentCollection&collSel[]=" + miCole;
+                //
+                String micadena = login.getUri().trim() + "/rest/filtered-items?" + miCodFiltro;
+                URL url = new URL(micadena);
+                //
+                URI uri = new URI(url.getProtocol(),
+                        null,
+                        url.getHost(),
+                        url.getPort(),
+                        url.getPath(),
+                        URLEncoder.encode(url.getQuery(), "UTF-8"),
+                        null);
+
+                System.out.println("URI: " + uri);
+                //
+                String comando = "curl -g -H \"Accept:application/json\"  "
+                        + "\"" + uri + "\"";
+                //                
+                //URI uri = new URI(comando);
+                System.out.println("Comando filtro: " + comando);
+                process = Runtime.getRuntime().exec(comando);
+                int p = process.waitFor();
+                if (p != 0) {
+                    wait.close();
+                    return null;
+                }
+                //process = Runtime.getRuntime().exec(uri.getPath());
+                InputStream is = process.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                JsonParser parser = new JsonParser();
+                String result = br.lines().collect(Collectors.joining("\n"));
+                //System.out.println("resuldato del filtro: " + result);
+                JsonElement datos = parser.parse(result);
+                if (datos.isJsonObject()) {
+                    JsonObject obj = (JsonObject) datos;
+                    cantItem = obj.get("item-count").getAsInt();
+                    publish("Items encontrados: " + cantItem);
+                    System.out.println("cantidad de items: " + cantItem);
+                    if (cantItem == 0) {
+                        ((DefaultTableModel) tabla.getModel()).setRowCount(0);
+                        wait.close();
+                        return null;
+                    } else {
+                        ((DefaultTableModel) tabla.getModel()).setRowCount(cantItem);
+                    }
+                } else {
+                    wait.close();
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource()),
+                            "No hubo resultados en el filtrado.", "Informe", JOptionPane.INFORMATION_MESSAGE);
+                    return null;
+                }
+                JsonObject obj = (JsonObject) datos;
+                JsonArray misItems = (JsonArray) obj.get("items");
+                Iterator<JsonElement> iter = misItems.iterator();
+                int i = 0;
+                //
+                while (iter.hasNext()) {
+                    JsonObject miFiltro = (JsonObject) iter.next();
+                    tabla.getModel().setValueAt(i + 1, i, 0);
+                    //tabla.getModel().setValueAt(miFiltro.get("uuid").getAsString(), i, 1);
+                    tabla.getModel().setValueAt(miFiltro.get("link").getAsString(), i, 1);
+                    tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
+                    JsonElement objColl = (JsonObject) miFiltro.get("parentCollection");
+                    if (objColl.isJsonObject()) {
+                        if (objColl.isJsonObject()) {
+                            tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 2);
+                        } else {
+                            tabla.getModel().setValueAt("", i, 2);
+                        }
+                        String miHandle = miFiltro.get("handle").getAsString();
+                        tabla.getModel().setValueAt(miHandle, i, 3);
+                    }
+                    i = i + 1;
+                    publish("item: " + i + " de " + cantItem);
+                }
+                //
+                wait.close();
+                return null;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                wait.setMensaje(chunks.get(0));
+            }
+
+        };
+        mySwingWorker.execute();
+        wait.makeWait("Ejecutando filtro...", evt);
     }
 
     public void miHandle(int fila, int columna, String unHandle) {
