@@ -40,12 +40,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.swordapp</groupId>
-            <artifactId>sword2-client</artifactId>
-            <version>0.9.3</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>unknown.binary</groupId>
             <artifactId>AbsoluteLayout</artifactId>
             <version>SNAPSHOT</version>
@@ -72,12 +66,6 @@
             <artifactId>mets</artifactId>
             <version>1.5.2</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.dspace.modules</groupId>
-            <artifactId>swordv2</artifactId>
-            <version>7.0-preview-1</version>
-            <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.apache.mets</groupId>
