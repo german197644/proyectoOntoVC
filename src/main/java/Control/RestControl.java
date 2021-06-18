@@ -10,6 +10,7 @@ import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Fichero;
 import Modelo.ItemRest;
+import static com.clarkparsia.pellet.hierarchy.HierarchyFunctions.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,12 +28,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -42,6 +46,7 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import org.apache.commons.csv.CSVFormat;
 
 /**
  *
@@ -474,41 +479,152 @@ public final class RestControl {
     /**
      *
      * @param item Representa el item de la coleccion.
-     * @return Retorna los bitStreams presentes en el item.
+     * @param miListaRecursos
+     * @throws java.lang.InterruptedException
+     * @throws java.util.concurrent.ExecutionException
      */
-    public DefaultListModel obtenerBitstreams(ItemRest item) {
+    public void obtenerBitstreams(ItemRest item, JList miListaRecursos)
+            throws InterruptedException, ExecutionException {
         DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
-        try {
-            ConfigControl conn = ConfigControl.getInstancia();
-            String comando = "curl \"" + conn.getUri().trim() + item.getLink() + "/bitstreams\"";
-            Process process = Runtime.getRuntime().exec(comando);
-            //
-            InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            //
-            String out = br.lines().collect(Collectors.joining("\n"));
-            //System.out.println("Linea: " + out);
-            JsonParser parser = new JsonParser();
-            JsonReader reader = new JsonReader(new StringReader(out));
-            JsonElement datos = parser.parse(reader);
-            //
-            if (datos.isJsonArray()) {
-                JsonArray array = (JsonArray) datos;
-                Iterator<JsonElement> iter = array.iterator();
-                while (iter.hasNext()) {
-                    JsonObject jsonItem = (JsonObject) iter.next();
-                    JsonElement linkItem = jsonItem.get("link");
-                    JsonElement nameItem = jsonItem.get("name");
-                    // Creamos el Bitstreams a presentar en el principal
-                    BitstreamsRest bs = new BitstreamsRest(nameItem.getAsString(), linkItem.getAsString());
-                    listBitstreams.addElement(bs);
+        SwingWorker<DefaultListModel, Void> mySwingWorker = new SwingWorker<DefaultListModel, Void>() {
+            @Override
+            protected DefaultListModel doInBackground() throws Exception {
+                try {
+                    ConfigControl conn = ConfigControl.getInstancia();
+                    String comando = "curl \"" + conn.getUri().trim() + item.getLink() + "/bitstreams\"";
+                    Process process = Runtime.getRuntime().exec(comando);
+                    //
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    String out = br.lines().collect(Collectors.joining("\n"));
+                    //System.out.println("Linea: " + out);
+                    JsonParser parser = new JsonParser();
+                    JsonReader reader = new JsonReader(new StringReader(out));
+                    JsonElement datos = parser.parse(reader);
+                    //
+                    if (datos.isJsonArray()) {
+                        JsonArray array = (JsonArray) datos;
+                        Iterator<JsonElement> iter = array.iterator();
+                        while (iter.hasNext()) {
+                            JsonObject jsonItem = (JsonObject) iter.next();
+                            JsonElement linkItem = jsonItem.get("link");
+                            JsonElement nameItem = jsonItem.get("name");
+                            // Creamos el Bitstreams a presentar en el principal
+                            BitstreamsRest bs = new BitstreamsRest(nameItem.getAsString(), linkItem.getAsString());
+                            listBitstreams.addElement(bs);
+                        }
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return listBitstreams;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (this.get().size() > 0) {
+                        miListaRecursos.setModel(this.get());
+                    } else {
+                        DefaultListModel<String> dlm = new DefaultListModel();
+                        dlm.addElement("sin recursos");
+                        miListaRecursos.setModel(dlm);
+                    }
+                    //miListaRecursos.setModel(this.get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        } catch (IOException ex) {
-            Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listBitstreams;
+
+        };
+        mySwingWorker.execute();
+    }
+
+    public void obtenerMetadata(ItemRest item, JTextArea ta) {
+        SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    ConfigControl conn = ConfigControl.getInstancia();
+
+                    String comando = "curl \"" + conn.getUri().trim() + item.getLink().trim() + "/metadata\"";
+                    Process process = Runtime.getRuntime().exec(comando);
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        return null;
+                    }
+                    //
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    String out = new String(br.lines().collect(Collectors.joining("\n")).getBytes(), "UTF-8");
+                    //System.out.println("OUT: " + new String(out.getBytes(), "UTF-8"));
+                    //System.out.println("OUT: " + out);
+                    JsonParser parser = new JsonParser();
+                    JsonReader reader = new JsonReader(new StringReader(out));
+                    JsonElement datos = parser.parse(reader);
+                    //
+                    if (datos.isJsonArray()) {
+                        JsonArray array = (JsonArray) datos;
+                        Iterator<JsonElement> iter = array.iterator();
+                        //
+                        ta.setText("");
+                        //
+                        Properties property = new Properties();
+                        property = conn.getConfigDublinCore();
+                        int ancho = ta.getWidth();
+                        while (iter.hasNext()) {
+                            JsonObject jsonItem = (JsonObject) iter.next();
+                            JsonElement unaKey = jsonItem.get("key");
+                            JsonElement unValue = jsonItem.get("value");
+                            //
+                            StringTokenizer tokens = new StringTokenizer(unaKey.getAsString(), ".");
+                            int nDatos = tokens.countTokens();
+                            String[] miMeta = new String[nDatos];
+                            int n = 0;
+                            while (tokens.hasMoreTokens()) {
+                                String str = tokens.nextToken();
+                                miMeta[n] = str;
+                                //System.out.println(miMeta[i]);
+                                n++;
+                            }
+                            //
+                            //ta.append(unaKey.getAsString() + "\n");
+                            //String datoMeta = miMeta[nDatos - 1];
+                            //System.out.println("metadato.rotulo: " + datoMeta);
+                            String rotulo = null;
+                            if (property != null) {
+                                rotulo = property.getProperty(unaKey.getAsString());
+                            }                            
+                            //ta.append(miMeta[nDatos - 1] + "\n");
+
+                            if (rotulo == null) {
+                                ta.append(miMeta[nDatos - 1] + "\n");
+                            } else {
+                                //ta.append(miMeta[nDatos - 1] + "\n");
+                                String rotuloMetadato = new String(rotulo.getBytes(),"UTF-8");
+                                ta.append(rotuloMetadato + "\n");
+                            }
+                            // Valor del metadato.
+                            ta.append(unValue.getAsString() + "\n");
+                            for (int i = 0; i <= (ancho / 9); i++) {
+                                ta.append("-");
+                            }
+                            ta.append("\n");
+                        }
+                    } else {
+                        ta.append("No se obtuvieron metadatos representativos.\n");
+                    }
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        };
+        mySwingWorker.execute();
     }
 
     /**
@@ -635,7 +751,17 @@ public final class RestControl {
         return mySwingWorker.get();
     }
 
-    public void unFiltro(ColeccionRest miColeccion,
+    /**
+     *
+     * @param miColeccion
+     * @param evt
+     * @param tabla
+     * @param filtros
+     * @param limite
+     * @param offset
+     *
+     */
+    public void miFiltro(ColeccionRest miColeccion,
             ActionEvent evt,
             JTable tabla,
             JTable filtros,
@@ -685,8 +811,7 @@ public final class RestControl {
                         + "&limit=" + String.valueOf(limite).trim() + "&offset=" + String.valueOf(offset).trim()
                         + "&expand=parentCollection&collSel%5B%5D=" + miCole.trim() + "\"";
                 //                
-                System.out.println("Comando: " + comando);
-
+                //System.out.println("Comando: " + comando);                
                 process = Runtime.getRuntime().exec(comando);
                 InputStream is = process.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
@@ -717,7 +842,6 @@ public final class RestControl {
                 JsonArray misItems = (JsonArray) obj.get("items");
                 Iterator<JsonElement> iter = misItems.iterator();
                 int i = 0;
-
                 while (iter.hasNext()) {
                     JsonObject miFiltro = (JsonObject) iter.next();
                     tabla.getModel().setValueAt(i + 1, i, 0);
@@ -726,13 +850,17 @@ public final class RestControl {
                     tabla.getModel().setValueAt(miFiltro.get("handle").getAsString(), i, 3);
                     tabla.getModel().setValueAt(miFiltro.get("name").getAsString(), i, 4);
                     //
-                    JsonObject objCole = (JsonObject) miFiltro.get("parentCollection");                                        
-                    tabla.getModel().setValueAt(objCole.get("name").getAsString(), i, 2);                    
+                    JsonObject objCole = (JsonObject) miFiltro.get("parentCollection");
+                    tabla.getModel().setValueAt(objCole.get("name").getAsString(), i, 2);
                     //
                     //String miHandle = miFiltro.get("handle").getAsString();
                     //tabla.getModel().setValueAt(miHandle, i, 3);
                     i = i + 1;
                     publish("item: " + i + " de " + cantItem);
+                }
+                if (i > 0) {
+                    //establecemos el alto de las filas.
+                    tabla.setRowHeight(40);
                 }
                 //
                 wait.close();
@@ -1022,7 +1150,8 @@ public final class RestControl {
     public void miHandle(int fila, int columna, String unHandle) {
         try {
             ConfigControl login = ConfigControl.getInstancia();
-            if ((fila > -1) && (columna > -1) && (columna == 3)) {
+            //if ((fila > -1) && (columna > -1) && (columna == 3)) {
+            if ((fila > -1) && (columna > -1)) {
                 Runtime.getRuntime().exec("cmd.exe /c start chrome "
                         + login.getHandle() + unHandle);
             }

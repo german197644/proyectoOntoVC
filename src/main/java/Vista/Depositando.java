@@ -15,6 +15,7 @@ import Modelo.ComunidadRest;
 import Modelo.ItemRest;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -60,8 +61,8 @@ public class Depositando extends javax.swing.JFrame {
         taConsola.append(">> Conectando con los servicio.\n");
         try {
             // rest api                
-            RestControl rest = RestControl.getInstancia();            
-            if (rest.conectar()){ // no hace falta consulta el estatus.
+            RestControl rest = RestControl.getInstancia();
+            if (rest.conectar()) { // no hace falta consulta el estatus.
                 taConsola.append("Servicio DSpace: OK!.\n");
                 rest.estructuraRepositorio(taConsola, jTree1);
             } else {
@@ -79,7 +80,7 @@ public class Depositando extends javax.swing.JFrame {
             }
         } catch (Exception ex) {
             Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
         this.setVisible(true);
     }
 
@@ -251,7 +252,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel3.add(btnDepositar);
 
         btnSalir.setForeground(new java.awt.Color(255, 0, 0));
-        btnSalir.setText("Cancelar");
+        btnSalir.setText("Terminar");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
@@ -517,7 +518,7 @@ public class Depositando extends javax.swing.JFrame {
         mnuTool.setText("Herramienta");
 
         mnuConectar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuConectar.setText("Seteo y conexión");
+        mnuConectar.setText("Conexión");
         mnuConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuConectarActionPerformed(evt);
@@ -526,7 +527,7 @@ public class Depositando extends javax.swing.JFrame {
         mnuTool.add(mnuConectar);
 
         mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuFiltrar.setText("Búsqueda de ítems");
+        mnuFiltrar.setText("Recuperacón");
         mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuFiltrarActionPerformed(evt);
@@ -558,12 +559,12 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
-        Configurando win = new Configurando(this, true);        
+        Configurando win = new Configurando(this, true);
         win.setConecto(false); // para saber si volvio a conectar y refrescar.
         win.setConsola(taConsola);
-        win.setVisible(true);        
+        win.setVisible(true);
         // Verificar si se cancelo o se conecto!               
-        if (!win.isConecto()){
+        if (!win.isConecto()) {
             win.dispose();
             return;
         }
@@ -683,7 +684,7 @@ public class Depositando extends javax.swing.JFrame {
                         msg = msg + "La selección de los recursos.\n";
                     }
                     if (base.validarMetadatos_v2()) {
-                        msg = msg + "Ingresado los metadatos y no tenga errores [Rótulos en rojo]. \n";
+                        msg = msg + "La descripción de los metadatos y que no tengan errores [Rótulos en rojo]. \n";
                     }
                     //| (base.isErrorValidacion())) {
                     if (!msg.isEmpty()) {
@@ -694,7 +695,7 @@ public class Depositando extends javax.swing.JFrame {
                     // Le damos formato json a los metadatos
                     base.jsonMetadatos();
                     break;
-                case 2:                    
+                case 2:
                     break;
                 case 3:
                     break;
@@ -793,7 +794,7 @@ public class Depositando extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "La Estructura del repositorio o \n"
                         + "los metadatos no son los esperados.\nPor favor verifique.", "Error", JOptionPane.ERROR_MESSAGE);
                 taConsola.append("Operación de filtrado cancelada.\n");
-                return;
+                //return;
             }
             //
             Recuperando filtro = new Recuperando(this, rootPaneCheckingEnabled);
@@ -835,14 +836,21 @@ public class Depositando extends javax.swing.JFrame {
         this.item = (ItemRest) ((Object) listaItems.getSelectedValue());
         if ((item != null) && (item.isItem())) {
             RestControl rest = RestControl.getInstancia();
-            DefaultListModel misItems = rest.obtenerBitstreams(this.item);
-            if (!misItems.isEmpty()) {
+            try {
+                //DefaultListModel misItems = rest.obtenerBitstreams(this.item);
+                rest.obtenerBitstreams(this.item, listaBitstreams);
+                /*
+                if (!misItems.isEmpty()) {
                 listaBitstreams.setModel(misItems);
-            } else {
+                } else {
                 DefaultListModel<String> dlm = new DefaultListModel();
                 dlm.addElement("sin bitStreams");
                 listaBitstreams.setModel(dlm);
                 taConsola.append("No hay datos de los items de la colección.\n");
+                }
+                */
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_listaItemsMousePressed

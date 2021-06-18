@@ -357,6 +357,7 @@ public final class StardogControl {
         return repite;
     }
 
+    
     private String rotuloMetadato(String aString) throws Exception {
         String rot = "";
         ConfigControl config = ConfigControl.getInstancia();
@@ -375,6 +376,27 @@ public final class StardogControl {
         //System.out.println("metadato: " + rot);
         return rot;
     }
+    
+    /*
+    public String getRotulo(String aString) throws Exception {
+        String rot = "";
+        ConfigControl config = ConfigControl.getInstancia();
+        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
+        //properties.load(propertiesStream);
+        properties = config.getConfigMetadatos();
+
+        String aValue = properties.getProperty(aString + ".rotulo");
+
+        if (aValue != null) {
+            //System.out.println("metadato que repite: " + aString);
+            rot = aValue;
+        } else {
+            rot = aString;
+        }
+        //System.out.println("metadato: " + rot);
+        return rot;
+    }
+    */
 
     private boolean isExists(Metadato m) throws Exception {
         for (int i = 0; i < capturaMetadados.size(); i++) {

@@ -15,17 +15,17 @@ import Modelo.ItemRest;
 import Modelo.JLabelLink;
 import Modelo.Metadato;
 import Modelo.TextAreaRenderer;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -48,29 +48,21 @@ public class Recuperando extends javax.swing.JDialog {
      */
     public Recuperando(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        try {
-            initComponents();
-            this.setLocationRelativeTo(null);
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            Dimension screenSize = toolkit.getScreenSize();
-            int height = screenSize.height - 30;
-            this.setBounds(0, 0, screenSize.width, height);
-            //
-            tablaFiltro.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
-            tablaFiltro.setRowHeight(50); // con 50 anda
-
-            //
-            ConfigControl login = ConfigControl.getInstancia();
-            JLabelLink link = new JLabelLink();
-            link.setText("Busqueda en el repositorio. Aquí.");
-            link.setSize(link.getText().length(), 20);
-            link.setLink(login.getUri() + "/rest/static/reports/query.html");
-            link.setTextLink("Aquí");
-            jPanel17.add(link);
-            //jPanel16.repaint();
-        } catch (IOException ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        initComponents();
+        this.setLocationRelativeTo(null);
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension screenSize = toolkit.getScreenSize();
+        int height = screenSize.height - 60;
+        this.setBounds(0, 15, screenSize.width, height);
+        //
+        DefaultTableModel miTabla = (DefaultTableModel) tablaFiltro.getModel();
+        int filas = miTabla.getRowCount();
+        for (int i = 1; i <= filas; i++) {
+            miTabla.removeRow(0);
+        }        
+        //tablaFiltro.setModel(miTabla);
+        //tablaFiltro.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
+        //tablaFiltro.setRowHeight(50); // con 50 anda
     }
 
     public void setTree(TreeModel model) {
@@ -102,7 +94,6 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel23 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel18 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -141,6 +132,14 @@ public class Recuperando extends javax.swing.JDialog {
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel33 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel29 = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
         panelSur = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         panelCentral = new javax.swing.JPanel();
@@ -152,10 +151,16 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel24 = new javax.swing.JPanel();
         jPanel27 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jPanel21 = new javax.swing.JPanel();
+        jPanel25 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
-        jLabel24 = new javax.swing.JLabel();
+        jPanel20 = new javax.swing.JPanel();
         btnDescargar = new javax.swing.JButton();
+        jPanel23 = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        taMetadata = new javax.swing.JTextArea();
         jPanel19 = new javax.swing.JPanel();
         jButton6 = new javax.swing.JButton();
         jPanel22 = new javax.swing.JPanel();
@@ -166,6 +171,7 @@ public class Recuperando extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Filtrado y recupero de Items");
+        setPreferredSize(new java.awt.Dimension(911, 622));
 
         panelCabecera.setPreferredSize(new java.awt.Dimension(670, 220));
         panelCabecera.setLayout(new java.awt.BorderLayout());
@@ -179,9 +185,14 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel2.setBackground(new java.awt.Color(0, 153, 153));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTree1.setBorder(javax.swing.BorderFactory.createTitledBorder("Repositorio"));
+        jScrollPane1.setBackground(new java.awt.Color(0, 153, 153));
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Repositorio."));
+        jScrollPane1.setOpaque(false);
+
+        jTree1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Repositorio");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.setOpaque(false);
         jTree1.setPreferredSize(new java.awt.Dimension(400, 64));
         jTree1.setVisibleRowCount(8);
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -218,7 +229,7 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 303, Short.MAX_VALUE)
+            .addGap(0, 550, Short.MAX_VALUE)
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,22 +237,6 @@ public class Recuperando extends javax.swing.JDialog {
         );
 
         jPanel8.add(jPanel11);
-
-        jPanel13.setBackground(new java.awt.Color(0, 153, 153));
-        jPanel13.setAutoscrolls(true);
-
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 303, Short.MAX_VALUE)
-        );
-        jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 159, Short.MAX_VALUE)
-        );
-
-        jPanel8.add(jPanel13);
 
         jPanel5.add(jPanel8);
 
@@ -253,12 +248,16 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel18.setBackground(new java.awt.Color(0, 153, 153));
         jPanel18.setLayout(new java.awt.BorderLayout());
 
-        jListMetadatos.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
+        jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos."));
+        jScrollPane5.setOpaque(false);
+
+        jListMetadatos.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jListMetadatos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Metadatos" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        jListMetadatos.setOpaque(false);
         jScrollPane5.setViewportView(jListMetadatos);
 
         jPanel18.add(jScrollPane5, java.awt.BorderLayout.CENTER);
@@ -404,17 +403,61 @@ public class Recuperando extends javax.swing.JDialog {
         jPanel16.add(jLabel19, java.awt.BorderLayout.LINE_END);
 
         jPanel17.setOpaque(false);
+        jPanel17.setLayout(new java.awt.GridLayout(4, 0, 0, 5));
 
-        javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
-        jPanel17.setLayout(jPanel17Layout);
-        jPanel17Layout.setHorizontalGroup(
-            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 880, Short.MAX_VALUE)
-        );
-        jPanel17Layout.setVerticalGroup(
-            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 131, Short.MAX_VALUE)
-        );
+        jPanel4.setOpaque(false);
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jLabel33.setText("Repositorio DSpace en el navegador:");
+        jPanel4.add(jLabel33);
+
+        jPanel17.add(jPanel4);
+
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+        jLabel29.setText("- Reporte avanzado.");
+        jPanel1.add(jLabel29);
+
+        jLabel30.setText("Aqui.");
+        jLabel30.setToolTipText("Haga click para ir a reporte.");
+        jLabel30.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel30MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel30MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel30MouseExited(evt);
+            }
+        });
+        jPanel1.add(jLabel30);
+
+        jPanel17.add(jPanel1);
+
+        jPanel3.setOpaque(false);
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+        jLabel31.setText("- Filtro avanzado.");
+        jPanel3.add(jLabel31);
+
+        jLabel32.setText("Aqui.");
+        jLabel32.setToolTipText("Haga click para ir a filtrado.");
+        jLabel32.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel32MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel32MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel32MouseExited(evt);
+            }
+        });
+        jPanel3.add(jLabel32);
+
+        jPanel17.add(jPanel3);
 
         jPanel16.add(jPanel17, java.awt.BorderLayout.CENTER);
 
@@ -440,9 +483,10 @@ public class Recuperando extends javax.swing.JDialog {
         getContentPane().add(panelCabecera, java.awt.BorderLayout.PAGE_START);
 
         panelCentral.setBackground(new java.awt.Color(204, 255, 204));
+        panelCentral.setPreferredSize(new java.awt.Dimension(911, 290));
         panelCentral.setLayout(new java.awt.BorderLayout(0, 2));
 
-        jPanel15.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel15.setBackground(new java.awt.Color(255, 204, 102));
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
 
         jLabel15.setText("     ");
@@ -460,28 +504,47 @@ public class Recuperando extends javax.swing.JDialog {
         panelCentral.add(jLabel14, java.awt.BorderLayout.LINE_END);
 
         jPanel24.setOpaque(false);
+        jPanel24.setPreferredSize(new java.awt.Dimension(893, 280));
         jPanel24.setLayout(new java.awt.BorderLayout());
 
         jPanel27.setOpaque(false);
+        jPanel27.setPreferredSize(new java.awt.Dimension(893, 200));
         jPanel27.setLayout(new java.awt.BorderLayout());
 
         jPanel26.setOpaque(false);
-        jPanel26.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 5));
+        jPanel26.setPreferredSize(new java.awt.Dimension(893, 180));
+        jPanel26.setLayout(new java.awt.GridLayout(1, 0));
 
-        listaRecursos.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos del ítem"));
+        jPanel9.setOpaque(false);
+        jPanel9.setLayout(new java.awt.GridLayout(1, 0));
+
+        jPanel21.setOpaque(false);
+        jPanel21.setLayout(new javax.swing.BoxLayout(jPanel21, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel25.setOpaque(false);
+        jPanel25.setLayout(new java.awt.GridLayout(1, 0));
+
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos del ítem."));
+        jScrollPane2.setOpaque(false);
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(350, 140));
+
+        listaRecursos.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        listaRecursos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         listaRecursos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "material de estudio" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         listaRecursos.setPreferredSize(new java.awt.Dimension(300, 16));
-        listaRecursos.setVisibleRowCount(5);
+        listaRecursos.setVisibleRowCount(6);
         jScrollPane2.setViewportView(listaRecursos);
 
-        jPanel26.add(jScrollPane2);
+        jPanel25.add(jScrollPane2);
 
-        jLabel24.setText("   ");
-        jPanel26.add(jLabel24);
+        jPanel21.add(jPanel25);
+
+        jPanel20.setOpaque(false);
+        jPanel20.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         btnDescargar.setText("Descargar recurso");
         btnDescargar.addActionListener(new java.awt.event.ActionListener() {
@@ -489,7 +552,31 @@ public class Recuperando extends javax.swing.JDialog {
                 btnDescargarActionPerformed(evt);
             }
         });
-        jPanel26.add(btnDescargar);
+        jPanel20.add(btnDescargar);
+
+        jPanel21.add(jPanel20);
+
+        jPanel9.add(jPanel21);
+
+        jPanel26.add(jPanel9);
+
+        jPanel23.setOpaque(false);
+        jPanel23.setLayout(new java.awt.GridLayout(1, 0));
+
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos del recurso."));
+        jScrollPane6.setOpaque(false);
+        jScrollPane6.setPreferredSize(new java.awt.Dimension(180, 50));
+
+        taMetadata.setEditable(false);
+        taMetadata.setColumns(95);
+        taMetadata.setLineWrap(true);
+        taMetadata.setRows(6);
+        taMetadata.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jScrollPane6.setViewportView(taMetadata);
+
+        jPanel23.add(jScrollPane6);
+
+        jPanel26.add(jPanel23);
 
         jPanel27.add(jPanel26, java.awt.BorderLayout.CENTER);
 
@@ -508,11 +595,13 @@ public class Recuperando extends javax.swing.JDialog {
 
         jPanel24.add(jPanel27, java.awt.BorderLayout.PAGE_END);
 
-        jPanel22.setLayout(new java.awt.GridLayout());
+        jPanel22.setPreferredSize(new java.awt.Dimension(452, 50));
+        jPanel22.setLayout(new java.awt.GridLayout(1, 0));
 
         jScrollPane4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane4.setPreferredSize(new java.awt.Dimension(452, 30));
 
+        tablaFiltro.setAutoCreateRowSorter(true);
         tablaFiltro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -560,7 +649,7 @@ public class Recuperando extends javax.swing.JDialog {
         panelBase.setBackground(new java.awt.Color(0, 153, 153));
         panelBase.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButton2.setText("Cancelar");
+        jButton2.setText("Finalizar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -579,7 +668,7 @@ public class Recuperando extends javax.swing.JDialog {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         RestControl rest = RestControl.getInstancia();
-        rest.unFiltro(coleccion, evt, tablaFiltro, jTable1,
+        rest.miFiltro(coleccion, evt, tablaFiltro, jTable1,
                 Integer.parseInt(fTextLimite.getText()), Integer.parseInt(txtOffSet.getText()));
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -633,29 +722,26 @@ public class Recuperando extends javax.swing.JDialog {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void tablaFiltroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFiltroMousePressed
-        RestControl rest = RestControl.getInstancia();
-        int fila = tablaFiltro.rowAtPoint(evt.getPoint());
-        int columna = tablaFiltro.columnAtPoint(evt.getPoint());
-        //String unHandle = tablaFiltro.getModel().getValueAt(fila, columna).toString().trim();
-        //rest.miHandle(fila, columna, unHandle);
-        //
-        // Recuperar los recursos del item        
-        //
-        if ((fila < 0) && (columna < 0)) {
-            return;
-        }
-        String unLink = tablaFiltro.getModel().getValueAt(fila, 1).toString().trim();
-        String unNombre = tablaFiltro.getModel().getValueAt(fila, 3).toString().trim();
-        ItemRest miItem = new ItemRest(unNombre, unLink);
-        DefaultListModel misItems = rest.obtenerBitstreams(miItem);
-        if (misItems.size() > 0) {
-            System.out.println("entre....................");
-            listaRecursos.setModel(misItems);
-        } else {
-            System.out.println("no entre)");
-            DefaultListModel<String> dlm = new DefaultListModel();
-            dlm.addElement("sin recursos");
-            listaRecursos.setModel(dlm);
+        try {
+            RestControl rest = RestControl.getInstancia();
+            DefaultTableModel miTabla = (DefaultTableModel) tablaFiltro.getModel();
+            int fila = tablaFiltro.rowAtPoint(evt.getPoint());
+            int columna = tablaFiltro.columnAtPoint(evt.getPoint());
+            //
+            if ((fila < 0) && (columna < 0)) {
+                // retorno para no producir errores
+                return;
+            }
+            String unLink = miTabla.getValueAt(fila, 1).toString().trim();
+            String unNombre = miTabla.getValueAt(fila, 3).toString().trim();
+            ItemRest miItem = new ItemRest(unNombre, unLink);
+            // DefaultListModel misItems = rest.obtenerBitstreams(miItem, listaRecursos);
+            rest.obtenerBitstreams(miItem, listaRecursos);            
+            // Mostramos los metadatas.
+            rest.obtenerMetadata(miItem, taMetadata);
+            taMetadata.setCaretPosition(0);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_tablaFiltroMousePressed
 
@@ -666,7 +752,7 @@ public class Recuperando extends javax.swing.JDialog {
         System.out.println("Fila: " + fila + " - Columna: " + colu);
         //int fila = tablaFiltro.rowAtPoint(evt.getPoint());
         //int columna = tablaFiltro.columnAtPoint(evt.getPoint());
-        String unHandle = tablaFiltro.getModel().getValueAt(fila, colu).toString().trim();
+        String unHandle = tablaFiltro.getModel().getValueAt(fila, 3).toString().trim();
         rest.miHandle(fila, colu, unHandle);
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -674,18 +760,55 @@ public class Recuperando extends javax.swing.JDialog {
         try {
             ConfigControl login = ConfigControl.getInstancia();
             if (listaRecursos.getModel().getSize() > 0) {
-                if (!(((Object) listaRecursos.getSelectedValue())instanceof BitstreamsRest)) {
+                if (!(((Object) listaRecursos.getSelectedValue()) instanceof BitstreamsRest)) {
                     return;
                 }
                 BitstreamsRest bs = (BitstreamsRest) ((Object) listaRecursos.getSelectedValue());
                 String dir = login.getUri().trim() + bs.getLink() + "/retrieve";
                 System.out.println("Recuso: " + dir);
-                Runtime.getRuntime().exec("cmd.exe /c start chrome "+ dir);
+                Runtime.getRuntime().exec("cmd.exe /c start chrome " + dir);
             }
         } catch (IOException ex) {
             Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnDescargarActionPerformed
+
+    private void jLabel32MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel32MouseEntered
+        jLabel32.setForeground(Color.red);
+    }//GEN-LAST:event_jLabel32MouseEntered
+
+    private void jLabel32MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel32MouseExited
+        jLabel32.setForeground(Color.black);
+    }//GEN-LAST:event_jLabel32MouseExited
+
+    private void jLabel30MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseEntered
+        jLabel30.setForeground(Color.red);
+    }//GEN-LAST:event_jLabel30MouseEntered
+
+    private void jLabel30MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseExited
+        jLabel30.setForeground(Color.black);
+    }//GEN-LAST:event_jLabel30MouseExited
+
+    private void jLabel30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseClicked
+        try {
+            ConfigControl config = ConfigControl.getInstancia();
+            // creamos el link query
+            String reporte = config.getUri().trim() + config.getReporte().trim();
+            Runtime.getRuntime().exec("cmd.exe /c start chrome " + reporte);
+        } catch (IOException ex) {
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jLabel30MouseClicked
+
+    private void jLabel32MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel32MouseClicked
+        try {
+            ConfigControl config = ConfigControl.getInstancia();
+            String filtro = config.getUri().trim() + config.getFiltro().trim();
+            Runtime.getRuntime().exec("cmd.exe /c start chrome " + filtro);
+        } catch (IOException ex) {
+            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jLabel32MouseClicked
 
     /**
      * @param args the command line arguments
@@ -757,12 +880,16 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -770,10 +897,10 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jListMetadatos;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
@@ -781,19 +908,27 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTree jTree1;
@@ -803,6 +938,7 @@ public class Recuperando extends javax.swing.JDialog {
     private javax.swing.JPanel panelCabecera;
     private javax.swing.JPanel panelCentral;
     private javax.swing.JPanel panelSur;
+    private javax.swing.JTextArea taMetadata;
     private javax.swing.JTable tablaFiltro;
     private javax.swing.JTextField txtMetadato;
     private javax.swing.JTextField txtOffSet;

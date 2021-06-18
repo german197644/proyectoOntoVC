@@ -57,6 +57,8 @@ public final class ConfigControl {
     //private String folderPropiedades = "E:\\Temp\\propiedades\\";
     private String folderPropiedades = "";
     private String handle = "";
+    private String reporte = "";
+    private String filtro = "";
 
     private static ConfigControl instancia = null;
 
@@ -108,14 +110,22 @@ public final class ConfigControl {
 
     public Properties getConfigMetadatos() {
         try {
+            URI uri = null;
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
             }
             URL inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
-            URI uri = new URI(inputURL.toString());
+            
+            if (inputURL != null) {
+                uri = new URI(inputURL.toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encuentra el archivo.\n");
+                properties = null;
+                return properties; // Paro la ejecución de este método.
+            }
             File file = new File(uri.getPath());
-            if (file.exists()) {                
+            if (file.exists()) {
                 propertiesStream = new FileInputStream(uri.getPath());
                 properties = new Properties();
                 properties.load(propertiesStream);
@@ -154,11 +164,19 @@ public final class ConfigControl {
     public Properties getConfigDublinCore() throws IOException {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URI uri = null;
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
             }
             URL inputURL = classLoader.getResource("propiedades/configDublinCore.properties");
-            URI uri = new URI(inputURL.toString());
+            if (inputURL != null) {
+                uri = new URI(inputURL.toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encuentra el archivo.\n");
+                properties = null;
+                return null;
+            }
+            //URI uri = new URI(inputURL.toString());
             File file = new File(uri.getPath());
             if (file.exists()) {
                 propertiesStream = new FileInputStream(uri.getPath());
@@ -230,6 +248,8 @@ public final class ConfigControl {
         this.folderWork = properties.getProperty("folderwork").trim();
         this.folderPropiedades = properties.getProperty("folderProperty").trim();
         this.handle = properties.getProperty("handle").trim();
+        this.reporte = properties.getProperty("reporte").trim();
+        this.filtro = properties.getProperty("filtro").trim();
     }
 
     //public void grabar_url_st(String aSdIRI, String aUser, String aPass, String aObo) 
@@ -514,6 +534,64 @@ public final class ConfigControl {
         }
     }
 
+    public void grabarReporte(String aReporte, ActionEvent evt) {
+        try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                properties.setProperty("reporte", aReporte);
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void grabarFiltro(String aReporte, ActionEvent evt) {
+        try {
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            URL inputURL = classLoader.getResource("propiedades/config.properties");
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());
+                properties.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                properties.setProperty("filtro", aReporte);
+                properties.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Operación concluida con éxito.");
+            } else {
+                properties = null;
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void grabarBase(String miBase, ActionEvent evt) {
         try {
             Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
@@ -666,6 +744,22 @@ public final class ConfigControl {
         } else {
             this.folderPropiedades = path.trim();
         }
+    }
+
+    public String getReporte() {
+        return reporte;
+    }
+
+    public void setReporte(String reporte) {
+        this.reporte = reporte;
+    }
+
+    public String getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(String filtro) {
+        this.filtro = filtro;
     }
 
 } //fin

@@ -44,7 +44,7 @@ public class Configurando extends javax.swing.JDialog {
 
     // Salida de los resultados.
     JTextArea consola;
-    
+
     //
     boolean conecto = false;
 
@@ -88,7 +88,7 @@ public class Configurando extends javax.swing.JDialog {
     public void setConecto(boolean conecto) {
         this.conecto = conecto;
     }
-    
+
     /**
      *
      * @param consola Se muestran las novedades de la ejecucion.
@@ -103,7 +103,7 @@ public class Configurando extends javax.swing.JDialog {
             this.setLocationRelativeTo(null);
             if (config.getProperties() != null) {
                 // STARDOG
-                //this.st_url.removeAllItems();
+                //
                 this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
                 //this.st_url.updateUI();
                 if (st_url.getSelectedIndex() >= 0) {
@@ -116,9 +116,9 @@ public class Configurando extends javax.swing.JDialog {
                 this.st_pass.setText(config.getPassst());
                 stardog = StardogControl.getInstancia();
                 // fin coneccion stardog
-
+                //
                 // DSpace
-                //this.sw_url.removeAllItems();
+                //
                 this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
                 //this.sw_url.updateUI();
                 if (sw_url.getSelectedIndex() >= 0) {
@@ -128,13 +128,14 @@ public class Configurando extends javax.swing.JDialog {
                 }
                 this.sw_usuario.setText(config.getUseRest());
                 this.sw_pass.setText(config.getPassRest());
-                //this.sw_obo.setText(login.getObo()); // ya no aplica.
                 rest = RestControl.getInstancia();
                 // fin coneccion DSpace
-
+                //
                 // General
                 this.txtWorkFolder.setText(config.getFolderWork());
                 this.txtHandle.setText(config.getHandle());
+                this.txtReporte.setText(config.getReporte());
+                this.txtFiltro.setText(config.getFiltro());
             }
             // Visualizamos el panel.
             this.loginPanel.setVisible(true);
@@ -203,6 +204,16 @@ public class Configurando extends javax.swing.JDialog {
         txtHandle = new javax.swing.JTextField();
         btnGuardarHandle = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        txtReporte = new javax.swing.JTextField();
+        btnGuardarReport = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        txtFiltro = new javax.swing.JTextField();
+        btnSaveFiltrado = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
         panel_inferior = new javax.swing.JPanel();
         btnConectar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
@@ -248,7 +259,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel4.setText("Otra URL");
+        nombreBDStardogLabel4.setText("URL utilizada");
         nombreBDStardogLabel4.setName(""); // NOI18N
         jPanel7.add(nombreBDStardogLabel4);
 
@@ -369,7 +380,7 @@ public class Configurando extends javax.swing.JDialog {
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel5.setText("Otra URL");
+        nombreBDStardogLabel5.setText("URL utilizada");
         nombreBDStardogLabel5.setName(""); // NOI18N
         jPanel8.add(nombreBDStardogLabel5);
 
@@ -507,6 +518,52 @@ public class Configurando extends javax.swing.JDialog {
 
             jPanel17.add(jPanel14);
 
+            jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+            jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+            jLabel4.setText("Reporte avanzado");
+            jPanel6.add(jLabel4);
+
+            txtReporte.setColumns(25);
+            txtReporte.setText("/rest/static/reports/index.htmll");
+            jPanel6.add(txtReporte);
+
+            btnGuardarReport.setText("Guardar cambios");
+            btnGuardarReport.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnGuardarReportActionPerformed(evt);
+                }
+            });
+            jPanel6.add(btnGuardarReport);
+
+            jLabel9.setText("Ej.: /rest/...");
+            jPanel6.add(jLabel9);
+
+            jPanel17.add(jPanel6);
+
+            jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
+
+            jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+            jLabel10.setText("Filtro avanzado");
+            jPanel9.add(jLabel10);
+
+            txtFiltro.setColumns(25);
+            txtFiltro.setText("/rest/static/reports/query.html");
+            jPanel9.add(txtFiltro);
+
+            btnSaveFiltrado.setText("Guardar cambios");
+            btnSaveFiltrado.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    btnSaveFiltradoActionPerformed(evt);
+                }
+            });
+            jPanel9.add(btnSaveFiltrado);
+
+            jLabel11.setText("Ej.: /rest/...");
+            jPanel9.add(jLabel11);
+
+            jPanel17.add(jPanel9);
+
             generalPanel.add(jPanel17, java.awt.BorderLayout.CENTER);
 
             jTabbedPane1.addTab("Datos generales", generalPanel);
@@ -523,7 +580,7 @@ public class Configurando extends javax.swing.JDialog {
             });
             panel_inferior.add(btnConectar);
 
-            btnCancelar.setText("Cancelar");
+            btnCancelar.setText("Finalizar");
             btnCancelar.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     btnCancelarActionPerformed(evt);
@@ -597,7 +654,7 @@ public class Configurando extends javax.swing.JDialog {
             }
         };
         mySwingWorker.execute();
-        wait.makeWait("Conectando...", evt);              
+        wait.makeWait("Conectando...", evt);
     }//GEN-LAST:event_btnConectarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -774,6 +831,20 @@ public class Configurando extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_sw_urlActionPerformed
 
+    private void btnGuardarReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarReportActionPerformed
+        String dato = txtReporte.getText().trim();
+        if (!dato.isEmpty()) {
+            config.grabarReporte(dato, evt);
+        }
+    }//GEN-LAST:event_btnGuardarReportActionPerformed
+
+    private void btnSaveFiltradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveFiltradoActionPerformed
+        String dato = txtFiltro.getText().trim();
+        if (!dato.isEmpty()) {
+            config.grabarFiltro(dato, evt);
+        }
+    }//GEN-LAST:event_btnSaveFiltradoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -829,21 +900,27 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnGuardarBase;
     private javax.swing.JButton btnGuardarHandle;
+    private javax.swing.JButton btnGuardarReport;
     private javax.swing.JButton btnGuardarUT;
     private javax.swing.JButton btnQuitarURI;
     private javax.swing.JButton btnQuitarURL;
+    private javax.swing.JButton btnSaveFiltrado;
     private javax.swing.JButton btn_agregar_st;
     private javax.swing.JButton btn_agregar_sw;
     private javax.swing.JPanel cont_stardog;
     private javax.swing.JPanel cont_sword;
     private javax.swing.JPanel generalPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
@@ -852,8 +929,10 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JLabel nombreBDStardogLabel;
@@ -874,7 +953,9 @@ public class Configurando extends javax.swing.JDialog {
     private javax.swing.JPasswordField sw_pass;
     private javax.swing.JComboBox<String> sw_url;
     private javax.swing.JTextField sw_usuario;
+    private javax.swing.JTextField txtFiltro;
     private javax.swing.JTextField txtHandle;
+    private javax.swing.JTextField txtReporte;
     private javax.swing.JTextField txtWorkFolder;
     private javax.swing.JLabel userStardogLabel;
     private javax.swing.JLabel userStardogLabel1;

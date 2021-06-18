@@ -5,7 +5,6 @@
  */
 package Control;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -21,10 +20,11 @@ public class DublinCoreControl {
     private static DublinCoreControl instancia = null;
 
     Properties properties = null;
+    Properties propertiesBE = null;
     InputStream propertiesStream = null;
 
     protected DublinCoreControl() throws IOException {
-        properties = new Properties();
+        //properties = new Properties();
     }
 
     public static DublinCoreControl getInstancia() throws Exception {
@@ -37,7 +37,8 @@ public class DublinCoreControl {
     /**
      *
      * @param aValue Tipo de metadato.
-     * @return Retorna la equivalencia Dublin Core en función del tipo de metadato.
+     * @return Retorna la equivalencia Dublin Core en función del tipo de
+     * metadato.
      * @throws Exception
      */
     public Object getEquivalenciaDC(String aValue) throws Exception {
@@ -48,7 +49,7 @@ public class DublinCoreControl {
         properties = config.getConfigDublinCore();
         equi = properties.getProperty(aValue.trim().toLowerCase());
         if (equi.contains(",")) {
-            StringTokenizer st = new StringTokenizer(equi, ",");            
+            StringTokenizer st = new StringTokenizer(equi, ",");
             return st;
         }
         return equi;
@@ -57,17 +58,27 @@ public class DublinCoreControl {
     /**
      *
      * @param aValue Tipo de matadato.
-     * @return Retorna la equivalencia Dublin Core en función del tipo de metadato.
+     * @return Retorna la equivalencia Dublin Core en función del tipo de
+     * metadato.
      * @throws Exception
      */
     public String buscarEquivalencias(String aValue) throws Exception {
         ConfigControl config = ConfigControl.getInstancia();
         //propertiesStream = new FileInputStream("src/main/java/propiedades/configDublinCore.properties");
         //properties.load(propertiesStream);
-        properties = config.getConfigDublinCore();
-        final String equi = properties.getProperty(aValue.trim().toLowerCase());
+        if (propertiesBE == null) {
+            propertiesBE = new Properties();
+            propertiesBE = config.getConfigDublinCore();
+        }
+        //properties = config.getConfigDublinCore();        
+        final String equi = propertiesBE.getProperty(aValue.trim().toLowerCase());
         return equi.trim();
     }
+
+    /**
+     * Pone en null la variable de propiedades de buscar Equivalencias.
+     */
+    public void concelarPropertieBE() {
+        propertiesBE = null;
+    }
 }
-
-
