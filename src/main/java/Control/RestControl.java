@@ -13,9 +13,12 @@ import Modelo.ItemRest;
 import static com.clarkparsia.pellet.hierarchy.HierarchyFunctions.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+import java.awt.HeadlessException;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -26,26 +29,33 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import jdk.nashorn.internal.runtime.ListAdapter;
 import org.apache.commons.csv.CSVFormat;
 
 /**
@@ -598,14 +608,14 @@ public final class RestControl {
                             String rotulo = null;
                             if (property != null) {
                                 rotulo = property.getProperty(unaKey.getAsString());
-                            }                            
+                            }
                             //ta.append(miMeta[nDatos - 1] + "\n");
 
                             if (rotulo == null) {
                                 ta.append(miMeta[nDatos - 1] + "\n");
                             } else {
                                 //ta.append(miMeta[nDatos - 1] + "\n");
-                                String rotuloMetadato = new String(rotulo.getBytes(),"UTF-8");
+                                String rotuloMetadato = new String(rotulo.getBytes(), "UTF-8");
                                 ta.append(rotuloMetadato + "\n");
                             }
                             // Valor del metadato.
@@ -1670,6 +1680,154 @@ public final class RestControl {
             Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
+    }
+
+    public void obtenerPrefix(JComboBox miCombo) {
+        DefaultComboBoxModel<String> listaPrefix = new DefaultComboBoxModel();
+
+        SwingWorker<DefaultComboBoxModel, Void> miSwingWorker = new SwingWorker<DefaultComboBoxModel, Void>() {
+            @Override
+            protected DefaultComboBoxModel doInBackground() throws Exception {
+                try {
+                    ConfigControl conn = ConfigControl.getInstancia();
+                    //System.out.println("URI ::: " + conn.getUri().trim());
+                    //
+                    String comando = "curl \"" + conn.getUri().trim() + "/rest/registries/schema\"";
+                    Process process = Runtime.getRuntime().exec(comando);
+                    //
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    String out = br.lines().collect(Collectors.joining("\n"));
+                    // System.out.println("Linea: " + out);
+                    JsonParser parser = new JsonParser();
+                    JsonReader reader = new JsonReader(new StringReader(out));
+                    JsonElement datos = parser.parse(reader);
+                    if (datos.isJsonArray()) {
+                        JsonArray array = (JsonArray) datos;
+                        Iterator<JsonElement> iter = array.iterator();
+                        while (iter.hasNext()) {
+                            JsonObject jsonItem = (JsonObject) iter.next();
+                            JsonElement miPrefix = jsonItem.get("prefix");
+                            // Creamos la lista con los prefix de los esquemas presentes.
+                            listaPrefix.addElement(miPrefix.getAsString());
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No hay esquemas presentes en el repositorio.");
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return listaPrefix;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    miCombo.setModel(this.get());
+                    miCombo.updateUI();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        miSwingWorker.execute();
+    }
+
+    public void obtenerEsquema(String miPrefix, JList miEsquema) {
+        SwingWorker<DefaultListModel, Void> miSwingWorker = new SwingWorker<DefaultListModel, Void>() {
+            @Override
+            protected DefaultListModel doInBackground() throws Exception {
+                DefaultListModel miModelo = new DefaultListModel();
+                try {
+                    ConfigControl conn = ConfigControl.getInstancia();
+                    //System.out.println("URI ::: " + conn.getUri().trim());
+                    //
+                    String comando = "curl \"" + conn.getUri().trim() + "/rest/registries/schema " + miPrefix + "\"";
+                    Process process = Runtime.getRuntime().exec(comando);
+                    //
+                    InputStream is = process.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    //
+                    String out = br.lines().collect(Collectors.joining("\n"));
+                    // System.out.println("Linea: " + out);
+                    JsonParser parser = new JsonParser();
+                    JsonReader reader = new JsonReader(new StringReader(out));
+                    JsonElement datos = parser.parse(reader);
+                    if (datos.isJsonArray()) {
+                        JsonArray array = (JsonArray) datos;
+                        Iterator<JsonElement> iter = array.iterator();
+                        while (iter.hasNext()) {
+                            JsonObject jsonItem = (JsonObject) iter.next();
+                            JsonElement miPrefix = jsonItem.get("name");
+                            // Creamos la lista con los prefix de los esquemas presentes.
+                            miModelo.addElement(miPrefix.getAsString());
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No hay elementos con este prefijo: " + miPrefix);
+                    }
+                } catch (JsonIOException | JsonSyntaxException | HeadlessException | IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return miModelo;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    DefaultListModel modelo = (DefaultListModel) miEsquema.getModel();
+                    modelo.removeAllElements();
+                    modelo = this.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        miSwingWorker.execute();
+    }
+
+    public void obtenerConfigEsquema(String prefix, JTable miTalba) {
+        SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    ConfigControl config = ConfigControl.getInstancia();
+                    Properties miProp = config.getConfigDublinCore();
+                    Set<Object> Keys = miProp.keySet();
+                    DefaultTableModel modelo = (DefaultTableModel) miTalba.getModel();
+                    if (Keys.size() > 0) {
+                        int filas = modelo.getRowCount();
+                        for (int i = 1; i <= filas; i++) {
+                            modelo.removeRow(0);
+                        }
+                        //Enumeration<Object> keys = miProp.keys();
+                        //while (keys.hasMoreElements()) {
+                        for (Object clave : Keys) {
+                            String key = (String) clave;
+                            String value = (String) miProp.get(key);
+                            if (value.contains(prefix)) {
+                                //System.out.println(key + " = " + miProp.get(key));
+                                String[] miEsquema = {key, value, ""};
+                                modelo.addRow(miEsquema);
+                            }
+                        }
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                return null;
+            }
+        };
+        mySwingWorker.execute();
+    }
+
+    public void quitarFilaTabla(DefaultTableModel modelo, int row) {
+        if (row >= 0) {
+            modelo.removeRow(row);
+        }
     }
 
 }

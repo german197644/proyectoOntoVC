@@ -108,6 +108,10 @@ public final class StardogControl {
     public DefaultListModel<Metadato> getListaMetadados() {
         return listaMetadados;
     }
+    
+        public DefaultListModel getListaMetadados2() {
+        return listaMetadados;
+    }
 
     public void conectar() {
         SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {

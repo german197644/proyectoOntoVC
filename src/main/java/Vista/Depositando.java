@@ -168,6 +168,7 @@ public class Depositando extends javax.swing.JFrame {
         mnuTool = new javax.swing.JMenu();
         mnuConectar = new javax.swing.JMenuItem();
         mnuFiltrar = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mnuSalir = new javax.swing.JMenuItem();
 
@@ -243,7 +244,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel3.add(cbOpcion);
 
         btnDepositar.setForeground(new java.awt.Color(51, 102, 0));
-        btnDepositar.setText("Depositar");
+        btnDepositar.setText("Ejecutar");
         btnDepositar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDepositarActionPerformed(evt);
@@ -252,7 +253,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel3.add(btnDepositar);
 
         btnSalir.setForeground(new java.awt.Color(255, 0, 0));
-        btnSalir.setText("Terminar");
+        btnSalir.setText("Finalizar");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
@@ -266,6 +267,7 @@ public class Depositando extends javax.swing.JFrame {
 
         panel_central.setLayout(new java.awt.BorderLayout());
 
+        panelSur.setBackground(new java.awt.Color(255, 204, 153));
         panelSur.setLayout(new java.awt.BorderLayout());
 
         jPanel15.setBackground(new java.awt.Color(204, 255, 204));
@@ -283,6 +285,8 @@ public class Depositando extends javax.swing.JFrame {
 
         panelSur.add(jPanel16, java.awt.BorderLayout.LINE_END);
 
+        jScrollPane8.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
+        jScrollPane8.setOpaque(false);
         jScrollPane8.setPreferredSize(new java.awt.Dimension(166, 130));
 
         taConsola.setEditable(false);
@@ -515,7 +519,7 @@ public class Depositando extends javax.swing.JFrame {
 
         getContentPane().add(panel_central, java.awt.BorderLayout.CENTER);
 
-        mnuTool.setText("Herramienta");
+        mnuTool.setText("Herramientas");
 
         mnuConectar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuConectar.setText("Conexión");
@@ -534,6 +538,15 @@ public class Depositando extends javax.swing.JFrame {
             }
         });
         mnuTool.add(mnuFiltrar);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem1.setText("Esquema");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        mnuTool.add(jMenuItem1);
         mnuTool.add(jSeparator1);
 
         mnuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
@@ -848,7 +861,7 @@ public class Depositando extends javax.swing.JFrame {
                 listaBitstreams.setModel(dlm);
                 taConsola.append("No hay datos de los items de la colección.\n");
                 }
-                */
+                 */
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -914,6 +927,12 @@ public class Depositando extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRestablecerMetasActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        Esquema win = new Esquema(this, rootPaneCheckingEnabled);        
+        win.setVisible(true);
+        win.dispose();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -977,6 +996,7 @@ public class Depositando extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
