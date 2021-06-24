@@ -5,12 +5,16 @@
  */
 package Vista;
 
+import Control.ConfigControl;
 import Control.RestControl;
 import Control.StardogControl;
 import Modelo.Metadato;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -31,9 +35,14 @@ public class Esquema extends javax.swing.JDialog {
             this.setLocationRelativeTo(null);
             // seteamos los prefijos existentes
             RestControl rest = RestControl.getInstancia();
-            rest.obtenerPrefix(cbPrefix);            
+            rest.obtenerPrefix(cbPrefix);
+            DefaultComboBoxModel model = (DefaultComboBoxModel) cbPrefix.getModel();
+            System.out.println("tamaño modelo comboBox: " + model.getSize());
+            if (model.getSize() == 0) {
+                System.out.println("tttttttttttttamaño modelo comboBox: " + model.getSize());
+            }
             StardogControl base = StardogControl.getInstancia();
-            jList2.setModel(base.getListaMetadados2());
+            listaMeta.setModel(base.getListaMetadados2());
         } catch (Exception ex) {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -49,12 +58,12 @@ public class Esquema extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel2 = new javax.swing.JPanel();
-        jButton5 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        btnTerminar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cbPrefix = new javax.swing.JComboBox<>();
-        bntCargarEsquema = new javax.swing.JButton();
+        bntCargar = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -64,9 +73,9 @@ public class Esquema extends javax.swing.JDialog {
         jPanel7 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        listaMeta = new javax.swing.JList<>();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        listaPrefix = new javax.swing.JList<>();
         jPanel10 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jPanel19 = new javax.swing.JPanel();
@@ -74,17 +83,17 @@ public class Esquema extends javax.swing.JDialog {
         jPanel18 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel23 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        txtRotulo = new javax.swing.JTextField();
         jPanel9 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
-        jButton4 = new javax.swing.JButton();
+        btnQuitar = new javax.swing.JButton();
         jPanel15 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaAsociados = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de esquemas.");
@@ -94,16 +103,21 @@ public class Esquema extends javax.swing.JDialog {
         jPanel2.setBackground(new java.awt.Color(204, 255, 204));
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButton5.setText("Guardar configuración");
-        jPanel2.add(jButton5);
-
-        jButton1.setText("Terminar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardar.setText("Guardar configuración");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnGuardarActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton1);
+        jPanel2.add(btnGuardar);
+
+        btnTerminar.setText("Terminar");
+        btnTerminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTerminarActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnTerminar);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
@@ -117,13 +131,13 @@ public class Esquema extends javax.swing.JDialog {
         cbPrefix.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "prefijos en repositorio." }));
         jPanel3.add(cbPrefix);
 
-        bntCargarEsquema.setText("Cargar esquema");
-        bntCargarEsquema.addActionListener(new java.awt.event.ActionListener() {
+        bntCargar.setText("Cargar esquema");
+        bntCargar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bntCargarEsquemaActionPerformed(evt);
+                bntCargarActionPerformed(evt);
             }
         });
-        jPanel3.add(bntCargarEsquema);
+        jPanel3.add(bntCargar);
 
         getContentPane().add(jPanel3, java.awt.BorderLayout.PAGE_START);
 
@@ -160,23 +174,23 @@ public class Esquema extends javax.swing.JDialog {
         jPanel5.setOpaque(false);
         jPanel5.setLayout(new java.awt.GridLayout(2, 0, 0, 2));
 
-        jList2.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos de la ontología"));
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
+        listaMeta.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos de la ontología"));
+        listaMeta.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Metadato 1", "Metadato 2", "Metadato 3", "Metadato 4", "Metadato 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList2);
+        jScrollPane2.setViewportView(listaMeta);
 
         jPanel5.add(jScrollPane2);
 
-        jList1.setBorder(javax.swing.BorderFactory.createTitledBorder("Elementos del prefijo"));
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        listaPrefix.setBorder(javax.swing.BorderFactory.createTitledBorder("Elementos del prefijo"));
+        listaPrefix.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Esquema 1", "Esquema 2", "Esquema 3", "Esquema 4", "Esquema 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(listaPrefix);
 
         jPanel5.add(jScrollPane1);
 
@@ -248,9 +262,9 @@ public class Esquema extends javax.swing.JDialog {
         jPanel23.setPreferredSize(new java.awt.Dimension(422, 15));
         jPanel23.setLayout(new javax.swing.BoxLayout(jPanel23, javax.swing.BoxLayout.LINE_AXIS));
 
-        jTextField1.setColumns(21);
-        jTextField1.setPreferredSize(new java.awt.Dimension(174, 10));
-        jPanel23.add(jTextField1);
+        txtRotulo.setColumns(21);
+        txtRotulo.setPreferredSize(new java.awt.Dimension(174, 10));
+        jPanel23.add(txtRotulo);
 
         jPanel18.add(jPanel23, java.awt.BorderLayout.CENTER);
 
@@ -321,13 +335,13 @@ public class Esquema extends javax.swing.JDialog {
         jPanel14.setOpaque(false);
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButton4.setText("Quitar");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnQuitar.setText("Quitar");
+        btnQuitar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnQuitarActionPerformed(evt);
             }
         });
-        jPanel14.add(jButton4);
+        jPanel14.add(btnQuitar);
 
         jPanel12.add(jPanel14, java.awt.BorderLayout.SOUTH);
 
@@ -337,9 +351,9 @@ public class Esquema extends javax.swing.JDialog {
         jScrollPane3.setOpaque(false);
         jScrollPane3.setPreferredSize(new java.awt.Dimension(452, 100));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaAsociados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null}
+
             },
             new String [] {
                 "Metadato", "Esquema Asociado", "Rótulo Metadato"
@@ -353,7 +367,8 @@ public class Esquema extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable1);
+        tablaAsociados.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        jScrollPane3.setViewportView(tablaAsociados);
 
         jPanel15.add(jScrollPane3);
 
@@ -368,36 +383,48 @@ public class Esquema extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnTerminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTerminarActionPerformed
         this.setVisible(false);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnTerminarActionPerformed
 
-    private void bntCargarEsquemaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCargarEsquemaActionPerformed
+    private void bntCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCargarActionPerformed
         RestControl rest = RestControl.getInstancia();
         if (cbPrefix.getSelectedIndex() >= 0) {
             String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
-            rest.obtenerEsquema(miPrefix, jList1);
-            rest.obtenerConfigEsquema(miPrefix, jTable1);
+            rest.obtenerEsquema(miPrefix, listaPrefix);
+            rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
         }
-    }//GEN-LAST:event_bntCargarEsquemaActionPerformed
+    }//GEN-LAST:event_bntCargarActionPerformed
 
     private void btnAnexarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnexarActionPerformed
-        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-        if ((jList1.getSelectedIndex() >= 0) && (jList2.getSelectedIndex() >= 0)) {
-            String onto = ((Metadato) ((Object)jList2.getSelectedValue())).getRotulo();
-            String schema = jList1.getSelectedValue();
-            String[] miRow = {onto,schema};
+        DefaultTableModel modelo = (DefaultTableModel) tablaAsociados.getModel();
+        if ((listaPrefix.getSelectedIndex() >= 0) && (listaMeta.getSelectedIndex() >= 0)) {
+            String onto = ((Metadato) ((Object) listaMeta.getSelectedValue())).getRotulo();
+            String schema = listaPrefix.getSelectedValue();
+            String[] miRow = {onto, schema};
             modelo.addRow(miRow);
         }
     }//GEN-LAST:event_btnAnexarActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-         //int col = jTable1.getSelectedColumn();
-         int row = jTable1.getSelectedRow();
-         DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-         RestControl rest = RestControl.getInstancia();
-         rest.quitarFilaTabla(modelo, row);
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
+        //int col = jTable1.getSelectedColumn();                
+        RestControl rest = RestControl.getInstancia();
+        rest.quitarFilaTabla(tablaAsociados);
+    }//GEN-LAST:event_btnQuitarActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        try {
+            ConfigControl rest = ConfigControl.getInstancia();
+            TableModel modelo = tablaAsociados.getModel();
+            //ListSelectionModel lsm = tablaAsociados.getSelectionModel();
+            //int min = lsm.getMinSelectionIndex();
+            if (modelo.getRowCount() > 0) {
+                rest.grabarEsquema(modelo, evt);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -445,17 +472,15 @@ public class Esquema extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bntCargarEsquema;
+    private javax.swing.JButton bntCargar;
     private javax.swing.JButton btnAnexar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnQuitar;
+    private javax.swing.JButton btnTerminar;
     private javax.swing.JComboBox<String> cbPrefix;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -480,7 +505,9 @@ public class Esquema extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JList<String> listaMeta;
+    private javax.swing.JList<String> listaPrefix;
+    private javax.swing.JTable tablaAsociados;
+    private javax.swing.JTextField txtRotulo;
     // End of variables declaration//GEN-END:variables
 }

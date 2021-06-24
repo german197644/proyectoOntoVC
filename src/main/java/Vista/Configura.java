@@ -25,7 +25,7 @@ import javax.swing.SwingWorker;
  *
  * @author
  */
-public class Configurando extends javax.swing.JDialog {
+public class Configura extends javax.swing.JDialog {
 
     // seteo de los parametros conexión.
     private ConfigControl config = null;
@@ -54,7 +54,7 @@ public class Configurando extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public Configurando(java.awt.Frame parent, boolean modal) {
+    public Configura(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         //
         initComponents();
@@ -71,7 +71,7 @@ public class Configurando extends javax.swing.JDialog {
             config.setup_stardog();
             config.setup_dspace();
         } catch (IOException ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configura.class.getName()).log(Level.SEVERE, null, ex);
         }
         //
         config.setup_general();
@@ -140,7 +140,7 @@ public class Configurando extends javax.swing.JDialog {
             // Visualizamos el panel.
             this.loginPanel.setVisible(true);
         } catch (Exception ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configura.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -636,7 +636,7 @@ public class Configurando extends javax.swing.JDialog {
                         JOptionPane.showMessageDialog(null, "La autenticación no fue correcta.", "Informe", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (StardogException ex) {
-                    Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Configura.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 wait.close();
                 setConecto(true);
@@ -789,7 +789,7 @@ public class Configurando extends javax.swing.JDialog {
         try {
             if (st_url.getSelectedIndex() >= 0) {
                 int indice = st_url.getSelectedIndex() + 1;
-                //System.out.println("Vista.Configurando.btnQuitarURLActionPerformed()" + indice);
+                //System.out.println("Vista.Configura.btnQuitarURLActionPerformed()" + indice);
                 ConfigControl config = ConfigControl.getInstancia();
                 config.quitarUrlSt(indice, evt);
                 config.setup_stardog();
@@ -797,7 +797,7 @@ public class Configurando extends javax.swing.JDialog {
                 this.st_url.setModel(new DefaultComboBoxModel(config.getServidores_st()));
             }
         } catch (IOException ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configura.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnQuitarURLActionPerformed
 
@@ -805,7 +805,7 @@ public class Configurando extends javax.swing.JDialog {
         try {
             if (sw_url.getSelectedIndex() >= 0) {
                 int indice = sw_url.getSelectedIndex() + 1;
-                //System.out.println("Vista.Configurando.btnQuitarURLActionPerformed()" + indice);
+                //System.out.println("Vista.Configura.btnQuitarURLActionPerformed()" + indice);
                 ConfigControl config = ConfigControl.getInstancia();
                 config.quitarUriSw(indice, evt);
                 config.setup_dspace();;
@@ -813,7 +813,7 @@ public class Configurando extends javax.swing.JDialog {
                 this.sw_url.setModel(new DefaultComboBoxModel(config.getServidores_rest()));
             }
         } catch (IOException ex) {
-            Logger.getLogger(Configurando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Configura.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnQuitarURIActionPerformed
 
@@ -862,18 +862,30 @@ public class Configurando extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class
+            java.util.logging.Logger.getLogger(Configura.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class
+            java.util.logging.Logger.getLogger(Configura.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class
+            java.util.logging.Logger.getLogger(Configura.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Configurando.class
+            java.util.logging.Logger.getLogger(Configura.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -882,7 +894,7 @@ public class Configurando extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Configurando dialog = new Configurando(new javax.swing.JFrame(), true);
+                Configura dialog = new Configura(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

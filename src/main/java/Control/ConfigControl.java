@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableModel;
 
 public final class ConfigControl {
 
@@ -116,7 +117,7 @@ public final class ConfigControl {
                 classLoader = this.getClass().getClassLoader();
             }
             URL inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
-            
+
             if (inputURL != null) {
                 uri = new URI(inputURL.toString());
             } else {
@@ -760,6 +761,52 @@ public final class ConfigControl {
 
     public void setFiltro(String filtro) {
         this.filtro = filtro;
+    }
+
+    public void grabarEsquema(TableModel modelo, ActionEvent evt) {
+        try {
+            Properties miPropiedad = new Properties();
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            String archivo = "propiedades/configDublinCore.properties";
+            URL inputURL = classLoader.getResource(archivo);
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+                propertiesStream = new FileInputStream(uri.getPath());                
+                miPropiedad.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                //int cols = modelo.getColumnCount();
+                int rows = modelo.getRowCount();
+                for (int i = 0; i < rows; i++) {
+                    String clave = (String) modelo.getValueAt(i, 0);
+                    String value = (String) modelo.getValueAt(i, 1);
+                    miPropiedad.setProperty(clave, value);
+                }
+                miPropiedad.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                // 
+                for (int i = 0; i < rows; i++) {
+                    String clave = (String) modelo.getValueAt(i, 1);
+                    String value = (String) modelo.getValueAt(i, 2);
+                    miPropiedad.setProperty(clave, value);
+                }
+                miPropiedad.store(fos, "Parámetros de la Configuración general");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Esquema grabado con éxito.");
+            } else {
+                JOptionPane.showMessageDialog(win, "No se puede encontrar el archivo: " + archivo);
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 } //fin

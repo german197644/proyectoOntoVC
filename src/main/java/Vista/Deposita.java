@@ -30,21 +30,21 @@ import javax.swing.tree.TreePath;
  *
  * @author Pogliani, German.
  */
-public class Depositando extends javax.swing.JFrame {
+public class Deposita extends javax.swing.JFrame {
 
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
     ItemRest item = null;
     DefaultListModel misMetadatos = new DefaultListModel();
 
-    public Depositando() {
+    public Deposita() {
         initComponents();
         this.setTitle("Depósito y recuperación de ítems.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //this.setVisible(true);
         captura.getVerticalScrollBar().setUnitIncrement(18);
         //
-        //Configurando win = new Configurando(this, true);
+        //Configurando win = new Configura(this, true);
         //win.setConsola(taConsola);
         //win.setVisible(true);
 
@@ -56,7 +56,7 @@ public class Depositando extends javax.swing.JFrame {
             config.setup_dspace();
             config.setup_general();
         } catch (IOException ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
         taConsola.append(">> Conectando con los servicio.\n");
         try {
@@ -79,7 +79,7 @@ public class Depositando extends javax.swing.JFrame {
                 taConsola.append("Servicio StarDog: DOWN!.\n");
             }
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.setVisible(true);
     }
@@ -244,7 +244,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel3.add(cbOpcion);
 
         btnDepositar.setForeground(new java.awt.Color(51, 102, 0));
-        btnDepositar.setText("Ejecutar");
+        btnDepositar.setText("Ejecutar opción");
         btnDepositar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDepositarActionPerformed(evt);
@@ -379,7 +379,7 @@ public class Depositando extends javax.swing.JFrame {
         jPanel8.add(jLabel20, java.awt.BorderLayout.WEST);
 
         captura.setBackground(new java.awt.Color(204, 204, 255));
-        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Describir el Ítem"));
+        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Descripción de metadatos."));
         captura.setToolTipText("");
         captura.setMaximumSize(new java.awt.Dimension(33, 44));
         jPanel8.add(captura, java.awt.BorderLayout.CENTER);
@@ -572,7 +572,7 @@ public class Depositando extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuSalirActionPerformed
 
     private void mnuConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuConectarActionPerformed
-        Configurando win = new Configurando(this, true);
+        Configura win = new Configura(this, true);
         win.setConecto(false); // para saber si volvio a conectar y refrescar.
         win.setConsola(taConsola);
         win.setVisible(true);
@@ -612,7 +612,7 @@ public class Depositando extends javax.swing.JFrame {
                 taConsola.append("Sin servicio de DSpace\n");
             }
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
         win.dispose();
     }//GEN-LAST:event_mnuConectarActionPerformed
@@ -656,7 +656,7 @@ public class Depositando extends javax.swing.JFrame {
                 btnDelFichero.setEnabled(false);
             }
         } catch (IOException ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAddFicheroActionPerformed
 
@@ -672,7 +672,7 @@ public class Depositando extends javax.swing.JFrame {
                 btnDelFichero.setEnabled(false);
             }
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
@@ -744,7 +744,7 @@ public class Depositando extends javax.swing.JFrame {
                 //limpiarComponentes();
             }
         } catch (Exception ex) {
-            //Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error al depositar.\n" + ex.getMessage(), "Informe", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnDepositarActionPerformed
@@ -774,7 +774,7 @@ public class Depositando extends javax.swing.JFrame {
             //
             taConsola.append("Operación finalizada. Se agregó " + objeto.size() + " metadato.\n");
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAgregarMetadatoActionPerformed
 
@@ -810,7 +810,7 @@ public class Depositando extends javax.swing.JFrame {
                 //return;
             }
             //
-            Recuperando filtro = new Recuperando(this, rootPaneCheckingEnabled);
+            Recupera filtro = new Recupera(this, rootPaneCheckingEnabled);
             // seteamos el modelo del repositorio en el filtro
             filtro.setTree(jTree1.getModel());
             if (misMetadatos != null) {
@@ -822,7 +822,7 @@ public class Depositando extends javax.swing.JFrame {
             filtro.setVisible(true);
             filtro.dispose();
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_mnuFiltrarActionPerformed
 
@@ -841,7 +841,7 @@ public class Depositando extends javax.swing.JFrame {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnObtenerItemsActionPerformed
 
@@ -863,7 +863,7 @@ public class Depositando extends javax.swing.JFrame {
                 }
                  */
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_listaItemsMousePressed
@@ -897,7 +897,7 @@ public class Depositando extends javax.swing.JFrame {
             //
             captura.getViewport().setView(unPanel);
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnObtenerMetasActionPerformed
 
@@ -923,7 +923,7 @@ public class Depositando extends javax.swing.JFrame {
             //    listaMetadato.setEnabled(false);
             //}
         } catch (Exception ex) {
-            Logger.getLogger(Depositando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnRestablecerMetasActionPerformed
 
@@ -950,19 +950,19 @@ public class Depositando extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Deposita.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Deposita.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Deposita.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Depositando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Deposita.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Depositando().setVisible(true);
+                new Deposita().setVisible(true);
             }
         });
     }

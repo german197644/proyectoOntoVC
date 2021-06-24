@@ -16,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import java.awt.HeadlessException;
@@ -50,9 +51,11 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import jdk.nashorn.internal.runtime.ListAdapter;
@@ -1744,7 +1747,9 @@ public final class RestControl {
                     ConfigControl conn = ConfigControl.getInstancia();
                     //System.out.println("URI ::: " + conn.getUri().trim());
                     //
-                    String comando = "curl \"" + conn.getUri().trim() + "/rest/registries/schema " + miPrefix + "\"";
+                    String miURL = (conn.getUri().trim() + "/rest/registries/schema/" + miPrefix).trim();
+                    String comando = "curl \"" + miURL + "\"";
+                    System.out.println("COMANDO ::: " + comando);
                     Process process = Runtime.getRuntime().exec(comando);
                     //
                     InputStream is = process.getInputStream();
@@ -1756,8 +1761,10 @@ public final class RestControl {
                     JsonParser parser = new JsonParser();
                     JsonReader reader = new JsonReader(new StringReader(out));
                     JsonElement datos = parser.parse(reader);
-                    if (datos.isJsonArray()) {
-                        JsonArray array = (JsonArray) datos;
+                    // Obtenemos los metadatos del esquema.
+                    JsonElement objetos = datos.getAsJsonObject().get("metadataFields");
+                    if (objetos.isJsonArray()) {
+                        JsonArray array = (JsonArray) objetos;
                         Iterator<JsonElement> iter = array.iterator();
                         while (iter.hasNext()) {
                             JsonObject jsonItem = (JsonObject) iter.next();
@@ -1777,9 +1784,9 @@ public final class RestControl {
             @Override
             protected void done() {
                 try {
-                    DefaultListModel modelo = (DefaultListModel) miEsquema.getModel();
-                    modelo.removeAllElements();
-                    modelo = this.get();
+                    //ListModel modelo = miEsquema.getModel();                    
+                    //modelo = this.get();
+                    miEsquema.setModel(this.get());
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -1802,14 +1809,13 @@ public final class RestControl {
                         for (int i = 1; i <= filas; i++) {
                             modelo.removeRow(0);
                         }
-                        //Enumeration<Object> keys = miProp.keys();
-                        //while (keys.hasMoreElements()) {
                         for (Object clave : Keys) {
                             String key = (String) clave;
                             String value = (String) miProp.get(key);
+                            //String rotulo = new String(miProp.get(value).toString().getBytes("cp1252"));
+                            String rotulo = (String) miProp.get(value);
                             if (value.contains(prefix)) {
-                                //System.out.println(key + " = " + miProp.get(key));
-                                String[] miEsquema = {key, value, ""};
+                                String[] miEsquema = {key, value, rotulo};
                                 modelo.addRow(miEsquema);
                             }
                         }
@@ -1824,9 +1830,30 @@ public final class RestControl {
         mySwingWorker.execute();
     }
 
-    public void quitarFilaTabla(DefaultTableModel modelo, int row) {
-        if (row >= 0) {
-            modelo.removeRow(row);
+    public void quitarFilaTabla(JTable tabla) {
+        /*
+        ListSelectionModel lsm = tabla.getSelectionModel();
+        int minIndex = lsm.getMinSelectionIndex();
+        int maxIndex = lsm.getMaxSelectionIndex();
+        System.out.println("minimo: " + minIndex + " - Maximo: " + maxIndex);
+        if (!lsm.isSelectionEmpty()) {
+            DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+            for (int i = minIndex; i <= maxIndex; i++) {
+                if (lsm.isSelectedIndex(i)) {
+                    System.out.println("seleccionado: " + i);
+                    modelo.removeRow(i);
+                }
+            }
+        }
+         */
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        int numRows = tabla.getSelectedRows().length;
+        if (numRows > 0) {
+            System.out.println("numero de filas seleccionadas: " + numRows);
+            for (int i = 0; i < numRows; i++) {
+                System.out.println("fila seleccionada: " + tabla.getSelectedRow());
+                modelo.removeRow(tabla.getSelectedRow());
+            }
         }
     }
 

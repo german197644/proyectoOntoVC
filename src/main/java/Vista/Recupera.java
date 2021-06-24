@@ -34,7 +34,7 @@ import javax.swing.tree.TreePath;
  *
  * @author germa
  */
-public class Recuperando extends javax.swing.JDialog {
+public class Recupera extends javax.swing.JDialog {
 
     ComunidadRest comunidad = null;
     ColeccionRest coleccion = null;
@@ -46,7 +46,7 @@ public class Recuperando extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public Recuperando(java.awt.Frame parent, boolean modal) {
+    public Recupera(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
@@ -171,7 +171,6 @@ public class Recuperando extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Filtrado y recupero de Items");
-        setPreferredSize(new java.awt.Dimension(911, 622));
 
         panelCabecera.setPreferredSize(new java.awt.Dimension(670, 220));
         panelCabecera.setLayout(new java.awt.BorderLayout());
@@ -709,7 +708,7 @@ public class Recuperando extends javax.swing.JDialog {
                 dtm.addRow(new Object[]{equivalente, txtMetadato.getText()});
             }
         } catch (Exception ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -741,7 +740,7 @@ public class Recuperando extends javax.swing.JDialog {
             rest.obtenerMetadata(miItem, taMetadata);
             taMetadata.setCaretPosition(0);
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_tablaFiltroMousePressed
 
@@ -769,7 +768,7 @@ public class Recuperando extends javax.swing.JDialog {
                 Runtime.getRuntime().exec("cmd.exe /c start chrome " + dir);
             }
         } catch (IOException ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnDescargarActionPerformed
 
@@ -796,7 +795,7 @@ public class Recuperando extends javax.swing.JDialog {
             String reporte = config.getUri().trim() + config.getReporte().trim();
             Runtime.getRuntime().exec("cmd.exe /c start chrome " + reporte);
         } catch (IOException ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jLabel30MouseClicked
 
@@ -806,7 +805,7 @@ public class Recuperando extends javax.swing.JDialog {
             String filtro = config.getUri().trim() + config.getFiltro().trim();
             Runtime.getRuntime().exec("cmd.exe /c start chrome " + filtro);
         } catch (IOException ex) {
-            Logger.getLogger(Recuperando.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jLabel32MouseClicked
 
@@ -827,14 +826,18 @@ public class Recuperando extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recupera.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recupera.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recupera.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Recuperando.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Recupera.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -843,7 +846,7 @@ public class Recuperando extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Recuperando dialog = new Recuperando(new javax.swing.JFrame(), true);
+                Recupera dialog = new Recupera(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

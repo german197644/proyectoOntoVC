@@ -295,7 +295,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="66" red="33" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Ejecutar"/>
+                <Property name="text" type="java.lang.String" value="Ejecutar opci&#xf3;n"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDepositarActionPerformed"/>
@@ -614,7 +614,7 @@
                         </Property>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Describir el &#xcd;tem">
+                            <TitledBorder title="Descripci&#xf3;n de metadatos.">
                               <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                                 <LineBorder/>
                               </Border>
