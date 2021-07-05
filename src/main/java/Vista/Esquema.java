@@ -9,10 +9,13 @@ import Control.ConfigControl;
 import Control.RestControl;
 import Control.StardogControl;
 import Modelo.Metadato;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -36,13 +39,9 @@ public class Esquema extends javax.swing.JDialog {
             // seteamos los prefijos existentes
             RestControl rest = RestControl.getInstancia();
             rest.obtenerPrefix(cbPrefix);
-            DefaultComboBoxModel model = (DefaultComboBoxModel) cbPrefix.getModel();
-            System.out.println("tamaño modelo comboBox: " + model.getSize());
-            if (model.getSize() == 0) {
-                System.out.println("tttttttttttttamaño modelo comboBox: " + model.getSize());
-            }
-            StardogControl base = StardogControl.getInstancia();
-            listaMeta.setModel(base.getListaMetadados2());
+            DefaultComboBoxModel model = (DefaultComboBoxModel) cbPrefix.getModel();            
+            //StardogControl base = StardogControl.getInstancia();
+            //listaMeta.setModel(base.getListaMetadados2());            
         } catch (Exception ex) {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,16 +56,15 @@ public class Esquema extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
-        btnGuardar = new javax.swing.JButton();
-        btnTerminar = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
+        panelNorte = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cbPrefix = new javax.swing.JComboBox<>();
         bntCargar = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
+        panelCentro = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
+        jPanel24 = new javax.swing.JPanel();
+        jPanel25 = new javax.swing.JPanel();
         btnAnexar = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -91,45 +89,35 @@ public class Esquema extends javax.swing.JDialog {
         jPanel12 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         btnQuitar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
         jPanel15 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaAsociados = new javax.swing.JTable();
+        panelSur = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        btnGuardar = new javax.swing.JButton();
+        btnTerminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de esquemas.");
         setBackground(new java.awt.Color(204, 255, 204));
         setModal(true);
+        setResizable(false);
 
-        jPanel2.setBackground(new java.awt.Color(204, 255, 204));
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-        btnGuardar.setText("Guardar configuración");
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnGuardar);
-
-        btnTerminar.setText("Terminar");
-        btnTerminar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTerminarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnTerminar);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
-
-        jPanel3.setBackground(new java.awt.Color(204, 255, 204));
-        jPanel3.setPreferredSize(new java.awt.Dimension(812, 30));
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        panelNorte.setBackground(new java.awt.Color(204, 255, 204));
+        panelNorte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelNorte.setPreferredSize(new java.awt.Dimension(812, 33));
+        panelNorte.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jLabel1.setText("Prefijos de esquemas en repositorio");
-        jPanel3.add(jLabel1);
+        panelNorte.add(jLabel1);
 
         cbPrefix.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "prefijos en repositorio." }));
-        jPanel3.add(cbPrefix);
+        cbPrefix.setMaximumSize(new java.awt.Dimension(180, 20));
+        cbPrefix.setMinimumSize(new java.awt.Dimension(180, 20));
+        cbPrefix.setPreferredSize(new java.awt.Dimension(180, 20));
+        panelNorte.add(cbPrefix);
 
         bntCargar.setText("Cargar esquema");
         bntCargar.addActionListener(new java.awt.event.ActionListener() {
@@ -137,30 +125,54 @@ public class Esquema extends javax.swing.JDialog {
                 bntCargarActionPerformed(evt);
             }
         });
-        jPanel3.add(bntCargar);
+        panelNorte.add(bntCargar);
 
-        getContentPane().add(jPanel3, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(panelNorte, java.awt.BorderLayout.PAGE_START);
 
-        jPanel6.setBackground(new java.awt.Color(0, 204, 204));
-        jPanel6.setLayout(new java.awt.BorderLayout());
+        panelCentro.setBackground(new java.awt.Color(204, 255, 204));
+        panelCentro.setLayout(new java.awt.BorderLayout());
 
-        jPanel8.setBackground(new java.awt.Color(0, 204, 204));
+        jPanel8.setOpaque(false);
         jPanel8.setPreferredSize(new java.awt.Dimension(290, 383));
         jPanel8.setLayout(new java.awt.BorderLayout());
 
         jPanel1.setOpaque(false);
-        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        btnAnexar.setText("Anexar igualdad");
+        jPanel24.setMinimumSize(new java.awt.Dimension(3, 100));
+        jPanel24.setOpaque(false);
+        jPanel24.setPreferredSize(new java.awt.Dimension(3, 33));
+
+        javax.swing.GroupLayout jPanel24Layout = new javax.swing.GroupLayout(jPanel24);
+        jPanel24.setLayout(jPanel24Layout);
+        jPanel24Layout.setHorizontalGroup(
+            jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 3, Short.MAX_VALUE)
+        );
+        jPanel24Layout.setVerticalGroup(
+            jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        jPanel1.add(jPanel24, java.awt.BorderLayout.LINE_START);
+
+        jPanel25.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel25.setOpaque(false);
+        jPanel25.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnAnexar.setText("Anexar");
         btnAnexar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAnexarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnAnexar);
+        jPanel25.add(btnAnexar);
+
+        jPanel1.add(jPanel25, java.awt.BorderLayout.CENTER);
 
         jPanel8.add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jPanel4.setOpaque(false);
         jPanel4.setPreferredSize(new java.awt.Dimension(260, 444));
         jPanel4.setLayout(new java.awt.BorderLayout());
@@ -174,9 +186,11 @@ public class Esquema extends javax.swing.JDialog {
         jPanel5.setOpaque(false);
         jPanel5.setLayout(new java.awt.GridLayout(2, 0, 0, 2));
 
-        listaMeta.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos de la ontología"));
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Metadatos de la ontología"));
+        jScrollPane2.setOpaque(false);
+
         listaMeta.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Metadato 1", "Metadato 2", "Metadato 3", "Metadato 4", "Metadato 5" };
+            String[] strings = { "Metadatos" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -184,9 +198,11 @@ public class Esquema extends javax.swing.JDialog {
 
         jPanel5.add(jScrollPane2);
 
-        listaPrefix.setBorder(javax.swing.BorderFactory.createTitledBorder("Elementos del prefijo"));
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Elementos del prefijo"));
+        jScrollPane1.setOpaque(false);
+
         listaPrefix.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Esquema 1", "Esquema 2", "Esquema 3", "Esquema 4", "Esquema 5" };
+            String[] strings = { "Prefijos" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -224,7 +240,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel19.setLayout(jPanel19Layout);
         jPanel19Layout.setHorizontalGroup(
             jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 290, Short.MAX_VALUE)
+            .addGap(0, 288, Short.MAX_VALUE)
         );
         jPanel19Layout.setVerticalGroup(
             jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,7 +256,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel20.setLayout(jPanel20Layout);
         jPanel20Layout.setHorizontalGroup(
             jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 290, Short.MAX_VALUE)
+            .addGap(0, 288, Short.MAX_VALUE)
         );
         jPanel20Layout.setVerticalGroup(
             jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,7 +270,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel18.setPreferredSize(new java.awt.Dimension(341, 20));
         jPanel18.setLayout(new java.awt.BorderLayout());
 
-        jLabel3.setText("Rótulo Metadato:");
+        jLabel3.setText("Rótulo:");
         jPanel18.add(jLabel3, java.awt.BorderLayout.WEST);
 
         jPanel23.setMinimumSize(new java.awt.Dimension(6, 10));
@@ -274,7 +290,7 @@ public class Esquema extends javax.swing.JDialog {
 
         jPanel8.add(jPanel4, java.awt.BorderLayout.CENTER);
 
-        jPanel6.add(jPanel8, java.awt.BorderLayout.LINE_START);
+        panelCentro.add(jPanel8, java.awt.BorderLayout.LINE_START);
 
         jPanel9.setBackground(new java.awt.Color(0, 204, 204));
         jPanel9.setOpaque(false);
@@ -288,11 +304,11 @@ public class Esquema extends javax.swing.JDialog {
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 5, Short.MAX_VALUE)
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 418, Short.MAX_VALUE)
         );
 
         jPanel9.add(jPanel11, java.awt.BorderLayout.WEST);
@@ -304,7 +320,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 522, Short.MAX_VALUE)
+            .addGap(0, 519, Short.MAX_VALUE)
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -314,17 +330,17 @@ public class Esquema extends javax.swing.JDialog {
         jPanel9.add(jPanel17, java.awt.BorderLayout.PAGE_START);
 
         jPanel16.setOpaque(false);
-        jPanel16.setPreferredSize(new java.awt.Dimension(5, 441));
+        jPanel16.setPreferredSize(new java.awt.Dimension(3, 441));
 
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 5, Short.MAX_VALUE)
+            .addGap(0, 3, Short.MAX_VALUE)
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 431, Short.MAX_VALUE)
+            .addGap(0, 418, Short.MAX_VALUE)
         );
 
         jPanel9.add(jPanel16, java.awt.BorderLayout.EAST);
@@ -332,6 +348,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel12.setOpaque(false);
         jPanel12.setLayout(new java.awt.BorderLayout(0, 5));
 
+        jPanel14.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel14.setOpaque(false);
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -342,6 +359,14 @@ public class Esquema extends javax.swing.JDialog {
             }
         });
         jPanel14.add(btnQuitar);
+
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+        jPanel14.add(btnCancelar);
 
         jPanel12.add(jPanel14, java.awt.BorderLayout.SOUTH);
 
@@ -376,9 +401,55 @@ public class Esquema extends javax.swing.JDialog {
 
         jPanel9.add(jPanel12, java.awt.BorderLayout.CENTER);
 
-        jPanel6.add(jPanel9, java.awt.BorderLayout.CENTER);
+        panelCentro.add(jPanel9, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel6, java.awt.BorderLayout.CENTER);
+        getContentPane().add(panelCentro, java.awt.BorderLayout.CENTER);
+
+        panelSur.setBackground(new java.awt.Color(204, 204, 204));
+        panelSur.setMinimumSize(new java.awt.Dimension(229, 40));
+        panelSur.setPreferredSize(new java.awt.Dimension(809, 40));
+        panelSur.setLayout(new java.awt.BorderLayout());
+
+        jPanel2.setOpaque(false);
+        jPanel2.setPreferredSize(new java.awt.Dimension(809, 3));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 809, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 3, Short.MAX_VALUE)
+        );
+
+        panelSur.add(jPanel2, java.awt.BorderLayout.PAGE_START);
+
+        jPanel3.setMinimumSize(new java.awt.Dimension(229, 35));
+        jPanel3.setOpaque(false);
+        jPanel3.setPreferredSize(new java.awt.Dimension(809, 35));
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnGuardar.setText("Guardar configuración");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btnGuardar);
+
+        btnTerminar.setText("Finalizar");
+        btnTerminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTerminarActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btnTerminar);
+
+        panelSur.add(jPanel3, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(panelSur, java.awt.BorderLayout.PAGE_END);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -388,28 +459,51 @@ public class Esquema extends javax.swing.JDialog {
     }//GEN-LAST:event_btnTerminarActionPerformed
 
     private void bntCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntCargarActionPerformed
-        RestControl rest = RestControl.getInstancia();
-        if (cbPrefix.getSelectedIndex() >= 0) {
-            String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
-            rest.obtenerEsquema(miPrefix, listaPrefix);
-            rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+        try {
+            RestControl rest = RestControl.getInstancia();
+            if (cbPrefix.getSelectedIndex() > 0) {
+                String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
+                rest.obtenerEsquema(miPrefix, listaPrefix);
+                rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+            }
+            StardogControl base = StardogControl.getInstancia();
+            DefaultListModel mlm = base.getListaMetadados2();
+            if (mlm.getSize() == 0) {
+                base.getMetadatos_v6(new JTextArea(), evt);
+            } 
+            listaMeta.setModel(base.getListaMetadados2());
+        } catch (Exception ex) {
+            Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bntCargarActionPerformed
 
     private void btnAnexarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnexarActionPerformed
         DefaultTableModel modelo = (DefaultTableModel) tablaAsociados.getModel();
-        if ((listaPrefix.getSelectedIndex() >= 0) && (listaMeta.getSelectedIndex() >= 0)) {
+        if ((listaPrefix.getSelectedIndex() > 0) && (listaMeta.getSelectedIndex() >= 0)) {
             String onto = ((Metadato) ((Object) listaMeta.getSelectedValue())).getRotulo();
             String schema = listaPrefix.getSelectedValue();
-            String[] miRow = {onto, schema};
+            String rotular = (txtRotulo.getText().isEmpty()) ? "" : txtRotulo.getText().trim();
+            String[] miRow = {onto, schema, rotular};
             modelo.addRow(miRow);
         }
     }//GEN-LAST:event_btnAnexarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
-        //int col = jTable1.getSelectedColumn();                
-        RestControl rest = RestControl.getInstancia();
-        rest.quitarFilaTabla(tablaAsociados);
+        try {
+            //int col = jTable1.getSelectedColumn();
+            //RestControl rest = RestControl.getInstancia();
+            ConfigControl config = ConfigControl.getInstancia();
+            config.quitarDeEsquema2(tablaAsociados, evt);
+            //
+            RestControl rest = RestControl.getInstancia();
+            if (cbPrefix.getSelectedIndex() > 0) {
+                String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
+                //rest.obtenerEsquema(miPrefix, listaPrefix);
+                rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnQuitarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -425,6 +519,15 @@ public class Esquema extends javax.swing.JDialog {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        RestControl rest = RestControl.getInstancia();
+        if (cbPrefix.getSelectedIndex() > 0) {
+            String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
+            //rest.obtenerEsquema(miPrefix, listaPrefix);
+            rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+        }
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -474,6 +577,7 @@ public class Esquema extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bntCargar;
     private javax.swing.JButton btnAnexar;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnQuitar;
     private javax.swing.JButton btnTerminar;
@@ -495,10 +599,11 @@ public class Esquema extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
@@ -507,6 +612,9 @@ public class Esquema extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JList<String> listaMeta;
     private javax.swing.JList<String> listaPrefix;
+    private javax.swing.JPanel panelCentro;
+    private javax.swing.JPanel panelNorte;
+    private javax.swing.JPanel panelSur;
     private javax.swing.JTable tablaAsociados;
     private javax.swing.JTextField txtRotulo;
     // End of variables declaration//GEN-END:variables

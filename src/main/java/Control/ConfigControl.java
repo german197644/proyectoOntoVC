@@ -29,7 +29,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 public final class ConfigControl {
@@ -777,7 +779,8 @@ public final class ConfigControl {
             // No fijamos si existe el archivo de configuracion.
             File file = new File(uri.getPath());
             if (file.exists()) {
-                propertiesStream = new FileInputStream(uri.getPath());                
+
+                propertiesStream = new FileInputStream(uri.getPath());
                 miPropiedad.load(propertiesStream);
                 //
                 OutputStream fos = new FileOutputStream(uri.getPath());
@@ -786,21 +789,129 @@ public final class ConfigControl {
                 int rows = modelo.getRowCount();
                 for (int i = 0; i < rows; i++) {
                     String clave = (String) modelo.getValueAt(i, 0);
-                    String value = (String) modelo.getValueAt(i, 1);
-                    miPropiedad.setProperty(clave, value);
+                    String valor = (String) modelo.getValueAt(i, 1);
+                    miPropiedad.setProperty(clave, valor);
                 }
-                miPropiedad.store(fos, "Parámetros de la Configuración general");
-                fos.flush();
+                //miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
+                //fos.flush();
                 // 
                 for (int i = 0; i < rows; i++) {
                     String clave = (String) modelo.getValueAt(i, 1);
-                    String value = (String) modelo.getValueAt(i, 2);
-                    miPropiedad.setProperty(clave, value);
+                    String valor = (String) modelo.getValueAt(i, 2);
+                    System.out.println(clave + " :: " + valor);
+                    valor = (valor == null) ? "": new String(valor.getBytes("UTF-8"));
+                    miPropiedad.setProperty(clave, valor);
                 }
-                miPropiedad.store(fos, "Parámetros de la Configuración general");
+                miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
                 fos.flush();
                 fos.close();
                 JOptionPane.showMessageDialog(win, "Esquema grabado con éxito.");
+            } else {
+                JOptionPane.showMessageDialog(win, "No se puede encontrar el archivo: " + archivo);
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void quitarDeEsquema(JTable tabla, ActionEvent evt) {
+        try {
+            Properties miPropiedad = new Properties();
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            String archivo = "propiedades/configDublinCore.properties";
+            URL inputURL = classLoader.getResource(archivo);
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+
+                propertiesStream = new FileInputStream(uri.getPath());
+                miPropiedad.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+                int numRows = tabla.getSelectedRows().length;
+                if (numRows > 0) {
+                    System.out.println("numero de filas seleccionadas: " + numRows);
+                    for (int i = 0; i < numRows; i++) {
+                        System.out.println("fila seleccionada: " + tabla.getSelectedRow()+1);
+                        String clave = (String) modelo.getValueAt(tabla.getSelectedRow(), 0);
+                        String valor = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
+                        System.out.println("clave: " + clave + "  - " + " valor: " + valor);
+                        if (clave != null) {
+                            miPropiedad.remove(clave);
+                        }
+                        clave = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
+                        if (clave != null) {
+                            miPropiedad.remove(clave);
+                        }
+                        modelo.removeRow(tabla.getSelectedRow());
+                    }
+                }
+
+                miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Esquema modificado con éxito.");
+            } else {
+                JOptionPane.showMessageDialog(win, "No se puede encontrar el archivo: " + archivo);
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void quitarDeEsquema2(JTable tabla, ActionEvent evt) {
+        try {
+            Properties miPropiedad = new Properties();
+            Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = this.getClass().getClassLoader();
+            }
+            String archivo = "propiedades/configDublinCore.properties";
+            URL inputURL = classLoader.getResource(archivo);
+            URI uri = new URI(inputURL.toString());
+            // No fijamos si existe el archivo de configuracion.
+            File file = new File(uri.getPath());
+            if (file.exists()) {
+
+                propertiesStream = new FileInputStream(uri.getPath());
+                miPropiedad.load(propertiesStream);
+                //
+                OutputStream fos = new FileOutputStream(uri.getPath());
+                //
+                DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+                int numRows = tabla.getSelectedRows().length;                
+                if (numRows > 0) {
+                    // Nos hacemos de los indices de las filas.
+                    int[] filas = tabla.getSelectedRows();
+                    System.out.println("numero de filas seleccionadas: " + numRows);
+                    for (int i = 0; i < numRows; i++) {
+                        System.out.println("fila seleccionada: " + filas[i]);
+                        String clave = (String) modelo.getValueAt(filas[i], 0);
+                        String valor = (String) modelo.getValueAt(filas[i], 1);
+                        System.out.println("clave: " + clave + "  - " + " valor: " + valor);
+                        if (clave != null) {
+                            miPropiedad.remove(clave);
+                        }
+                        clave = (String) modelo.getValueAt(filas[i], 1);
+                        if (clave != null) {
+                            miPropiedad.remove(clave);
+                        }
+                        //modelo.removeRow(tabla.getSelectedRow());
+                    }
+                }
+
+                miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
+                fos.flush();
+                fos.close();
+                JOptionPane.showMessageDialog(win, "Esquema modificado con éxito.");
             } else {
                 JOptionPane.showMessageDialog(win, "No se puede encontrar el archivo: " + archivo);
             }

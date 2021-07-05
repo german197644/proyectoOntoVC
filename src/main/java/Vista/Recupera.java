@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -59,7 +60,7 @@ public class Recupera extends javax.swing.JDialog {
         int filas = miTabla.getRowCount();
         for (int i = 1; i <= filas; i++) {
             miTabla.removeRow(0);
-        }        
+        }
         //tablaFiltro.setModel(miTabla);
         //tablaFiltro.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
         //tablaFiltro.setRowHeight(50); // con 50 anda
@@ -93,7 +94,6 @@ public class Recupera extends javax.swing.JDialog {
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        jPanel11 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel18 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -152,7 +152,6 @@ public class Recupera extends javax.swing.JDialog {
         jPanel27 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
-        jPanel21 = new javax.swing.JPanel();
         jPanel25 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
@@ -170,29 +169,45 @@ public class Recupera extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Filtrado y recupero de Items");
+        setTitle("Recupero de Items.");
 
         panelCabecera.setPreferredSize(new java.awt.Dimension(670, 220));
         panelCabecera.setLayout(new java.awt.BorderLayout());
 
+        jTabbedPane1.setMinimumSize(new java.awt.Dimension(800, 200));
+        jTabbedPane1.setPreferredSize(new java.awt.Dimension(800, 200));
+
+        jPanel5.setBackground(new java.awt.Color(204, 204, 204));
         jPanel5.setMaximumSize(new java.awt.Dimension(492, 122));
         jPanel5.setLayout(new java.awt.GridLayout(1, 0));
 
-        jPanel8.setMaximumSize(new java.awt.Dimension(400, 122));
-        jPanel8.setLayout(new java.awt.GridLayout(1, 0));
+        jPanel8.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel8.setMaximumSize(new java.awt.Dimension(1100, 122));
+        jPanel8.setMinimumSize(new java.awt.Dimension(800, 72));
+        jPanel8.setPreferredSize(new java.awt.Dimension(800, 100));
+        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel2.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel2.setMaximumSize(new java.awt.Dimension(400, 32667));
+        jPanel2.setMinimumSize(new java.awt.Dimension(50, 50));
+        jPanel2.setOpaque(false);
+        jPanel2.setPreferredSize(new java.awt.Dimension(400, 100));
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jScrollPane1.setBackground(new java.awt.Color(0, 153, 153));
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Repositorio."));
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(400, 32667));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(55, 55));
         jScrollPane1.setOpaque(false);
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
 
         jTree1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Repositorio");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.setMaximumSize(new java.awt.Dimension(81, 100));
+        jTree1.setMinimumSize(new java.awt.Dimension(55, 55));
         jTree1.setOpaque(false);
-        jTree1.setPreferredSize(new java.awt.Dimension(400, 64));
+        jTree1.setPreferredSize(new java.awt.Dimension(300, 100));
+        jTree1.setRequestFocusEnabled(false);
         jTree1.setVisibleRowCount(8);
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -222,29 +237,20 @@ public class Recupera extends javax.swing.JDialog {
 
         jPanel8.add(jPanel2);
 
-        jPanel11.setBackground(new java.awt.Color(0, 153, 153));
-
-        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
-        jPanel11.setLayout(jPanel11Layout);
-        jPanel11Layout.setHorizontalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 550, Short.MAX_VALUE)
-        );
-        jPanel11Layout.setVerticalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 159, Short.MAX_VALUE)
-        );
-
-        jPanel8.add(jPanel11);
-
         jPanel5.add(jPanel8);
 
         jTabbedPane1.addTab("Repositorio", jPanel5);
 
+        jPanel6.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel6.setPreferredSize(new java.awt.Dimension(532, 0));
-        jPanel6.setLayout(new java.awt.GridLayout(1, 0));
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
 
         jPanel18.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel18.setMaximumSize(new java.awt.Dimension(400, 32667));
+        jPanel18.setMinimumSize(new java.awt.Dimension(50, 50));
+        jPanel18.setOpaque(false);
+        jPanel18.setPreferredSize(new java.awt.Dimension(400, 100));
         jPanel18.setLayout(new java.awt.BorderLayout());
 
         jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos."));
@@ -276,6 +282,10 @@ public class Recupera extends javax.swing.JDialog {
         jPanel6.add(jPanel18);
 
         jPanel10.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel10.setMaximumSize(new java.awt.Dimension(400, 32667));
+        jPanel10.setMinimumSize(new java.awt.Dimension(50, 50));
+        jPanel10.setOpaque(false);
+        jPanel10.setPreferredSize(new java.awt.Dimension(400, 100));
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         jLabel1.setText("   ");
@@ -345,8 +355,9 @@ public class Recupera extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Metadatos", jPanel6);
 
-        jPanel7.setBackground(new java.awt.Color(0, 153, 153));
-        jPanel7.setPreferredSize(new java.awt.Dimension(650, 0));
+        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel7.setPreferredSize(new java.awt.Dimension(500, 0));
         jPanel7.setLayout(new java.awt.BorderLayout());
 
         jLabel9.setText("     ");
@@ -356,6 +367,7 @@ public class Recupera extends javax.swing.JDialog {
         jPanel7.add(jLabel11, java.awt.BorderLayout.PAGE_END);
 
         jPanel14.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel14.setOpaque(false);
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jLabel5.setText("Límite: ");
@@ -386,7 +398,8 @@ public class Recupera extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Limites", jPanel7);
 
-        jPanel16.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel16.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel16.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel16.setLayout(new java.awt.BorderLayout());
 
         jLabel12.setText("   ");
@@ -469,7 +482,7 @@ public class Recupera extends javax.swing.JDialog {
         panelSur.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         panelSur.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jButton3.setText("Ejecutar consulta de elementos");
+        jButton3.setText("Ejecutar filtro");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -482,10 +495,10 @@ public class Recupera extends javax.swing.JDialog {
         getContentPane().add(panelCabecera, java.awt.BorderLayout.PAGE_START);
 
         panelCentral.setBackground(new java.awt.Color(204, 255, 204));
-        panelCentral.setPreferredSize(new java.awt.Dimension(911, 290));
+        panelCentral.setPreferredSize(new java.awt.Dimension(600, 290));
         panelCentral.setLayout(new java.awt.BorderLayout(0, 2));
 
-        jPanel15.setBackground(new java.awt.Color(255, 204, 102));
+        jPanel15.setBackground(new java.awt.Color(204, 204, 204));
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
 
         jLabel15.setText("     ");
@@ -503,47 +516,52 @@ public class Recupera extends javax.swing.JDialog {
         panelCentral.add(jLabel14, java.awt.BorderLayout.LINE_END);
 
         jPanel24.setOpaque(false);
-        jPanel24.setPreferredSize(new java.awt.Dimension(893, 280));
+        jPanel24.setPreferredSize(new java.awt.Dimension(800, 280));
         jPanel24.setLayout(new java.awt.BorderLayout());
 
         jPanel27.setOpaque(false);
         jPanel27.setPreferredSize(new java.awt.Dimension(893, 200));
         jPanel27.setLayout(new java.awt.BorderLayout());
 
+        jPanel26.setMinimumSize(new java.awt.Dimension(200, 100));
         jPanel26.setOpaque(false);
-        jPanel26.setPreferredSize(new java.awt.Dimension(893, 180));
-        jPanel26.setLayout(new java.awt.GridLayout(1, 0));
+        jPanel26.setPreferredSize(new java.awt.Dimension(600, 180));
+        jPanel26.setLayout(new javax.swing.BoxLayout(jPanel26, javax.swing.BoxLayout.LINE_AXIS));
 
+        jPanel9.setMaximumSize(new java.awt.Dimension(350, 200));
+        jPanel9.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel9.setName(""); // NOI18N
         jPanel9.setOpaque(false);
-        jPanel9.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel21.setOpaque(false);
-        jPanel21.setLayout(new javax.swing.BoxLayout(jPanel21, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel9.setPreferredSize(new java.awt.Dimension(350, 200));
+        jPanel9.setLayout(new javax.swing.BoxLayout(jPanel9, javax.swing.BoxLayout.Y_AXIS));
 
         jPanel25.setOpaque(false);
         jPanel25.setLayout(new java.awt.GridLayout(1, 0));
 
-        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos del ítem."));
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Recursos del ítem."));
+        jScrollPane2.setMaximumSize(new java.awt.Dimension(500, 150));
         jScrollPane2.setOpaque(false);
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(350, 140));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(450, 100));
 
         listaRecursos.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         listaRecursos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         listaRecursos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "material de estudio" };
+            String[] strings = { "material" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        listaRecursos.setPreferredSize(new java.awt.Dimension(300, 16));
+        listaRecursos.setMaximumSize(new java.awt.Dimension(500, 150));
+        listaRecursos.setPreferredSize(new java.awt.Dimension(300, 100));
         listaRecursos.setVisibleRowCount(6);
         jScrollPane2.setViewportView(listaRecursos);
 
         jPanel25.add(jScrollPane2);
 
-        jPanel21.add(jPanel25);
+        jPanel9.add(jPanel25);
 
+        jPanel20.setMaximumSize(new java.awt.Dimension(32767, 40));
         jPanel20.setOpaque(false);
-        jPanel20.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel20.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         btnDescargar.setText("Descargar recurso");
         btnDescargar.addActionListener(new java.awt.event.ActionListener() {
@@ -553,16 +571,15 @@ public class Recupera extends javax.swing.JDialog {
         });
         jPanel20.add(btnDescargar);
 
-        jPanel21.add(jPanel20);
-
-        jPanel9.add(jPanel21);
+        jPanel9.add(jPanel20);
 
         jPanel26.add(jPanel9);
 
         jPanel23.setOpaque(false);
+        jPanel23.setPreferredSize(new java.awt.Dimension(400, 200));
         jPanel23.setLayout(new java.awt.GridLayout(1, 0));
 
-        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos del recurso."));
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Metadatos descriptivos."));
         jScrollPane6.setOpaque(false);
         jScrollPane6.setPreferredSize(new java.awt.Dimension(180, 50));
 
@@ -570,7 +587,11 @@ public class Recupera extends javax.swing.JDialog {
         taMetadata.setColumns(95);
         taMetadata.setLineWrap(true);
         taMetadata.setRows(6);
+        taMetadata.setText("metadatos");
         taMetadata.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        taMetadata.setMaximumSize(new java.awt.Dimension(32267, 32267));
+        taMetadata.setMinimumSize(new java.awt.Dimension(50, 50));
+        taMetadata.setPreferredSize(new java.awt.Dimension(600, 120));
         jScrollPane6.setViewportView(taMetadata);
 
         jPanel23.add(jScrollPane6);
@@ -582,7 +603,7 @@ public class Recupera extends javax.swing.JDialog {
         jPanel19.setOpaque(false);
         jPanel19.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 5));
 
-        jButton6.setText("Examinar ìtem en el navegador");
+        jButton6.setText("Examinar ìtem");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -610,7 +631,7 @@ public class Recupera extends javax.swing.JDialog {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Nro.", "Id", "Colección", "Handle", "Titulo"
+                "Nro.", "Identificador ítem", "Colección", "Handle", "Titulo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -645,7 +666,7 @@ public class Recupera extends javax.swing.JDialog {
 
         getContentPane().add(panelCentral, java.awt.BorderLayout.CENTER);
 
-        panelBase.setBackground(new java.awt.Color(0, 153, 153));
+        panelBase.setBackground(new java.awt.Color(204, 204, 204));
         panelBase.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         jButton2.setText("Finalizar");
@@ -725,20 +746,16 @@ public class Recupera extends javax.swing.JDialog {
             RestControl rest = RestControl.getInstancia();
             DefaultTableModel miTabla = (DefaultTableModel) tablaFiltro.getModel();
             int fila = tablaFiltro.rowAtPoint(evt.getPoint());
-            int columna = tablaFiltro.columnAtPoint(evt.getPoint());
-            //
-            if ((fila < 0) && (columna < 0)) {
-                // retorno para no producir errores
-                return;
+            int columna = tablaFiltro.columnAtPoint(evt.getPoint());            
+            if ((fila >= 0) && (columna >= 0)) {
+                String unNombre = miTabla.getValueAt(fila, 4).toString().trim();
+                String unLink = miTabla.getValueAt(fila, 1).toString().trim();                
+                ItemRest miItem = new ItemRest(unNombre, unLink);                
+                rest.obtenerBitstreams(miItem, listaRecursos);
+                // Mostramos los metadatas.
+                rest.obtenerMetadata(miItem, taMetadata);
+                taMetadata.setCaretPosition(0);
             }
-            String unLink = miTabla.getValueAt(fila, 1).toString().trim();
-            String unNombre = miTabla.getValueAt(fila, 3).toString().trim();
-            ItemRest miItem = new ItemRest(unNombre, unLink);
-            // DefaultListModel misItems = rest.obtenerBitstreams(miItem, listaRecursos);
-            rest.obtenerBitstreams(miItem, listaRecursos);            
-            // Mostramos los metadatas.
-            rest.obtenerMetadata(miItem, taMetadata);
-            taMetadata.setCaretPosition(0);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -748,11 +765,13 @@ public class Recupera extends javax.swing.JDialog {
         RestControl rest = RestControl.getInstancia();
         int fila = tablaFiltro.getSelectedRow();
         int colu = tablaFiltro.getSelectedColumn();
-        System.out.println("Fila: " + fila + " - Columna: " + colu);
-        //int fila = tablaFiltro.rowAtPoint(evt.getPoint());
-        //int columna = tablaFiltro.columnAtPoint(evt.getPoint());
-        String unHandle = tablaFiltro.getModel().getValueAt(fila, 3).toString().trim();
-        rest.miHandle(fila, colu, unHandle);
+        if ((fila >= 0) && (colu >= 0)) {
+            System.out.println("Fila: " + fila + " - Columna: " + colu);
+            //int fila = tablaFiltro.rowAtPoint(evt.getPoint());
+            //int columna = tablaFiltro.columnAtPoint(evt.getPoint());
+            String unHandle = tablaFiltro.getModel().getValueAt(fila, 3).toString().trim();
+            rest.miHandle(fila, colu, unHandle);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void btnDescargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDescargarActionPerformed
@@ -766,6 +785,8 @@ public class Recupera extends javax.swing.JDialog {
                 String dir = login.getUri().trim() + bs.getLink() + "/retrieve";
                 System.out.println("Recuso: " + dir);
                 Runtime.getRuntime().exec("cmd.exe /c start chrome " + dir);
+            } else {
+                JOptionPane.showMessageDialog(this, "No Hay Recurso seleccionado.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException ex) {
             Logger.getLogger(Recupera.class.getName()).log(Level.SEVERE, null, ex);
@@ -902,7 +923,6 @@ public class Recupera extends javax.swing.JDialog {
     private javax.swing.JList<String> jListMetadatos;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -912,7 +932,6 @@ public class Recupera extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;

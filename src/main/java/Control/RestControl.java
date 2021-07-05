@@ -10,13 +10,11 @@ import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.Fichero;
 import Modelo.ItemRest;
-import static com.clarkparsia.pellet.hierarchy.HierarchyFunctions.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import java.awt.HeadlessException;
@@ -30,7 +28,6 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -41,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.AbstractButton;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
@@ -51,15 +47,11 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import jdk.nashorn.internal.runtime.ListAdapter;
-import org.apache.commons.csv.CSVFormat;
 
 /**
  *
@@ -240,9 +232,9 @@ public final class RestControl {
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
-
+            //
             out = br.lines().collect(Collectors.joining("\n"));
-
+            //
             JsonParser parser = new JsonParser();
             JsonElement datos = parser.parse(new StringReader(out));
             if (datos.isJsonObject()) {
@@ -311,19 +303,27 @@ public final class RestControl {
      * @param tree Representacion devuelta de la estructura del repositorio.
      */
     public void estructuraRepositorio(JTextArea ta, JTree tree) {
-        SwingWorker<DefaultTreeModel, String> mySwingWorker = new SwingWorker<DefaultTreeModel, String>() {
+        //SwingWorker<DefaultTreeModel, String> mySwingWorker = new SwingWorker<DefaultTreeModel, String>() {
+        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
             @Override
-            protected DefaultTreeModel doInBackground() {
+            //protected DefaultTreeModel doInBackground() {
+            protected Void doInBackground() {
                 //DefaultTreeModel modeloRepo = null;
                 try {
                     publish("Obteniendo estructura del repositorio.\n");
                     ConfigControl conn = ConfigControl.getInstancia();
                     //String comando = "curl -X GET -H \"accept: application/json\" "
                     //        + conn.getUri().trim() + "/rest/communities";
-                    String comando = "curl \"" + conn.getUri().trim() + "/rest/communities\"";
-                    //System.out.println(".doInBackground(): " + comando);
+                    String url = conn.getUri().trim() + "/rest/communities";
+                    String comando = "curl \"" + url + "\"";
                     Process process = Runtime.getRuntime().exec(comando);
                     //
+                    int p = process.waitFor();
+                    if (p != 0) {
+                        //DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+                        // ver si corresponde borrar las estructura actual.                        
+                        return null;
+                    }
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
@@ -336,24 +336,37 @@ public final class RestControl {
                         JsonArray array = (JsonArray) datos;
                         publish("El repositorio posee una estructura de: " + array.size() + " elementos. Relevando, por favor espere...\n");
                     }
-                    DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
-                    padre = dumpJSONElement2(datos, padre);
-                    modeloRepo = new DefaultTreeModel(padre);
+                    DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+                    DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+                    root.removeAllChildren();
+                    //
+                    //DefaultMutableTreeNode padre = new DefaultMutableTreeNode("Repositorio");
+                    //padre = dumpJSONElement2(datos, padre);
+                    root = dumpJSONElement2(datos, root);
+                    modeloRepo = new DefaultTreeModel(root);
+                    //modeloRepo.reload(root);
+                    model.reload(root);
+                    //
                     publish("Estructura de repositorio obtenida satisfactoriamente.\n");
                 } catch (IOException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                     publish("No se pudo obtener la estructura del repositorio satisfactoriamente.\n");
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return modeloRepo;
+                //return modeloRepo;
+                return null;
             }
 
             @Override
             protected void done() {
+                /*
                 try {
-                    tree.setModel(this.get());
+                    //tree.setModel(this.get());
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                 */
             }
 
             @Override
@@ -498,10 +511,10 @@ public final class RestControl {
      */
     public void obtenerBitstreams(ItemRest item, JList miListaRecursos)
             throws InterruptedException, ExecutionException {
-        DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
-        SwingWorker<DefaultListModel, Void> mySwingWorker = new SwingWorker<DefaultListModel, Void>() {
+        //DefaultListModel<BitstreamsRest> listBitstreams = new DefaultListModel();
+        SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
             @Override
-            protected DefaultListModel doInBackground() throws Exception {
+            protected Void doInBackground() throws Exception {
                 try {
                     ConfigControl conn = ConfigControl.getInstancia();
                     String comando = "curl \"" + conn.getUri().trim() + item.getLink() + "/bitstreams\"";
@@ -510,47 +523,34 @@ public final class RestControl {
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
-                    //
                     String out = br.lines().collect(Collectors.joining("\n"));
-                    //System.out.println("Linea: " + out);
                     JsonParser parser = new JsonParser();
                     JsonReader reader = new JsonReader(new StringReader(out));
                     JsonElement datos = parser.parse(reader);
-                    //
                     if (datos.isJsonArray()) {
                         JsonArray array = (JsonArray) datos;
                         Iterator<JsonElement> iter = array.iterator();
-                        while (iter.hasNext()) {
-                            JsonObject jsonItem = (JsonObject) iter.next();
-                            JsonElement linkItem = jsonItem.get("link");
-                            JsonElement nameItem = jsonItem.get("name");
-                            // Creamos el Bitstreams a presentar en el principal
-                            BitstreamsRest bs = new BitstreamsRest(nameItem.getAsString(), linkItem.getAsString());
-                            listBitstreams.addElement(bs);
+                        ListModel modelo = miListaRecursos.getModel();
+                        DefaultListModel miModelo = (DefaultListModel) modelo;
+                        if (array.size() > 0) {
+                            miModelo.removeAllElements();
+                            while (iter.hasNext()) {
+                                JsonObject jsonItem = (JsonObject) iter.next();
+                                JsonElement nameItem = jsonItem.get("name");
+                                JsonElement linkItem = jsonItem.get("link");
+                                // Creamos el Bitstreams.
+                                BitstreamsRest bs = new BitstreamsRest(nameItem.getAsString(), linkItem.getAsString());
+                                miModelo.addElement(bs);
+                            }
+                        } else {
+                            miModelo.addElement("sin recursos");
                         }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return listBitstreams;
+                return null;
             }
-
-            @Override
-            protected void done() {
-                try {
-                    if (this.get().size() > 0) {
-                        miListaRecursos.setModel(this.get());
-                    } else {
-                        DefaultListModel<String> dlm = new DefaultListModel();
-                        dlm.addElement("sin recursos");
-                        miListaRecursos.setModel(dlm);
-                    }
-                    //miListaRecursos.setModel(this.get());
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
         };
         mySwingWorker.execute();
     }
@@ -561,23 +561,21 @@ public final class RestControl {
             protected Void doInBackground() throws Exception {
                 try {
                     ConfigControl conn = ConfigControl.getInstancia();
-
-                    String comando = "curl \"" + conn.getUri().trim() + item.getLink().trim() + "/metadata\"";
+                    String comando = "curl \"" + conn.getUri().trim()
+                            + item.getLink().trim() + "/metadata\"";
                     Process process = Runtime.getRuntime().exec(comando);
                     int p = process.waitFor();
                     if (p != 0) {
                         return null;
                     }
-                    //
                     InputStream is = process.getInputStream();
                     InputStreamReader isr = new InputStreamReader(is);
                     BufferedReader br = new BufferedReader(isr);
-                    //
-                    String out = new String(br.lines().collect(Collectors.joining("\n")).getBytes(), "UTF-8");
-                    //System.out.println("OUT: " + new String(out.getBytes(), "UTF-8"));
-                    //System.out.println("OUT: " + out);
+                    //String out = new String(br.lines().collect(Collectors.joining("\n")).getBytes(), "UTF-8");
+                    String out = br.lines().collect(Collectors.joining("\n"));
+
                     JsonParser parser = new JsonParser();
-                    JsonReader reader = new JsonReader(new StringReader(out));
+                    JsonReader reader = new JsonReader(new StringReader(out)); // se puede obviar.
                     JsonElement datos = parser.parse(reader);
                     //
                     if (datos.isJsonArray()) {
@@ -604,22 +602,17 @@ public final class RestControl {
                                 //System.out.println(miMeta[i]);
                                 n++;
                             }
-                            //
-                            //ta.append(unaKey.getAsString() + "\n");
-                            //String datoMeta = miMeta[nDatos - 1];
-                            //System.out.println("metadato.rotulo: " + datoMeta);
+                            //                            
                             String rotulo = null;
                             if (property != null) {
                                 rotulo = property.getProperty(unaKey.getAsString());
                             }
-                            //ta.append(miMeta[nDatos - 1] + "\n");
-
                             if (rotulo == null) {
                                 ta.append(miMeta[nDatos - 1] + "\n");
                             } else {
-                                //ta.append(miMeta[nDatos - 1] + "\n");
-                                String rotuloMetadato = new String(rotulo.getBytes(), "UTF-8");
-                                ta.append(rotuloMetadato + "\n");
+                                //String rotuloMetadato = new String(rotulo.getBytes(), "UTF-8");                                
+                                //ta.append(rotuloMetadato + "\n");
+                                ta.append(rotulo + "\n");
                             }
                             // Valor del metadato.
                             ta.append(unValue.getAsString() + "\n");
@@ -1710,11 +1703,13 @@ public final class RestControl {
                     if (datos.isJsonArray()) {
                         JsonArray array = (JsonArray) datos;
                         Iterator<JsonElement> iter = array.iterator();
+                        DefaultComboBoxModel modelo = (DefaultComboBoxModel) miCombo.getModel();
                         while (iter.hasNext()) {
                             JsonObject jsonItem = (JsonObject) iter.next();
                             JsonElement miPrefix = jsonItem.get("prefix");
                             // Creamos la lista con los prefix de los esquemas presentes.
-                            listaPrefix.addElement(miPrefix.getAsString());
+                            //listaPrefix.addElement(miPrefix.getAsString());
+                            modelo.addElement(miPrefix.getAsString());
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "No hay esquemas presentes en el repositorio.");
@@ -1727,12 +1722,8 @@ public final class RestControl {
 
             @Override
             protected void done() {
-                try {
-                    miCombo.setModel(this.get());
-                    miCombo.updateUI();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                //miCombo.setModel(this.get());
+                //miCombo.updateUI();
             }
         };
         miSwingWorker.execute();
@@ -1809,15 +1800,19 @@ public final class RestControl {
                         for (int i = 1; i <= filas; i++) {
                             modelo.removeRow(0);
                         }
+                        //int indice = 1;
                         for (Object clave : Keys) {
                             String key = (String) clave;
                             String value = (String) miProp.get(key);
                             //String rotulo = new String(miProp.get(value).toString().getBytes("cp1252"));
-                            String rotulo = (String) miProp.get(value);
+                            Object rotulo = miProp.get(value); 
+                            System.out.println("rotulo: " + rotulo);
                             if (value.contains(prefix)) {
-                                String[] miEsquema = {key, value, rotulo};
+                                //Object[] miEsquema = {key, value, rotulo,indice};
+                                Object[] miEsquema = {key, value, rotulo};
                                 modelo.addRow(miEsquema);
-                            }
+                                //indice += 1;
+                            }                            
                         }
                     }
                 } catch (IOException ex) {

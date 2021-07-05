@@ -34,7 +34,7 @@ public class Configura extends javax.swing.JDialog {
     RestControl rest = null;
 
     // conectar a Stardog
-    StardogControl stardog = null;
+    StardogControl st = null;
 
     // saber si se hizo alguna modificacion en la conexion.
     public boolean conn = false;
@@ -114,8 +114,8 @@ public class Configura extends javax.swing.JDialog {
                 this.st_bd.setText(config.getBase());
                 this.st_usuario.setText(config.getUserst());
                 this.st_pass.setText(config.getPassst());
-                stardog = StardogControl.getInstancia();
-                // fin coneccion stardog
+                st = StardogControl.getInstancia();
+                // fin coneccion st
                 //
                 // DSpace
                 //
@@ -219,18 +219,31 @@ public class Configura extends javax.swing.JDialog {
         btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setAutoRequestFocus(false);
+        setResizable(false);
 
+        jTabbedPane1.setBackground(new java.awt.Color(204, 204, 204));
+        jTabbedPane1.setToolTipText("");
+        jTabbedPane1.setOpaque(true);
+
+        loginPanel.setBackground(new java.awt.Color(204, 255, 204));
         loginPanel.setLayout(new java.awt.BorderLayout());
 
+        panel_Superior.setBackground(new java.awt.Color(0, 204, 204));
+        panel_Superior.setAutoscrolls(true);
+        panel_Superior.setOpaque(false);
         panel_Superior.setLayout(new javax.swing.BoxLayout(panel_Superior, javax.swing.BoxLayout.Y_AXIS));
 
+        cont_stardog.setBackground(new java.awt.Color(204, 255, 204));
         cont_stardog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Base de Datos Gráfico - Stardog", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_stardog.setOpaque(false);
         cont_stardog.setLayout(new java.awt.GridLayout(4, 1));
 
+        jPanel1.setOpaque(false);
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel.setText("URL");
+        nombreBDStardogLabel.setText("URL almacenada");
         nombreBDStardogLabel.setName(""); // NOI18N
         jPanel1.add(nombreBDStardogLabel);
 
@@ -238,7 +251,9 @@ public class Configura extends javax.swing.JDialog {
         st_url.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         st_url.setEditor(null);
         st_url.setFocusTraversalPolicyProvider(true);
-        st_url.setMaximumSize(new java.awt.Dimension(56, 20));
+        st_url.setMaximumSize(new java.awt.Dimension(400, 20));
+        st_url.setMinimumSize(new java.awt.Dimension(300, 20));
+        st_url.setPreferredSize(new java.awt.Dimension(300, 20));
         st_url.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 st_urlActionPerformed(evt);
@@ -256,11 +271,15 @@ public class Configura extends javax.swing.JDialog {
 
         cont_stardog.add(jPanel1);
 
+        jPanel7.setOpaque(false);
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel4.setText("URL utilizada");
+        nombreBDStardogLabel4.setText("URL ");
+        nombreBDStardogLabel4.setMaximumSize(new java.awt.Dimension(85, 17));
+        nombreBDStardogLabel4.setMinimumSize(new java.awt.Dimension(85, 17));
         nombreBDStardogLabel4.setName(""); // NOI18N
+        nombreBDStardogLabel4.setPreferredSize(new java.awt.Dimension(85, 17));
         jPanel7.add(nombreBDStardogLabel4);
 
         st_otro.setColumns(50);
@@ -281,12 +300,15 @@ public class Configura extends javax.swing.JDialog {
 
         cont_stardog.add(jPanel7);
 
+        jPanel2.setOpaque(false);
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         userStardogLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         userStardogLabel.setText("Usuario");
+        userStardogLabel.setMaximumSize(new java.awt.Dimension(85, 17));
+        userStardogLabel.setMinimumSize(new java.awt.Dimension(85, 17));
         userStardogLabel.setName(""); // NOI18N
-        userStardogLabel.setPreferredSize(new java.awt.Dimension(50, 17));
+        userStardogLabel.setPreferredSize(new java.awt.Dimension(85, 17));
         jPanel2.add(userStardogLabel);
 
         st_usuario.setColumns(30);
@@ -322,6 +344,7 @@ public class Configura extends javax.swing.JDialog {
 
         cont_stardog.add(jPanel2);
 
+        jPanel3.setOpaque(false);
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -349,17 +372,23 @@ public class Configura extends javax.swing.JDialog {
 
         panel_Superior.add(cont_stardog);
 
+        cont_sword.setBackground(new java.awt.Color(204, 255, 204));
         cont_sword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Repositorio DSpace - Rest API", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        cont_sword.setOpaque(false);
         cont_sword.setLayout(new java.awt.GridLayout(3, 1, 5, 5));
 
+        jPanel4.setOpaque(false);
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel2.setText("URL");
+        nombreBDStardogLabel2.setText("URL almacenada");
         nombreBDStardogLabel2.setName(""); // NOI18N
         jPanel4.add(nombreBDStardogLabel2);
 
         sw_url.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        sw_url.setMaximumSize(new java.awt.Dimension(400, 20));
+        sw_url.setMinimumSize(new java.awt.Dimension(300, 20));
+        sw_url.setPreferredSize(new java.awt.Dimension(300, 20));
         sw_url.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sw_urlActionPerformed(evt);
@@ -377,11 +406,16 @@ public class Configura extends javax.swing.JDialog {
 
         cont_sword.add(jPanel4);
 
+        jPanel8.setOpaque(false);
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        nombreBDStardogLabel5.setText("URL utilizada");
+        nombreBDStardogLabel5.setText("URL ");
+        nombreBDStardogLabel5.setMaximumSize(new java.awt.Dimension(85, 17));
+        nombreBDStardogLabel5.setMinimumSize(new java.awt.Dimension(85, 17));
         nombreBDStardogLabel5.setName(""); // NOI18N
+        nombreBDStardogLabel5.setPreferredSize(new java.awt.Dimension(85, 17));
+        nombreBDStardogLabel5.setRequestFocusEnabled(false);
         jPanel8.add(nombreBDStardogLabel5);
 
         sw_otro.setColumns(50);
@@ -402,11 +436,15 @@ public class Configura extends javax.swing.JDialog {
 
         cont_sword.add(jPanel8);
 
+        jPanel5.setOpaque(false);
         jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         nombreBDStardogLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         nombreBDStardogLabel3.setText("Usuario");
+        nombreBDStardogLabel3.setMaximumSize(new java.awt.Dimension(85, 17));
+        nombreBDStardogLabel3.setMinimumSize(new java.awt.Dimension(85, 17));
         nombreBDStardogLabel3.setName(""); // NOI18N
+        nombreBDStardogLabel3.setPreferredSize(new java.awt.Dimension(85, 17));
         jPanel5.add(nombreBDStardogLabel3);
 
         sw_usuario.setColumns(30);
@@ -448,6 +486,8 @@ public class Configura extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Datos de conexión", loginPanel);
 
+        generalPanel.setBackground(new java.awt.Color(204, 255, 204));
+        generalPanel.setAutoscrolls(true);
         generalPanel.setLayout(new java.awt.BorderLayout());
 
         jLabel6.setText("     ");
@@ -462,15 +502,20 @@ public class Configura extends javax.swing.JDialog {
         jLabel5.setText("    ");
         generalPanel.add(jLabel5, java.awt.BorderLayout.PAGE_START);
 
+        jPanel17.setOpaque(false);
         jPanel17.setPreferredSize(new java.awt.Dimension(653, 200));
         jPanel17.setLayout(new java.awt.GridLayout(10, 1));
 
         jPanel13.setMinimumSize(new java.awt.Dimension(193, 20));
+        jPanel13.setOpaque(false);
         jPanel13.setPreferredSize(new java.awt.Dimension(100, 20));
         jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Carpeta de trabajo");
+        jLabel2.setMaximumSize(new java.awt.Dimension(132, 17));
+        jLabel2.setMinimumSize(new java.awt.Dimension(132, 17));
+        jLabel2.setPreferredSize(new java.awt.Dimension(132, 17));
         jPanel13.add(jLabel2);
 
         txtWorkFolder.setColumns(25);
@@ -495,10 +540,12 @@ public class Configura extends javax.swing.JDialog {
 
             jPanel17.add(jPanel13);
 
+            jPanel14.setOpaque(false);
             jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
             jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
             jLabel1.setText("Handle - web browser");
+            jLabel1.setName(""); // NOI18N
             jPanel14.add(jLabel1);
 
             txtHandle.setColumns(25);
@@ -518,10 +565,15 @@ public class Configura extends javax.swing.JDialog {
 
             jPanel17.add(jPanel14);
 
+            jPanel6.setOpaque(false);
             jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
             jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
             jLabel4.setText("Reporte avanzado");
+            jLabel4.setMaximumSize(new java.awt.Dimension(132, 17));
+            jLabel4.setMinimumSize(new java.awt.Dimension(132, 17));
+            jLabel4.setPreferredSize(new java.awt.Dimension(132, 17));
+            jLabel4.setRequestFocusEnabled(false);
             jPanel6.add(jLabel4);
 
             txtReporte.setColumns(25);
@@ -541,10 +593,14 @@ public class Configura extends javax.swing.JDialog {
 
             jPanel17.add(jPanel6);
 
+            jPanel9.setOpaque(false);
             jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
 
             jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
             jLabel10.setText("Filtro avanzado");
+            jLabel10.setMaximumSize(new java.awt.Dimension(132, 17));
+            jLabel10.setMinimumSize(new java.awt.Dimension(132, 17));
+            jLabel10.setPreferredSize(new java.awt.Dimension(132, 17));
             jPanel9.add(jLabel10);
 
             txtFiltro.setColumns(25);
@@ -570,6 +626,7 @@ public class Configura extends javax.swing.JDialog {
 
             getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
+            panel_inferior.setBackground(new java.awt.Color(204, 204, 204));
             panel_inferior.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 10));
 
             btnConectar.setText("Conectar");
@@ -622,8 +679,8 @@ public class Configura extends javax.swing.JDialog {
                     config.setBase(st_bd.getText());
                     // conectar a Stardog
                     publish(">> Conectando con el servicio de Stardog...\n", "1");
-                    stardog.conectar();
-                    stardoglogin = stardog.estatus();
+                    st.conectar();
+                    stardoglogin = st.estatus();
                     if (stardoglogin) {
                         publish("Servicio Stardog: OK!.\n", "2");
                     } else {

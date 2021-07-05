@@ -36,18 +36,15 @@ public class Deposita extends javax.swing.JFrame {
     ColeccionRest coleccion = null;
     ItemRest item = null;
     DefaultListModel misMetadatos = new DefaultListModel();
+    //
+    int reiterar = 0; // veces que se reitera un mensaje.
 
     public Deposita() {
         initComponents();
         this.setTitle("Depósito y recuperación de ítems.");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //this.setVisible(true);
         captura.getVerticalScrollBar().setUnitIncrement(18);
         //
-        //Configurando win = new Configura(this, true);
-        //win.setConsola(taConsola);
-        //win.setVisible(true);
-
         ConfigControl config = null;
         try {
             config = ConfigControl.getInstancia();
@@ -60,17 +57,21 @@ public class Deposita extends javax.swing.JFrame {
         }
         taConsola.append(">> Conectando con los servicio.\n");
         try {
-            // rest api                
+            // rest
             RestControl rest = RestControl.getInstancia();
             if (rest.conectar()) { // no hace falta consulta el estatus.
                 taConsola.append("Servicio DSpace: OK!.\n");
                 rest.estructuraRepositorio(taConsola, jTree1);
             } else {
                 taConsola.append("Servicio DSpace: DOWN!.\n");
-
             }
-            // stardog
+            // -----------------------------------------------------------
+            // stardog            
             StardogControl baseGrafica = StardogControl.getInstancia();
+            System.out.println("url_st: " + config.getUrl_st());
+            System.out.println("usuario st: " + config.getUserst());
+            System.out.println("pass st: " + config.getPassst());
+            System.out.println("base de datos st: " + config.getBase());
             baseGrafica.conectar();
             if (baseGrafica.estatus()) {
                 taConsola.append("Servicio StarDog: OK!.\n");
@@ -103,72 +104,74 @@ public class Deposita extends javax.swing.JFrame {
         mnuDeleteColeccion = new javax.swing.JMenuItem();
         panel_superior = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        jPanel22 = new javax.swing.JPanel();
+        jPanel27 = new javax.swing.JPanel();
         panel_inferior = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         cbOpcion = new javax.swing.JComboBox<>();
         btnDepositar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         panel_central = new javax.swing.JPanel();
-        panelSur = new javax.swing.JPanel();
-        jPanel15 = new javax.swing.JPanel();
-        jLabel26 = new javax.swing.JLabel();
-        jPanel16 = new javax.swing.JPanel();
-        jLabel27 = new javax.swing.JLabel();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        taConsola = new javax.swing.JTextArea();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listaOA = new javax.swing.JList<>();
-        jPanel18 = new javax.swing.JPanel();
-        btnObtenerMetas = new javax.swing.JButton();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        listaMetadato = new javax.swing.JList<>();
-        jPanel14 = new javax.swing.JPanel();
-        btnAgregarMetadato = new javax.swing.JButton();
-        btnRestablecerMetas = new javax.swing.JButton();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        captura = new javax.swing.JScrollPane();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jPanel9 = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
+        jPanel23 = new javax.swing.JPanel();
+        jPanel24 = new javax.swing.JPanel();
+        jPanel25 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
         jPanel17 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         btnObtenerItems = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         listaItems = new javax.swing.JList<>();
         jScrollPane6 = new javax.swing.JScrollPane();
         listaBitstreams = new javax.swing.JList<>();
+        jPanel19 = new javax.swing.JPanel();
+        jPanel20 = new javax.swing.JPanel();
+        panelSur = new javax.swing.JPanel();
+        jPanel15 = new javax.swing.JPanel();
+        jPanel16 = new javax.swing.JPanel();
+        jPanel28 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         listaRecursos = new javax.swing.JList<>();
         jPanel13 = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
         btnAddFichero = new javax.swing.JButton();
         btnDelFichero = new javax.swing.JButton();
-        jLabel16 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taConsola = new javax.swing.JTextArea();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        captura = new javax.swing.JScrollPane();
+        jPanel30 = new javax.swing.JPanel();
+        jPanel29 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listaOA = new javax.swing.JList<>();
+        jPanel18 = new javax.swing.JPanel();
+        btnObtenerMetas = new javax.swing.JButton();
+        jPanel21 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        listaMetadato = new javax.swing.JList<>();
+        jPanel14 = new javax.swing.JPanel();
+        btnAgregarMetadato = new javax.swing.JButton();
+        btnRestablecerMetas = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuTool = new javax.swing.JMenu();
         mnuConectar = new javax.swing.JMenuItem();
-        mnuFiltrar = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        mnuFiltrar = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mnuSalir = new javax.swing.JMenuItem();
 
@@ -192,50 +195,56 @@ public class Deposita extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panel_superior.setBackground(new java.awt.Color(0, 153, 204));
+        panel_superior.setName(""); // NOI18N
+        panel_superior.setPreferredSize(new java.awt.Dimension(800, 30));
         panel_superior.setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setBackground(new java.awt.Color(0, 153, 204));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setLayout(new java.awt.BorderLayout());
-
-        jLabel2.setText("          ");
-        jPanel1.add(jLabel2, java.awt.BorderLayout.WEST);
-
-        jLabel4.setText("       ");
-        jPanel1.add(jLabel4, java.awt.BorderLayout.LINE_END);
 
         jLabel14.setFont(new java.awt.Font("Verdana", 1, 16)); // NOI18N
         jLabel14.setText(">> Gestión de ítem.");
         jPanel1.add(jLabel14, java.awt.BorderLayout.CENTER);
 
+        jPanel22.setOpaque(false);
+        jPanel22.setPreferredSize(new java.awt.Dimension(10, 30));
+        jPanel1.add(jPanel22, java.awt.BorderLayout.LINE_START);
+
+        jPanel27.setOpaque(false);
+        jPanel27.setPreferredSize(new java.awt.Dimension(10, 30));
+        jPanel1.add(jPanel27, java.awt.BorderLayout.LINE_END);
+
         panel_superior.add(jPanel1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(panel_superior, java.awt.BorderLayout.PAGE_START);
 
-        panel_inferior.setBackground(new java.awt.Color(0, 153, 204));
+        panel_inferior.setBackground(new java.awt.Color(204, 204, 204));
+        panel_inferior.setPreferredSize(new java.awt.Dimension(800, 42));
         panel_inferior.setLayout(new java.awt.BorderLayout());
-
-        jLabel5.setText("   ");
-        panel_inferior.add(jLabel5, java.awt.BorderLayout.LINE_END);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 5)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("          ");
+        jLabel6.setMinimumSize(new java.awt.Dimension(20, 3));
+        jLabel6.setName(""); // NOI18N
+        jLabel6.setPreferredSize(new java.awt.Dimension(20, 3));
         panel_inferior.add(jLabel6, java.awt.BorderLayout.PAGE_START);
-
-        jLabel7.setText("          ");
-        panel_inferior.add(jLabel7, java.awt.BorderLayout.LINE_START);
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 3)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("          ");
         panel_inferior.add(jLabel8, java.awt.BorderLayout.PAGE_END);
 
-        jPanel3.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel3.setMinimumSize(new java.awt.Dimension(448, 35));
         jPanel3.setOpaque(false);
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
+        jPanel3.setPreferredSize(new java.awt.Dimension(448, 35));
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 11, 5));
 
         cbOpcion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        cbOpcion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Crear ítem", "Enviar metadatos", "Enviar bitstreams", "Eliminar ítem", "Eliminar metadato", "Eliminar bitstreams", "Modificar metadato" }));
+        cbOpcion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione la opción adecuada.", "Crear ítem.", "Enviar metadatos.", "Enviar bitstreams.", "Eliminar ítem.", "Eliminar metadato.", "Eliminar bitstreams.", "Modificar metadato." }));
+        cbOpcion.setMaximumSize(new java.awt.Dimension(260, 21));
+        cbOpcion.setMinimumSize(new java.awt.Dimension(230, 21));
+        cbOpcion.setPreferredSize(new java.awt.Dimension(230, 21));
         cbOpcion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbOpcionActionPerformed(evt);
@@ -265,55 +274,236 @@ public class Deposita extends javax.swing.JFrame {
 
         getContentPane().add(panel_inferior, java.awt.BorderLayout.PAGE_END);
 
+        panel_central.setMinimumSize(new java.awt.Dimension(300, 200));
+        panel_central.setPreferredSize(new java.awt.Dimension(850, 500));
+        panel_central.setRequestFocusEnabled(false);
         panel_central.setLayout(new java.awt.BorderLayout());
 
-        panelSur.setBackground(new java.awt.Color(255, 204, 153));
+        jPanel10.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel10.setPreferredSize(new java.awt.Dimension(800, 130));
+        jPanel10.setLayout(new java.awt.BorderLayout());
+
+        jPanel11.setLayout(new java.awt.GridLayout(1, 0));
+
+        jPanel23.setPreferredSize(new java.awt.Dimension(324, 120));
+        jPanel23.setLayout(new java.awt.BorderLayout());
+
+        jPanel24.setMinimumSize(new java.awt.Dimension(10, 3));
+        jPanel24.setPreferredSize(new java.awt.Dimension(10, 3));
+        jPanel24.setRequestFocusEnabled(false);
+        jPanel23.add(jPanel24, java.awt.BorderLayout.PAGE_END);
+        jPanel23.add(jPanel25, java.awt.BorderLayout.PAGE_START);
+
+        jPanel26.setMinimumSize(new java.awt.Dimension(150, 100));
+        jPanel26.setName(""); // NOI18N
+        jPanel26.setPreferredSize(new java.awt.Dimension(800, 200));
+        jPanel26.setLayout(new javax.swing.BoxLayout(jPanel26, javax.swing.BoxLayout.LINE_AXIS));
+
+        jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Estructura del Repositorio"));
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(89, 125));
+
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Repositorio");
+        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.setComponentPopupMenu(miMenu);
+        jTree1.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        jTree1.setMinimumSize(new java.awt.Dimension(50, 50));
+        jTree1.setPreferredSize(new java.awt.Dimension(80, 140));
+        jTree1.setVisibleRowCount(7);
+        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                jTree1ValueChanged(evt);
+            }
+        });
+        jScrollPane5.setViewportView(jTree1);
+
+        jPanel26.add(jScrollPane5);
+
+        jPanel17.setMaximumSize(new java.awt.Dimension(115, 32767));
+        jPanel17.setMinimumSize(new java.awt.Dimension(115, 100));
+        jPanel17.setPreferredSize(new java.awt.Dimension(115, 100));
+        jPanel17.setLayout(new javax.swing.BoxLayout(jPanel17, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jLabel1.setText("          ");
+        jPanel17.add(jLabel1);
+
+        btnObtenerItems.setText("Extraer los ítems");
+        btnObtenerItems.setMaximumSize(new java.awt.Dimension(130, 23));
+        btnObtenerItems.setMinimumSize(new java.awt.Dimension(130, 23));
+        btnObtenerItems.setPreferredSize(new java.awt.Dimension(130, 23));
+        btnObtenerItems.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnObtenerItemsActionPerformed(evt);
+            }
+        });
+        jPanel17.add(btnObtenerItems);
+
+        jPanel26.add(jPanel17);
+
+        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "ítems"));
+        jScrollPane4.setPreferredSize(new java.awt.Dimension(80, 140));
+
+        listaItems.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Items" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaItems.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        listaItems.setMinimumSize(new java.awt.Dimension(50, 50));
+        listaItems.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                listaItemsMousePressed(evt);
+            }
+        });
+        jScrollPane4.setViewportView(listaItems);
+
+        jPanel26.add(jScrollPane4);
+
+        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Recursos presentes"));
+
+        listaBitstreams.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Bitstreams" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaBitstreams.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        listaBitstreams.setMinimumSize(new java.awt.Dimension(50, 50));
+        listaBitstreams.setPreferredSize(new java.awt.Dimension(80, 140));
+        jScrollPane6.setViewportView(listaBitstreams);
+
+        jPanel26.add(jScrollPane6);
+
+        jPanel23.add(jPanel26, java.awt.BorderLayout.CENTER);
+
+        jPanel11.add(jPanel23);
+
+        jPanel10.add(jPanel11, java.awt.BorderLayout.CENTER);
+
+        jPanel19.setOpaque(false);
+        jPanel10.add(jPanel19, java.awt.BorderLayout.EAST);
+
+        jPanel20.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel20.setPreferredSize(new java.awt.Dimension(10, 100));
+        jPanel10.add(jPanel20, java.awt.BorderLayout.WEST);
+
+        panel_central.add(jPanel10, java.awt.BorderLayout.NORTH);
+
+        panelSur.setPreferredSize(new java.awt.Dimension(226, 150));
         panelSur.setLayout(new java.awt.BorderLayout());
 
         jPanel15.setBackground(new java.awt.Color(204, 255, 204));
-        jPanel15.setLayout(new java.awt.GridLayout(7, 0));
-
-        jLabel26.setText("          ");
-        jPanel15.add(jLabel26);
-
+        jPanel15.setPreferredSize(new java.awt.Dimension(10, 98));
+        jPanel15.setLayout(new java.awt.BorderLayout());
         panelSur.add(jPanel15, java.awt.BorderLayout.WEST);
 
-        jPanel16.setLayout(new java.awt.GridLayout(5, 0));
-
-        jLabel27.setText("          ");
-        jPanel16.add(jLabel27);
-
+        jPanel16.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel16.setPreferredSize(new java.awt.Dimension(10, 70));
+        jPanel16.setLayout(new java.awt.BorderLayout());
         panelSur.add(jPanel16, java.awt.BorderLayout.LINE_END);
 
-        jScrollPane8.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
-        jScrollPane8.setOpaque(false);
-        jScrollPane8.setPreferredSize(new java.awt.Dimension(166, 130));
+        jPanel28.setName(""); // NOI18N
+        jPanel28.setPreferredSize(new java.awt.Dimension(500, 200));
+        jPanel28.setLayout(new java.awt.BorderLayout());
+
+        jPanel7.setMaximumSize(new java.awt.Dimension(400, 272));
+        jPanel7.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel7.setPreferredSize(new java.awt.Dimension(300, 100));
+        jPanel7.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Material para depósito"));
+        jScrollPane3.setMinimumSize(new java.awt.Dimension(10, 10));
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(52, 100));
+
+        listaRecursos.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        listaRecursos.setMinimumSize(new java.awt.Dimension(50, 50));
+        listaRecursos.setPreferredSize(new java.awt.Dimension(100, 100));
+        listaRecursos.setVisibleRowCount(5);
+        jScrollPane3.setViewportView(listaRecursos);
+
+        jPanel7.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+
+        jPanel13.setMinimumSize(new java.awt.Dimension(30, 32));
+        jPanel13.setPreferredSize(new java.awt.Dimension(30, 32));
+        jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnAddFichero.setText("Agregar Recurso");
+        btnAddFichero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddFicheroActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnAddFichero);
+
+        btnDelFichero.setText("Quitar Recurso");
+        btnDelFichero.setEnabled(false);
+        btnDelFichero.setMaximumSize(new java.awt.Dimension(113, 23));
+        btnDelFichero.setMinimumSize(new java.awt.Dimension(113, 23));
+        btnDelFichero.setPreferredSize(new java.awt.Dimension(113, 23));
+        btnDelFichero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDelFicheroActionPerformed(evt);
+            }
+        });
+        jPanel13.add(btnDelFichero);
+
+        jPanel7.add(jPanel13, java.awt.BorderLayout.PAGE_END);
+
+        jPanel28.add(jPanel7, java.awt.BorderLayout.WEST);
+
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Salida de la ejecuciòn"));
 
         taConsola.setEditable(false);
-        taConsola.setBackground(new java.awt.Color(255, 204, 153));
         taConsola.setColumns(20);
+        taConsola.setLineWrap(true);
         taConsola.setRows(5);
-        jScrollPane8.setViewportView(taConsola);
+        jScrollPane2.setViewportView(taConsola);
 
-        panelSur.add(jScrollPane8, java.awt.BorderLayout.CENTER);
+        jPanel28.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+
+        panelSur.add(jPanel28, java.awt.BorderLayout.CENTER);
 
         panel_central.add(panelSur, java.awt.BorderLayout.SOUTH);
 
-        jPanel4.setPreferredSize(new java.awt.Dimension(300, 281));
+        jPanel4.setMaximumSize(new java.awt.Dimension(802, 32667));
+        jPanel4.setName(""); // NOI18N
+        jPanel4.setPreferredSize(new java.awt.Dimension(802, 102));
         jPanel4.setLayout(new java.awt.BorderLayout());
 
+        jPanel5.setMinimumSize(new java.awt.Dimension(8, 3));
+        jPanel5.setPreferredSize(new java.awt.Dimension(8, 3));
         jPanel5.setLayout(new java.awt.GridLayout(0, 3, 4, 5));
         jPanel4.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
+        jPanel6.setMaximumSize(new java.awt.Dimension(502, 32667));
+        jPanel6.setMinimumSize(new java.awt.Dimension(55, 55));
+        jPanel6.setName(""); // NOI18N
+        jPanel6.setPreferredSize(new java.awt.Dimension(502, 102));
         jPanel6.setLayout(new java.awt.BorderLayout());
 
         jLabel12.setText("  ");
+        jLabel12.setPreferredSize(new java.awt.Dimension(6, 3));
         jPanel6.add(jLabel12, java.awt.BorderLayout.PAGE_END);
 
-        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.Y_AXIS));
+        jPanel8.setLayout(new java.awt.BorderLayout());
 
-        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Objetos de Aprendizajes"));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 103));
+        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Descripción de metadatos."));
+        captura.setToolTipText("");
+        captura.setMaximumSize(new java.awt.Dimension(33, 44));
+        jPanel8.add(captura, java.awt.BorderLayout.CENTER);
+
+        jPanel30.setMaximumSize(new java.awt.Dimension(502, 32800));
+        jPanel30.setMinimumSize(new java.awt.Dimension(55, 55));
+        jPanel30.setName(""); // NOI18N
+        jPanel30.setPreferredSize(new java.awt.Dimension(502, 102));
+        jPanel30.setLayout(new javax.swing.BoxLayout(jPanel30, javax.swing.BoxLayout.X_AXIS));
+
+        jPanel29.setMaximumSize(new java.awt.Dimension(250, 32800));
+        jPanel29.setMinimumSize(new java.awt.Dimension(55, 55));
+        jPanel29.setPreferredSize(new java.awt.Dimension(250, 100));
+        jPanel29.setLayout(new javax.swing.BoxLayout(jPanel29, javax.swing.BoxLayout.Y_AXIS));
+
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Objetos de Aprendizajes"));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 100));
+        jScrollPane1.setRequestFocusEnabled(false);
 
         listaOA.setBackground(new java.awt.Color(240, 240, 240));
         listaOA.setVisibleRowCount(5);
@@ -327,11 +517,13 @@ public class Deposita extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(listaOA);
 
-        jPanel7.add(jScrollPane1);
+        jPanel29.add(jScrollPane1);
 
-        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel18.setMaximumSize(new java.awt.Dimension(32767, 33));
+        jPanel18.setMinimumSize(new java.awt.Dimension(55, 33));
+        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        btnObtenerMetas.setText("Obtener Metadatos para el O.A. seleccionado");
+        btnObtenerMetas.setText("Propiedades del Objeto de Aprendizaje");
         btnObtenerMetas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnObtenerMetasActionPerformed(evt);
@@ -339,19 +531,28 @@ public class Deposita extends javax.swing.JFrame {
         });
         jPanel18.add(btnObtenerMetas);
 
-        jPanel7.add(jPanel18);
+        jPanel29.add(jPanel18);
 
-        jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder("Metadatos"));
+        jPanel30.add(jPanel29);
+
+        jPanel21.setMaximumSize(new java.awt.Dimension(250, 32800));
+        jPanel21.setMinimumSize(new java.awt.Dimension(55, 55));
+        jPanel21.setPreferredSize(new java.awt.Dimension(250, 100));
+        jPanel21.setLayout(new javax.swing.BoxLayout(jPanel21, javax.swing.BoxLayout.Y_AXIS));
+
+        jScrollPane7.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Metadatos"));
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(268, 100));
 
         listaMetadato.setBackground(new java.awt.Color(240, 240, 240));
         listaMetadato.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        listaMetadato.setOpaque(false);
         listaMetadato.setVisibleRowCount(5);
         jScrollPane7.setViewportView(listaMetadato);
 
-        jPanel7.add(jScrollPane7);
+        jPanel21.add(jScrollPane7);
 
-        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel14.setMaximumSize(new java.awt.Dimension(32767, 33));
+        jPanel14.setMinimumSize(new java.awt.Dimension(55, 33));
+        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         btnAgregarMetadato.setText("Describir Metadato");
         btnAgregarMetadato.addActionListener(new java.awt.event.ActionListener() {
@@ -369,20 +570,11 @@ public class Deposita extends javax.swing.JFrame {
         });
         jPanel14.add(btnRestablecerMetas);
 
-        jPanel7.add(jPanel14);
+        jPanel21.add(jPanel14);
 
-        jPanel6.add(jPanel7, java.awt.BorderLayout.WEST);
+        jPanel30.add(jPanel21);
 
-        jPanel8.setLayout(new java.awt.BorderLayout());
-
-        jLabel20.setText("     ");
-        jPanel8.add(jLabel20, java.awt.BorderLayout.WEST);
-
-        captura.setBackground(new java.awt.Color(204, 204, 255));
-        captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Descripción de metadatos."));
-        captura.setToolTipText("");
-        captura.setMaximumSize(new java.awt.Dimension(33, 44));
-        jPanel8.add(captura, java.awt.BorderLayout.CENTER);
+        jPanel8.add(jPanel30, java.awt.BorderLayout.WEST);
 
         jPanel6.add(jPanel8, java.awt.BorderLayout.CENTER);
 
@@ -391,6 +583,7 @@ public class Deposita extends javax.swing.JFrame {
         panel_central.add(jPanel4, java.awt.BorderLayout.CENTER);
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel2.setPreferredSize(new java.awt.Dimension(10, 140));
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel15.setText("          ");
@@ -400,6 +593,8 @@ public class Deposita extends javax.swing.JFrame {
 
         jPanel9.setLayout(new java.awt.BorderLayout());
 
+        jPanel12.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel12.setPreferredSize(new java.awt.Dimension(10, 14));
         jPanel12.setLayout(new javax.swing.BoxLayout(jPanel12, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel9.setText("          ");
@@ -408,114 +603,6 @@ public class Deposita extends javax.swing.JFrame {
         jPanel9.add(jPanel12, java.awt.BorderLayout.CENTER);
 
         panel_central.add(jPanel9, java.awt.BorderLayout.EAST);
-
-        jPanel10.setPreferredSize(new java.awt.Dimension(800, 130));
-        jPanel10.setLayout(new java.awt.BorderLayout());
-
-        jLabel11.setBackground(new java.awt.Color(204, 255, 204));
-        jLabel11.setText("          ");
-        jLabel11.setOpaque(true);
-        jPanel10.add(jLabel11, java.awt.BorderLayout.LINE_START);
-
-        jPanel11.setLayout(new java.awt.GridLayout(0, 7, 5, 0));
-
-        jScrollPane5.setBorder(javax.swing.BorderFactory.createTitledBorder("Estructura del Repositorio"));
-        jScrollPane5.setPreferredSize(new java.awt.Dimension(89, 125));
-
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Repositorio");
-        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        jTree1.setComponentPopupMenu(miMenu);
-        jTree1.setVisibleRowCount(7);
-        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                jTree1ValueChanged(evt);
-            }
-        });
-        jScrollPane5.setViewportView(jTree1);
-
-        jPanel11.add(jScrollPane5);
-
-        jPanel17.setMinimumSize(new java.awt.Dimension(60, 100));
-        jPanel17.setPreferredSize(new java.awt.Dimension(50, 100));
-        jPanel17.setLayout(new java.awt.GridLayout(5, 2, 5, 5));
-        jPanel17.add(jLabel13);
-
-        btnObtenerItems.setText("Extraer los ítems");
-        btnObtenerItems.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnObtenerItemsActionPerformed(evt);
-            }
-        });
-        jPanel17.add(btnObtenerItems);
-
-        jPanel11.add(jPanel17);
-
-        jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder("ítems"));
-
-        listaItems.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Items" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        listaItems.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                listaItemsMousePressed(evt);
-            }
-        });
-        jScrollPane4.setViewportView(listaItems);
-
-        jPanel11.add(jScrollPane4);
-
-        jScrollPane6.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos presentes"));
-
-        listaBitstreams.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Bitstreams" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane6.setViewportView(listaBitstreams);
-
-        jPanel11.add(jScrollPane6);
-
-        jScrollPane3.setBorder(javax.swing.BorderFactory.createTitledBorder("Recursos"));
-
-        listaRecursos.setBackground(new java.awt.Color(240, 240, 240));
-        listaRecursos.setOpaque(false);
-        listaRecursos.setVisibleRowCount(5);
-        jScrollPane3.setViewportView(listaRecursos);
-
-        jPanel11.add(jScrollPane3);
-
-        jPanel13.setLayout(new java.awt.GridLayout(5, 1, 5, 5));
-
-        jLabel17.setText("  ");
-        jPanel13.add(jLabel17);
-
-        btnAddFichero.setText("Agregar Recurso");
-        btnAddFichero.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddFicheroActionPerformed(evt);
-            }
-        });
-        jPanel13.add(btnAddFichero);
-
-        btnDelFichero.setText("Quitar Recurso");
-        btnDelFichero.setEnabled(false);
-        btnDelFichero.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDelFicheroActionPerformed(evt);
-            }
-        });
-        jPanel13.add(btnDelFichero);
-
-        jLabel16.setText("  ");
-        jPanel13.add(jLabel16);
-
-        jPanel11.add(jPanel13);
-
-        jPanel10.add(jPanel11, java.awt.BorderLayout.CENTER);
-
-        panel_central.add(jPanel10, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(panel_central, java.awt.BorderLayout.CENTER);
 
@@ -530,15 +617,6 @@ public class Deposita extends javax.swing.JFrame {
         });
         mnuTool.add(mnuConectar);
 
-        mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuFiltrar.setText("Recuperacón");
-        mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuFiltrarActionPerformed(evt);
-            }
-        });
-        mnuTool.add(mnuFiltrar);
-
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem1.setText("Esquema");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -547,6 +625,15 @@ public class Deposita extends javax.swing.JFrame {
             }
         });
         mnuTool.add(jMenuItem1);
+
+        mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        mnuFiltrar.setText("Recuperacón");
+        mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFiltrarActionPerformed(evt);
+            }
+        });
+        mnuTool.add(mnuFiltrar);
         mnuTool.add(jSeparator1);
 
         mnuSalir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
@@ -677,17 +764,24 @@ public class Deposita extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDelFicheroActionPerformed
 
     private void btnDepositarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDepositarActionPerformed
+
         try {
             StardogControl base = StardogControl.getInstancia();
             // Se valida si hay coleccion seleccionada, recursos seleccionados y 
             // los metadatos no tengan errores.
             int opcion = cbOpcion.getSelectedIndex();
-            if (opcion < 0) {
+            if (opcion < 1) {
+                if (reiterar < 3) {
+                    reiterar += 1;
+                    taConsola.append("No es una opción válida.\n");
+                }
                 return;
             }
+            reiterar = 0;            
             opcion += 1;
+            taConsola.append("Verificando opción elegida.\n");
             switch (opcion) {
-                case 1:
+                case 2:
                     String msg = "";
                     String msg_inicial = "Verifique por favor: \n";
                     if (this.coleccion == null) {
@@ -705,14 +799,14 @@ public class Deposita extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(this, msg, "Información", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
-                    // Le damos formato json a los metadatos
+                    // Le damos formato json a los metadatos capturados
                     base.jsonMetadatos();
-                    break;
-                case 2:
                     break;
                 case 3:
                     break;
                 case 4:
+                    break;
+                case 5:
                     if (listaItems.getSelectedIndex() < 0) {
                         JOptionPane.showMessageDialog(this,
                                 "Seleccione algun item!.",
@@ -722,12 +816,14 @@ public class Deposita extends javax.swing.JFrame {
                         item = (ItemRest) ((Object) listaItems.getSelectedValue());
                     }
                     break;
-                case 5:
-                    return;
+                case 6:
+                    break;
                 case 7:
+                    break;
+                case 8:
                     base.jsonMetadatosSinBitstreams();
-                    taConsola.append("Archivo de metadatos para modificar generados.\n");
-                    return;
+                    taConsola.append("Archivo para modificar metadatos generado.\n");
+                    break;
                 default:
                     break;
             }
@@ -769,8 +865,10 @@ public class Deposita extends javax.swing.JFrame {
             }
             //            
             StardogControl baseGrafica = StardogControl.getInstancia();
-            final JPanel aJp = baseGrafica.setPanelCaptura(objeto);
-            captura.getViewport().setView(aJp);
+            //final JPanel aJp = baseGrafica.setPanelCaptura2(objeto, captura);
+            baseGrafica.setPanelCaptura2(objeto, captura);
+            //captura.getViewport().setView(aJp);
+            
             //
             taConsola.append("Operación finalizada. Se agregó " + objeto.size() + " metadato.\n");
         } catch (Exception ex) {
@@ -840,6 +938,8 @@ public class Deposita extends javax.swing.JFrame {
                     taConsola.append("No hay datos de los items de la colección.\n");
                 }
             }
+            int indice_ultima_linea = taConsola.getDocument().getLength(); //retorna el numero de lineas
+            taConsola.setCaretPosition(indice_ultima_linea); //ubica el cursor al final
         } catch (Exception ex) {
             Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -886,16 +986,21 @@ public class Deposita extends javax.swing.JFrame {
             taConsola.append("Chequeando los metadatos... por favor espere.\n");
             StardogControl base = StardogControl.getInstancia();
             //base.getMetadatos_v2(dato, evt); // mejorado.
-            base.getMetadatos_v6(taConsola, evt); // mejorado.
+            base.getMetadatos_v6(taConsola, evt); // super mejorado.
             //            
             // Preseteamos el panel de captura con los metadatos obligatorios.
             taConsola.append("Preseteamos el panel de captura con los metadatos obligatorios.\n");
+            /*
             JPanel unPanel = base.preSeteoPanelCaptura();
             // Seteamos los metadatos a cargar
+            //
+            captura.getViewport().setView(unPanel);
+             */
+            // 
             DefaultListModel misMetas = base.getListaMetadados();
             listaMetadato.setModel(misMetas);
             //
-            captura.getViewport().setView(unPanel);
+            base.preSeteoPanelCaptura2(captura);
         } catch (Exception ex) {
             Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -928,7 +1033,7 @@ public class Deposita extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRestablecerMetasActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        Esquema win = new Esquema(this, rootPaneCheckingEnabled);        
+        Esquema win = new Esquema(this, rootPaneCheckingEnabled);
         win.setVisible(true);
         win.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
@@ -978,21 +1083,11 @@ public class Deposita extends javax.swing.JFrame {
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
     private javax.swing.JComboBox<String> cbOpcion;
-    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuBar jMenuBar1;
@@ -1007,8 +1102,20 @@ public class Deposita extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -1016,12 +1123,12 @@ public class Deposita extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;

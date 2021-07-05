@@ -21,10 +21,13 @@ import Modelo.Metadato;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -45,6 +48,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -108,12 +112,12 @@ public final class StardogControl {
     public DefaultListModel<Metadato> getListaMetadados() {
         return listaMetadados;
     }
-    
-        public DefaultListModel getListaMetadados2() {
+
+    public DefaultListModel getListaMetadados2() {
         return listaMetadados;
     }
 
-    public void conectar() {
+    public void conectar() throws InterruptedException, ExecutionException {
         SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -132,6 +136,7 @@ public final class StardogControl {
             }
         };
         mySwingWorker.execute();
+        mySwingWorker.get();
     }
 
     protected void desconectar() {
@@ -361,7 +366,6 @@ public final class StardogControl {
         return repite;
     }
 
-    
     private String rotuloMetadato(String aString) throws Exception {
         String rot = "";
         ConfigControl config = ConfigControl.getInstancia();
@@ -380,7 +384,7 @@ public final class StardogControl {
         //System.out.println("metadato: " + rot);
         return rot;
     }
-    
+
     /*
     public String getRotulo(String aString) throws Exception {
         String rot = "";
@@ -400,8 +404,7 @@ public final class StardogControl {
         //System.out.println("metadato: " + rot);
         return rot;
     }
-    */
-
+     */
     private boolean isExists(Metadato m) throws Exception {
         for (int i = 0; i < capturaMetadados.size(); i++) {
             if (capturaMetadados.get(i).getTipo().equals(m.getTipo())) {
@@ -434,7 +437,7 @@ public final class StardogControl {
     //rellena el jpnel con los componentes a mostrar.
     private JPanel rellenarJPanel(JPanel jp) {
         jp.setLayout(new GridBagLayout());
-        //seteamos el grid
+        //seteamos el grid        
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.CENTER;
         c.gridwidth = 1;
@@ -513,6 +516,53 @@ public final class StardogControl {
         return jp;
     }
 
+    //rellena el jpnel con los componentes a mostrar.
+    private JPanel rellenarJPanel2() {
+        //int FILAS = capturaMetadados.size();
+        //int COLUMNAS = 0;
+        JPanel miPanel = new JPanel();
+        //miPanel.setLayout(new GridLayout(FILAS, COLUMNAS));
+        miPanel.setLayout(new BoxLayout(miPanel, BoxLayout.Y_AXIS));
+        //
+        for (int i = 0; i < capturaMetadados.size(); ++i) {
+            JPanel miFlowContainer = new JPanel();
+            miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+            miFlowContainer.add(capturaMetadados.get(i).getEtiqueta());
+            miFlowContainer.add(capturaMetadados.get(i).getColector());
+            miPanel.add(miFlowContainer);
+        }
+        return miPanel;
+    }
+
+    public void preSeteoPanelCaptura2(JScrollPane captura) throws Exception {
+        JPanel miPanel = new JPanel();
+        DefaultListModel<Metadato> noMostrar = new DefaultListModel<>();
+        //seteamos las variables contenedoras a cero.
+        this.capturaMetadados.clear();
+        //generamos los elementos del panel.        
+        for (int i = 0; i < listaMetadados.size(); ++i) {
+            //y sino si ya no esta en la lista de captura
+            //antes de agregar controlar si el metadatos se debe repetir
+            Metadato miMetadato = listaMetadados.get(i);
+            if (miMetadato.isObligatorio()) { //podria obviarse el isExists()
+                this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
+            }
+            if (miMetadato.isRepite()) {
+                noMostrar.addElement(miMetadato); //ya no hace falta
+            }
+        }
+        listaMetadados = noMostrar;
+        //quitamos los metadatos que se agregaron pero no se repiten.
+        //for (int i = 0; i < eliminar.size(); ++i) {
+        //    listaMetadados.removeElement(eliminar.get(i));
+        //}
+        //ordenamos capturaMetadatos -----------------------------------
+        this.ordenar(); // mejorar
+        //--------------------------------------------------------------
+        miPanel = rellenarJPanel2();
+        captura.getViewport().setView(miPanel);
+    }
+
     /**
      * Genera los contenedores para los metadatos seleccionados.
      *
@@ -551,8 +601,7 @@ public final class StardogControl {
         //ordenamos capturaMetadatos -----------------------------------                       
         this.ordenar(); // mejorar
         //--------------------------------------------------------------
-
-        //System.out.println("entreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee ---  despues de ordenar" );    
+        
         jp.setLayout(new GridBagLayout());
         //seteamos el grid
         GridBagConstraints c = new GridBagConstraints();
@@ -583,19 +632,73 @@ public final class StardogControl {
                 jp.add(aux, c);
             }
         }
-
         return jp;
+    }
+
+    public void setPanelCaptura2(List objeto, JScrollPane miScrollPanel) throws Exception {
+
+        JPanel miJPanel = (JPanel) miScrollPanel.getViewport().getView();
+        //JPanel jp = new JPanel();
+
+        //si no hay datos
+        if (!objeto.isEmpty()) {
+
+            //generamos los elementos del panel.        
+            for (int i = 0; i < objeto.size(); ++i) {
+                //y sino si ya no esta en la lista de captura
+                //antes de agregar controlar si el metadatos se debe repetir
+                Metadato m = (Metadato) objeto.get(i);
+                if (isExists(m)) {
+                    // para el caso de que el metadato exista
+                    // verificamos si este se puede repetir
+                    // en tal caso se agrega a la lista
+                    // if (repiteMetadato(m)) { //podria obviarse el isExists()
+                    if (m.isRepite()) { //podria obviarse el isExists()
+                        //final Metadato met = getComponente(objeto.get(i));
+                        this.setCapturaMetadados(getComponente(objeto.get(i)));
+                    }
+                } else {
+                    //para el caso que no exista se crea y agtega
+                    this.setCapturaMetadados(getComponente(objeto.get(i)));
+                }
+            }
+            //ordenamos capturaMetadatos -----------------------------------                       
+            this.ordenar(); // mejorar
+            //--------------------------------------------------------------                       
+            //cargamos el panel con los colectores                           
+            miJPanel.removeAll();           
+            for (int i = 0; i < capturaMetadados.size(); ++i) {
+                JPanel miFlowContainer = new JPanel();
+                miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+                miFlowContainer.add(capturaMetadados.get(i).getEtiqueta());
+                miFlowContainer.add(capturaMetadados.get(i).getColector());
+                miJPanel.add(miFlowContainer);
+            }
+        }
+    }
+
+    private void setRotuloCaptura(Metadato meta) {
+        /*seteamos el JTextLabel*/
+        JLabel e = new JLabel();
+        e.setPreferredSize(new Dimension(130, 30));
+        e.setFont(new Font("Serif", Font.BOLD, 12));
+        e.setForeground(Color.BLACK);
+        e.setText(meta.getRotulo());
+        meta.setEtiqueta(e);
     }
 
     private Metadato setearFecha(Metadato m) throws ParseException, Exception {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
-        JLabel e = new JLabel();
+ /*JLabel e = new JLabel();
+        e.setPreferredSize(new Dimension(60, 30));
         e.setFont(new Font("Serif", Font.BOLD, 12));
         e.setForeground(Color.BLACK);
         e.setText(m.getRotulo());
         m.setEtiqueta(e);
+         */
+        setRotuloCaptura(m);
         //-------------------------------------------
 
         /*seteamos el orden*/
@@ -641,11 +744,14 @@ public final class StardogControl {
         int ord = 99;
 
         /*seteamos el JTextLabel*/
+ /*
         JLabel e = new JLabel();
         e.setFont(new Font("Serif", Font.BOLD, 12));
         e.setForeground(Color.BLACK);
         e.setText(m.getRotulo());
         m.setEtiqueta(e);
+         */
+        setRotuloCaptura(m);
         //-------------------------------------------
 
         JTextArea ta = new JTextArea(m.getRotulo());
@@ -666,11 +772,13 @@ public final class StardogControl {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
-        JLabel e = new JLabel();
+ /*JLabel e = new JLabel();
         e.setFont(new Font("Serif", Font.BOLD, 12));
         e.setForeground(Color.BLACK);
         e.setText(m.getRotulo());
         m.setEtiqueta(e);
+         */
+        setRotuloCaptura(m);
         //-------------------------------------------
 
         JComboBox jcb = new JComboBox();
@@ -690,11 +798,14 @@ public final class StardogControl {
         int ord = 0;
 
         /*seteamos el JTextLabel*/
+ /*
         JLabel e = new JLabel();
         e.setFont(new Font("Serif", Font.BOLD, 12));
         e.setForeground(Color.BLACK);
         e.setText(m.getRotulo());
         m.setEtiqueta(e);
+         */
+        setRotuloCaptura(m);
         //-------------------------------------------
 
         JTextField txt = new JTextField(m.getTipo());
@@ -749,6 +860,50 @@ public final class StardogControl {
         return miMetadato;
     }
 
+    private Metadato setearNombre2(Metadato miMetadato) {
+        JPanel miPanel = new JPanel(new GridBagLayout());
+        miPanel.setLayout(new BoxLayout(miPanel, BoxLayout.Y_AXIS));
+        //
+        JPanel miFlowContainer = new JPanel();
+        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+        miPanel.setPreferredSize(new Dimension(400, 150));
+        JLabel jlape = new JLabel("Apellido");
+        JLabel jlnom = new JLabel("Nombre");
+        JTextField apellido = new JTextField("Apellido");
+        apellido.setName("apellido");
+        apellido.setPreferredSize(new Dimension(200, 40));
+        JTextField nombre = new JTextField("Nombre");
+        nombre.setName("nombre");
+        nombre.setPreferredSize(new Dimension(200, 40));
+        GridBagConstraints c = new GridBagConstraints();
+
+        miFlowContainer.add(jlape, c);
+
+        miFlowContainer.add(apellido, c);
+        miPanel.add(miFlowContainer);
+        //
+        miFlowContainer = new JPanel();
+        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        miFlowContainer.add(jlnom, c);
+        miFlowContainer.add(nombre, c);
+        miPanel.add(miFlowContainer);
+        //
+        /*seteamos el JTextLabel*/
+ /*
+        JLabel e = new JLabel();
+        e.setPreferredSize(new Dimension(60, 30));
+        e.setFont(new Font("Serif", Font.BOLD, 12));
+        e.setForeground(Color.BLACK);
+        e.setText(miMetadato.getRotulo());
+        miMetadato.setEtiqueta(e);
+         */
+        setRotuloCaptura(miMetadato);
+        /*seteamos el colector con lo generado anteriormente*/
+        miMetadato.setColector(miPanel);
+        return miMetadato;
+    }
+
     /**
      * Crear el componente (txtfield-textarea-etc) dentro de la clase.Luego lo
      * recorre y lo carga en el panel.
@@ -770,10 +925,10 @@ public final class StardogControl {
         String tipoMetadato = m.getTipo();
         switch (tipoMetadato) {
             case "creator":
-                setearNombre(m);
+                setearNombre2(m);
                 break;
             case "contributor":
-                setearNombre(m);
+                setearNombre2(m);
                 break;
             case "date": //JDateChooser                
                 this.setearFecha(m);
