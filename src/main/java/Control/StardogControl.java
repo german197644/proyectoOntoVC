@@ -21,23 +21,22 @@ import Modelo.Metadato;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -48,6 +47,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.spi.DirStateFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -58,6 +58,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+import javax.swing.border.LineBorder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -171,22 +172,27 @@ public final class StardogControl {
                 TupleQueryResult aResult;
                 //
                 IRI sv = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasSnrdType");
+                IRI sv2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#hasDriverType");
                 IRI on = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#snrd");
+                IRI on2 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#driver");
                 SelectQuery aQuery = conexionStardog.select(
-                        "SELECT DISTINCT ?tipoSnrd WHERE { "
-                        + " ?sujeto ?typeSV ?objeto."
-                        + " ?objeto ?typeON ?tipoSnrd."
+                        "SELECT ?sujeto ?tipoSnrd"
+                        + " WHERE { "
+                        + " ?sujeto ?typeon ?tipoSnrd."
                         + "}"
                 );
-                aQuery.parameter("typeSV", sv);
-                aQuery.parameter("typeON", on);
+                aQuery.parameter("typeon", on);
                 aResult = aQuery.execute();
                 publish("Obteniendo la lista de Objetos de Aprendizaje presente en la BD gráfica.\n");
+                ConfigControl config = ConfigControl.getInstancia();
+                properties = config.getConfigMetadatos();
                 while (aResult.hasNext()) {
                     fila = aResult.next();
-                    final String aValue = fila.getValue("tipoSnrd").stringValue();
+                    final String aValue = extraeMata(fila.getValue("tipoSnrd").stringValue());
+                    final String aDriver = extraeMata(fila.getValue("sujeto").stringValue());
                     Metadato m;
-                    m = new Metadato(aValue, aValue);
+                    String aDriver2 = driverMetadato(aDriver);
+                    m = new Metadato(aValue, aValue, aDriver2);
                     resultado.addElement(m);
                 }
                 //
@@ -208,6 +214,14 @@ public final class StardogControl {
             }
         };
         mySwingWorker.execute();
+    }
+
+    private String extraeMata(String valor) {
+        if (!valor.contains("#")) {
+            return valor;
+        } else {
+            return valor.substring(valor.indexOf("#") + 1, valor.length());
+        }
     }
 
     public DefaultListModel<Metadato> getCapturaMetadados() {
@@ -332,13 +346,15 @@ public final class StardogControl {
 
     private boolean obligatorioMetadato(String aString) throws Exception {
         boolean obligatorio = false;
-        ConfigControl config = ConfigControl.getInstancia();
+        //ConfigControl config = ConfigControl.getInstancia();
         //String folder = config.getFolderPropiedades(); 
         //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
         //propertiesStream = new FileInputStream(folder+"configMetadatos.properties");
         //
         //properties.load(propertiesStream);
-        properties = config.getConfigMetadatos();
+        //
+        //properties = config.getConfigMetadatos();
+        //    
         //String cadena = aString + ".obligatorio";
         String aValue = properties.getProperty(aString + ".obligatorio");
         //System.out.println("metadato obligatorio: " + cadena + "  | " + aValue);
@@ -347,6 +363,40 @@ public final class StardogControl {
             obligatorio = true;
         }
         return obligatorio;
+    }
+
+    private boolean obligatorioMetadato2(String aTipo, String aDriver) throws Exception {
+        boolean obligatorio = false;
+        //ConfigControl config = ConfigControl.getInstancia();
+        //properties = config.getConfigMetadatos();
+        String cadena = (aTipo + "." + aDriver + ".obligatorio").trim();
+        //System.out.println("metadato :" + cadena);
+        String aValue = properties.getProperty(cadena);
+        //System.out.println("metadato obligatorio: " + cadena + "  | " + aValue);
+        if (aValue != null) {
+            if (aValue.equals("1")) {
+                obligatorio = true;
+            }
+        }
+        return obligatorio;
+    }
+
+    private String driverMetadato(String aTipo) throws Exception {
+        String resultado = null;
+        //ConfigControl config = ConfigControl.getInstancia();
+        //properties = config.getConfigMetadatos();
+        String cadena = (aTipo).trim().toLowerCase();
+        String cadenaNormalize = Normalizer.normalize(cadena, Normalizer.Form.NFD);   
+        String cadena2 = cadenaNormalize.replaceAll("[^\\p{ASCII}]", "");
+        System.out.println("metadato Tipo:" + cadena2);
+        String aValue = properties.getProperty(cadena2);
+        if (aValue == null) {
+            resultado = cadena2;
+        } else {
+            resultado = aValue;
+        }
+        System.out.println("metadato obligatorio: " + cadena + "  | " + aValue);
+        return resultado;
     }
 
     private boolean repiteMetadato(String aString) throws Exception {
@@ -385,26 +435,6 @@ public final class StardogControl {
         return rot;
     }
 
-    /*
-    public String getRotulo(String aString) throws Exception {
-        String rot = "";
-        ConfigControl config = ConfigControl.getInstancia();
-        //propertiesStream = new FileInputStream("src/main/java/propiedades/configMetadatos.properties");
-        //properties.load(propertiesStream);
-        properties = config.getConfigMetadatos();
-
-        String aValue = properties.getProperty(aString + ".rotulo");
-
-        if (aValue != null) {
-            //System.out.println("metadato que repite: " + aString);
-            rot = aValue;
-        } else {
-            rot = aString;
-        }
-        //System.out.println("metadato: " + rot);
-        return rot;
-    }
-     */
     private boolean isExists(Metadato m) throws Exception {
         for (int i = 0; i < capturaMetadados.size(); i++) {
             if (capturaMetadados.get(i).getTipo().equals(m.getTipo())) {
@@ -434,89 +464,7 @@ public final class StardogControl {
         return retorno;
     }
 
-    //rellena el jpnel con los componentes a mostrar.
-    private JPanel rellenarJPanel(JPanel jp) {
-        jp.setLayout(new GridBagLayout());
-        //seteamos el grid        
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        c.insets = new Insets(10, 0, 0, 0);
-        //cargamos el panel con los colectores                
-        for (int i = 0; i < capturaMetadados.size(); ++i) {
-            c.gridx = 0;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getEtiqueta(), c);
-            c.gridx = 1;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getColector(), c);
-        }
-
-        //mejoramos la visual si tiene pocos componentes la lista capturada.           
-        if (capturaMetadados.size() < 10) {
-            for (int i = capturaMetadados.size() + 1; i < 10; ++i) {
-                JLabel aux = new JLabel("-");
-                c.gridx = 0;
-                c.gridy = i;
-                jp.add(aux, c);
-                c.gridx = 1;
-                c.gridy = i;
-                jp.add(aux, c);
-            }
-        }
-        return jp;
-    }
-
-    /**
-     * Setea el panel de captura con los metadatos obligatorios.
-     *
-     * @return
-     * @throws Exception
-     */
-    public JPanel preSeteoPanelCaptura() throws Exception {
-        JPanel jp = new JPanel();
-        DefaultListModel<Metadato> noMostrar = new DefaultListModel<>();
-
-        //seteamos las variables contenedoras a cero.
-        this.capturaMetadados.clear();
-
-        //generamos los elementos del panel.        
-        for (int i = 0; i < listaMetadados.size(); ++i) {
-            //y sino si ya no esta en la lista de captura
-            //antes de agregar controlar si el metadatos se debe repetir
-            Metadato m = listaMetadados.get(i);
-            //System.out.println("mertadato:" + m.getTipo() + " | repite: " + m.isRepite() + " | obligatorio: " + m.isObligatorio());
-            if (m.isObligatorio()) { //podria obviarse el isExists()
-                //final Metadato met = getComponente(objeto.get(i));
-                //if (m.isRepite()) {
-                this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
-                //} else {
-                //para el caso que no exista se crea y agtega
-                //    this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
-                //listaMetadados.remove(i);
-                //noMostrar.addElement(m); //ya no hace falta
-            }
-            if (m.isRepite()) {
-                noMostrar.addElement(m); //ya no hace falta
-            }
-        }
-
-        listaMetadados = noMostrar;
-        //quitamos los metadatos que se agregaron pero no se repiten.
-        //for (int i = 0; i < eliminar.size(); ++i) {
-        //    listaMetadados.removeElement(eliminar.get(i));
-        //}
-
-        //ordenamos capturaMetadatos -----------------------------------
-        this.ordenar(); // mejorar
-        //--------------------------------------------------------------
-        jp = rellenarJPanel(jp);
-        return jp;
-    }
-
-    //rellena el jpnel con los componentes a mostrar.
+    // Rellena el jpnel con los componentes a mostrar.
     private JPanel rellenarJPanel2() {
         //int FILAS = capturaMetadados.size();
         //int COLUMNAS = 0;
@@ -524,9 +472,12 @@ public final class StardogControl {
         //miPanel.setLayout(new GridLayout(FILAS, COLUMNAS));
         miPanel.setLayout(new BoxLayout(miPanel, BoxLayout.Y_AXIS));
         //
+        this.ordenarPanelCaptura();
+        //
         for (int i = 0; i < capturaMetadados.size(); ++i) {
             JPanel miFlowContainer = new JPanel();
             miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+            miFlowContainer.add(capturaMetadados.get(i).getChequeado());
             miFlowContainer.add(capturaMetadados.get(i).getEtiqueta());
             miFlowContainer.add(capturaMetadados.get(i).getColector());
             miPanel.add(miFlowContainer);
@@ -534,9 +485,8 @@ public final class StardogControl {
         return miPanel;
     }
 
-    public void preSeteoPanelCaptura2(JScrollPane captura) throws Exception {
-        JPanel miPanel = new JPanel();
-        DefaultListModel<Metadato> noMostrar = new DefaultListModel<>();
+    public void preSeteoPanelCaptura2(JScrollPane captura, Metadato oaSelect) throws Exception {
+        List<Metadato> miLista = new ArrayList<>();
         //seteamos las variables contenedoras a cero.
         this.capturaMetadados.clear();
         //generamos los elementos del panel.        
@@ -545,97 +495,37 @@ public final class StardogControl {
             //antes de agregar controlar si el metadatos se debe repetir
             Metadato miMetadato = listaMetadados.get(i);
             if (miMetadato.isObligatorio()) { //podria obviarse el isExists()
-                this.setCapturaMetadados(getComponente(listaMetadados.get(i)));
-            }
-            if (miMetadato.isRepite()) {
-                noMostrar.addElement(miMetadato); //ya no hace falta
+                this.setCapturaMetadados(getComponente(listaMetadados.get(i), oaSelect));
+                if (miMetadato.isRepite()) { // me fijo si ademas repite.                    
+                    miLista.add(miMetadato);
+                }
+            } else if (miMetadato.isRepite()) {
+                miLista.add(miMetadato);
+            } else {
+                miLista.add(miMetadato);
             }
         }
-        listaMetadados = noMostrar;
-        //quitamos los metadatos que se agregaron pero no se repiten.
-        //for (int i = 0; i < eliminar.size(); ++i) {
-        //    listaMetadados.removeElement(eliminar.get(i));
-        //}
-        //ordenamos capturaMetadatos -----------------------------------
-        this.ordenar(); // mejorar
-        //--------------------------------------------------------------
-        miPanel = rellenarJPanel2();
+        // Ordeno
+        //miLista.sort(Comparator.comparing(Metadato::getRotulo));
+        //
+        listaMetadados.clear();
+        for (Metadato meta : miLista) {
+            listaMetadados.addElement(meta);
+        };
+        //
+        JPanel miPanel = rellenarJPanel2();
         captura.getViewport().setView(miPanel);
     }
 
     /**
-     * Genera los contenedores para los metadatos seleccionados.
+     * Resive una lista de metadatos y lo agrega al panel de captura.
      *
-     * @param objeto Lista de metadatos seleccionados.
-     * @return El panel con los metadatos seteados.
+     * @param objeto
+     * @param miScrollPanel
      * @throws Exception
+     *
      */
-    public JPanel setPanelCaptura(List objeto) throws Exception {
-        JPanel jp = new JPanel();
-
-        //si no hay datos
-        if (objeto.isEmpty()) {
-            return jp;
-        }
-
-        //generamos los elementos del panel.        
-        for (int i = 0; i < objeto.size(); ++i) {
-            //y sino si ya no esta en la lista de captura
-            //antes de agregar controlar si el metadatos se debe repetir
-            Metadato m = (Metadato) objeto.get(i);
-            if (isExists(m)) {
-                //para el caso de que el metadato exista
-                //verificamos si este se puede repetir
-                //en tal caso se agrega a la lista
-                //if (repiteMetadato(m)) { //podria obviarse el isExists()
-                if (m.isRepite()) { //podria obviarse el isExists()
-                    //final Metadato met = getComponente(objeto.get(i));
-                    this.setCapturaMetadados(getComponente(objeto.get(i)));
-                }
-            } else {
-                //para el caso que no exista se crea y agtega
-                this.setCapturaMetadados(getComponente(objeto.get(i)));
-            }
-        }
-
-        //ordenamos capturaMetadatos -----------------------------------                       
-        this.ordenar(); // mejorar
-        //--------------------------------------------------------------
-        
-        jp.setLayout(new GridBagLayout());
-        //seteamos el grid
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        c.insets = new Insets(10, 0, 0, 0);
-        //cargamos el panel con los colectores                
-        for (int i = 0; i < capturaMetadados.size(); ++i) {
-            c.gridx = 0;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getEtiqueta(), c);
-            c.gridx = 1;
-            c.gridy = i;
-            jp.add(capturaMetadados.get(i).getColector(), c);
-        }
-
-        //mejoramos la visual            
-        if (capturaMetadados.size() < 10) {
-            for (int i = capturaMetadados.size() + 1; i < 10; ++i) {
-                JLabel aux = new JLabel("-");
-                c.gridx = 0;
-                c.gridy = i;
-                jp.add(aux, c);
-                c.gridx = 1;
-                c.gridy = i;
-                jp.add(aux, c);
-            }
-        }
-        return jp;
-    }
-
-    public void setPanelCaptura2(List objeto, JScrollPane miScrollPanel) throws Exception {
+    public void setPanelCaptura2(List objeto, JScrollPane miScrollPanel, Metadato oaSelect) throws Exception {
 
         JPanel miJPanel = (JPanel) miScrollPanel.getViewport().getView();
         //JPanel jp = new JPanel();
@@ -655,25 +545,27 @@ public final class StardogControl {
                     // if (repiteMetadato(m)) { //podria obviarse el isExists()
                     if (m.isRepite()) { //podria obviarse el isExists()
                         //final Metadato met = getComponente(objeto.get(i));
-                        this.setCapturaMetadados(getComponente(objeto.get(i)));
+                        this.setCapturaMetadados(getComponente(objeto.get(i), oaSelect));
                     }
                 } else {
                     //para el caso que no exista se crea y agtega
-                    this.setCapturaMetadados(getComponente(objeto.get(i)));
+                    this.setCapturaMetadados(getComponente(objeto.get(i), oaSelect));
                 }
             }
             //ordenamos capturaMetadatos -----------------------------------                       
-            this.ordenar(); // mejorar
+            this.ordenarPanelCaptura(); // mejorar
             //--------------------------------------------------------------                       
             //cargamos el panel con los colectores                           
-            miJPanel.removeAll();           
+            miJPanel.removeAll();
             for (int i = 0; i < capturaMetadados.size(); ++i) {
                 JPanel miFlowContainer = new JPanel();
                 miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+                miFlowContainer.add(capturaMetadados.get(i).getChequeado());
                 miFlowContainer.add(capturaMetadados.get(i).getEtiqueta());
                 miFlowContainer.add(capturaMetadados.get(i).getColector());
                 miJPanel.add(miFlowContainer);
             }
+            miJPanel.updateUI();
         }
     }
 
@@ -794,17 +686,25 @@ public final class StardogControl {
         return m;
     }
 
+    private Metadato setearSNRD(Metadato m, Metadato oaSelect) throws Exception {
+        int ord = 0;
+
+        setRotuloCaptura(m);
+        //-------------------------------------------
+
+        JTextField txt = new JTextField(oaSelect.getTipo());
+        txt.setPreferredSize(new Dimension(400, 40));
+        ord = this.setOrdenMetadatos(m);
+        m.setOrden(ord);
+        //System.out.println("orden asignado " + m.getTipo() + " :" + ord);
+        m.setColector(txt);
+
+        return m;
+    }
+
     private Metadato setearDefault(Metadato m) throws Exception {
         int ord = 0;
 
-        /*seteamos el JTextLabel*/
- /*
-        JLabel e = new JLabel();
-        e.setFont(new Font("Serif", Font.BOLD, 12));
-        e.setForeground(Color.BLACK);
-        e.setText(m.getRotulo());
-        m.setEtiqueta(e);
-         */
         setRotuloCaptura(m);
         //-------------------------------------------
 
@@ -818,86 +718,45 @@ public final class StardogControl {
         return m;
     }
 
-    private Metadato setearNombre(Metadato miMetadato) {
-        JPanel jp = new JPanel(new GridBagLayout());
-        jp.setPreferredSize(new Dimension(400, 150));
-        JLabel jlape = new JLabel("Apellido:");
-        JLabel jlnom = new JLabel("Nombre:");
-        JTextField apellido = new JTextField("Apellido");
-        apellido.setName("apellido");
-        apellido.setPreferredSize(new Dimension(200, 40));
-        JTextField nombre = new JTextField("Nombre");
-        nombre.setName("nombre");
-        nombre.setPreferredSize(new Dimension(200, 40));
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        //cargamos los componentes al panel
-        c.gridx = 0;
-        c.gridy = 0;
-        jp.add(jlape, c);
-        c.gridx = 1;
-        c.gridy = 0;
-        jp.add(apellido, c);
-        //-------
-        c.gridx = 0;
-        c.gridy = 1;
-        jp.add(jlnom, c);
-        c.gridx = 1;
-        c.gridy = 1;
-        jp.add(nombre, c);
-
-        /*seteamos el JTextLabel*/
-        JLabel e = new JLabel();
-        e.setFont(new Font("Serif", Font.BOLD, 12));
-        e.setForeground(Color.BLACK);
-        e.setText(miMetadato.getRotulo());
-        miMetadato.setEtiqueta(e);
-        /*seteamos el colector con lo generado anteriormente*/
-        miMetadato.setColector(jp);
-        return miMetadato;
-    }
-
     private Metadato setearNombre2(Metadato miMetadato) {
         JPanel miPanel = new JPanel(new GridBagLayout());
         miPanel.setLayout(new BoxLayout(miPanel, BoxLayout.Y_AXIS));
+        miPanel.setBorder(new LineBorder(Color.BLACK));
+        //miPanel.setPreferredSize(new Dimension(400, 70));
         //
         JPanel miFlowContainer = new JPanel();
-        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        //miFlowContainer.setBorder(new LineBorder(Color.blue));
+        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-        miPanel.setPreferredSize(new Dimension(400, 150));
         JLabel jlape = new JLabel("Apellido");
         JLabel jlnom = new JLabel("Nombre");
-        JTextField apellido = new JTextField("Apellido");
-        apellido.setName("apellido");
-        apellido.setPreferredSize(new Dimension(200, 40));
-        JTextField nombre = new JTextField("Nombre");
-        nombre.setName("nombre");
-        nombre.setPreferredSize(new Dimension(200, 40));
-        GridBagConstraints c = new GridBagConstraints();
+        JTextField jtApellido = new JTextField("Apellido");
+        jtApellido.setName("apellido");
+        jtApellido.setMinimumSize(new Dimension(25, 25));
+        jtApellido.setMaximumSize(new Dimension(300, 25));
+        jtApellido.setPreferredSize(new Dimension(300, 25));
+        JTextField jtNombre = new JTextField("Nombre");
+        jtNombre.setName("nombre");
+        jtNombre.setPreferredSize(new Dimension(300, 25));
+        //GridBagConstraints c = new GridBagConstraints();
 
-        miFlowContainer.add(jlape, c);
+        //miFlowContainer.add(jlape, c);
+        miFlowContainer.add(jlape);
 
-        miFlowContainer.add(apellido, c);
+        //miFlowContainer.add(jtApellido, c);
+        miFlowContainer.add(jtApellido);
         miPanel.add(miFlowContainer);
         //
         miFlowContainer = new JPanel();
-        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        miFlowContainer.add(jlnom, c);
-        miFlowContainer.add(nombre, c);
+        //miFlowContainer.setBorder(new LineBorder(Color.RED));
+        miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        //miFlowContainer.add(jlnom, c);
+        miFlowContainer.add(jlnom);
+        //miFlowContainer.add(jtNombre, c);
+        miFlowContainer.add(jtNombre);
         miPanel.add(miFlowContainer);
         //
         /*seteamos el JTextLabel*/
- /*
-        JLabel e = new JLabel();
-        e.setPreferredSize(new Dimension(60, 30));
-        e.setFont(new Font("Serif", Font.BOLD, 12));
-        e.setForeground(Color.BLACK);
-        e.setText(miMetadato.getRotulo());
-        miMetadato.setEtiqueta(e);
-         */
         setRotuloCaptura(miMetadato);
         /*seteamos el colector con lo generado anteriormente*/
         miMetadato.setColector(miPanel);
@@ -912,16 +771,10 @@ public final class StardogControl {
      * @return Metadato
      * @throws java.lang.Exception
      */
-    public Metadato getComponente(Object o) throws Exception {
-        int ord = 0;
+    public Metadato getComponente(Object o, Metadato oaSelect) throws Exception {
         Metadato aMetaParam = (Metadato) o;
         Metadato m = new Metadato(aMetaParam.getTipo());
         m.setRotulo(aMetaParam.getRotulo());
-        //JLabel e = new JLabel();
-        //e.setFont(new Font("Serif", Font.BOLD, 12));
-        //e.setForeground(Color.BLACK);
-        //e.setText(aMetaParam.getRotulo());
-        //System.out.println("tiipoooooo :" + m.getTipo());
         String tipoMetadato = m.getTipo();
         switch (tipoMetadato) {
             case "creator":
@@ -993,6 +846,9 @@ public final class StardogControl {
             case "language":
                 this.setearComboBox(m, this.getLenguaje());
                 break;
+            case "snrd":
+                this.setearSNRD(m, oaSelect);
+                break;
             default:
                 this.setearDefault(m);
                 break;
@@ -1000,20 +856,21 @@ public final class StardogControl {
         return m;
     }
 
-    // FIX ME.
-    private void ordenar() {
+    // 
+    private void ordenarPanelCaptura() {
         ArrayList<Metadato> auxList = new ArrayList<>();
         for (int i = 0; i < capturaMetadados.size(); ++i) {
             auxList.add(capturaMetadados.get(i));
         }
-        auxList.sort(Comparator.comparing(Metadato::getOrden));
+        //auxList.sort(Comparator.comparing(Metadato::getOrden));
+        auxList.sort(Comparator.comparing(Metadato::getRotulo));
         capturaMetadados.removeAllElements();
         for (int j = 0; j < auxList.size(); ++j) {
-            capturaMetadados.add(j, auxList.get(j));
+            capturaMetadados.addElement(auxList.get(j));
         }
     }
 
-    // FIX ME.
+    // 
     public void ordenarMetadatos() {
         ArrayList<Metadato> auxList = new ArrayList<>();
         for (int i = 0; i < listaMetadados.size(); ++i) {
@@ -1653,7 +1510,7 @@ public final class StardogControl {
     /**
      * Genera un archivo json con la especificación de los metadatos.
      */
-    public void jsonMetadatos() {
+    public void generarJson() {
         FileWriter file = null;
         JSONObject data = new JSONObject();
         JSONArray list = new JSONArray();
@@ -1712,10 +1569,9 @@ public final class StardogControl {
         }
     }
 
-    public void jsonMetadatosSinBitstreams() {
+    public void generarJSONSinBitstreams() {
         FileWriter file = null;
-        JSONObject data = new JSONObject();
-        JSONArray list = new JSONArray();
+        JSONArray array = new JSONArray();
         try {
             ConfigControl config = ConfigControl.getInstancia();
             DublinCoreControl dublincore = DublinCoreControl.getInstancia();
@@ -1737,7 +1593,7 @@ public final class StardogControl {
                             JSONObject obj = new JSONObject();
                             obj.put("key", aux.nextToken().trim());
                             obj.put("value", result[i].trim());
-                            list.add(obj); // [{},{},...]
+                            array.add(obj); // [{},{},...]
                             i++;
                         }
                     } else {
@@ -1752,14 +1608,14 @@ public final class StardogControl {
                         String newValue = new String(rawString.getBytes("UTF-8"));
                         //
                         obj.put("value", newValue);
-                        list.add(obj); // [{},{},...]
+                        array.add(obj); // [{},{},...]
                     }
                 }
             }
             //data.put("metadata", list); // {"metadata":[{},{},...]}
             //            
             file = new FileWriter(new File(config.getFolderWork() + "metadatos_sb.json"));
-            file.write(list.toJSONString());
+            file.write(array.toJSONString());
             file.flush();
             file.close();
         } catch (Exception ex) {
@@ -1767,503 +1623,9 @@ public final class StardogControl {
         }
     }
 
-    /**
-     *
-     * @return Lista con los metadatos presentes en la ontología.
-     * @throws StardogException
-     *
-     */
-    public DefaultListModel getMetadatos_v3() {
-        try {
-            BindingSet fila;
-            TupleQueryResult aResult;
-            //
-            listaMetadados.clear();
-            IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#" + "Content");
-            IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            SelectQuery aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            //aQuery.parameter("buscar", filtro.getTipo());
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de Coverage.            
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "Coverage");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de Subject.
-            // falta agregar keyboard
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "Subject");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            /*
-            // obtenemos los metadatos de Title.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "Title");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-             */
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de Instantiation.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "Instantiation");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            /*
-            // obtenemos los metadatos de Date.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "Date");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-             */
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de Educational.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri2);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de General.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "General");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri2);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de IntelectualProperty.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "IntelectualProperty");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-            // -----------------------------------------------------------------------------
-            // obtenemos los metadatos de Agent.           
-            iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "");
-            iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Agent");
-            iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri2);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return listaMetadados;
-    }
-
-    public DefaultListModel getMetadatos_v4() {
-        try {
-            BindingSet fila;
-            TupleQueryResult aResult;
-
-            listaMetadados.clear();
-            IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#"
-                    + "");
-            IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
-            IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#" + "subClassOf");
-
-            SelectQuery aQuery = conexionStardog.select(
-                    "SELECT DISTINCT ?subclase "
-                    + "WHERE { "
-                    + " ?subclase ?predicado ?metadata."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("metadata", iri2);
-            //aQuery.parameter("buscar", filtro.getTipo());
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                listaMetadados.addElement(m1);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listaMetadados;
-    }
-
-    public void getMetadatos_v5(JTextArea ta, ActionEvent evt)
-            throws InterruptedException, ExecutionException {
-        DialogWaitControl wait = new DialogWaitControl(50);
-        SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    //BindingSet fila;
-                    TupleQueryResult aResult;
-                    //, aResult2;
-                    listaMetadados.removeAllElements();
-
-                    // obtenemos los metadatos de IntelectualProperty.           
-                    //IRI iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#IntelectualProperty");
-                    //IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "");
-                    IRI iri3 = Values.iri("http://www.w3.org/2000/01/rdf-schema#subClassOf");
-                    /*
-            SelectQuery aQuery = conexionStardog.select(
-                    "SELECT distinct ?subclase "
-                    + "WHERE { "
-                    + "?subclase ?predicado ?tipo."
-                    + "} "
-            );
-            aQuery.parameter("predicado", iri3);
-            aQuery.parameter("tipo", iri1);
-            aResult = aQuery.execute();
-            while (aResult.hasNext()) {
-                fila = aResult.next();
-                final String aValue = fila.getValue("subclase").stringValue();
-                final Metadato m1 = new Metadato(aValue);
-                final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                m1.setObligatorio(obligatorio);
-                m1.setRepite(repite);
-                m1.setRotulo(rotulo);
-                //listaMetadados.addElement(m1);
-            }*/
-                    // -----------------------------------------------------------------------------
-
-                    // obtenemos los metadatos presentes en la ontologia.           
-                    //iri1 = Values.iri("http://www.semanticweb.org/lk/ontologies/2017/3/SharedVocabulary.owl#Instantiation");
-                    //IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#" + "Educational");
-                    IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#Metadata");
-
-                    SelectQuery aQuery = conexionStardog.select(
-                            "SELECT distinct ?subclase "
-                            + "WHERE { "
-                            + " ?subclase ?predicado ?metadata."
-                            + "} "
-                    );
-                    aQuery.parameter("predicado", iri3);
-                    aQuery.parameter("metadata", iri2);
-                    //aQuery.parameter("buscar", filtro.getTipo());
-                    aResult = aQuery.execute();
-                    //aResult2 = aQuery.execute();
-                    //                    
-                    //DialogWaitControl wait = new DialogWaitControl(100);
-                    //wait.makeWait("Procesando metadatos. Aguarde", evt);
-
-                    //Collection<Value> subjects = new ArrayList<>();
-                    Collection<String> subjects = new ArrayList<>();
-                    try {
-                        while (aResult.hasNext()) {
-                            BindingSet bs = aResult.next();
-                            subjects.add(bs.getBinding("subclase").getValue().toString());
-                        }
-                    } finally {
-                        aResult.close();
-                    }
-                    System.out.println("cantidad de tuplas :" + subjects.size() + "\n");
-                    for (String col : subjects) {
-                        System.out.println(col + "\n");
-                    }
-                    System.out.println("cantidad de tuplas :\n" + subjects);
-                    // --------------------------------------------
-                    publish("Procesando metadatos. Aguarde. \n");
-                    int cantTuplas = subjects.size();
-                    /*
-                    while (aResult2.hasNext()) {
-                        //fila = aResult2.next();
-                        cantTuplas += 1;
-                    }*/
-                    //ystem.out.println("cantidad de tuplas :" + cantTuplas);
-                    //wait.setearProgressBar(cantTuplas);
-                    //
-                    wait.setearProgressBar(cantTuplas);
-                    int intProgressBar = 0;
-                    for (String col : subjects) {
-                        System.out.println(col + "\n");
-                        final String aValue = col;
-                        //final String aValue = fila.getValue("subclase").stringValue();
-                        final Metadato m1 = new Metadato(aValue);
-                        final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                        if (!rotulo.isEmpty()) {
-                            final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                            final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                            m1.setObligatorio(obligatorio);
-                            m1.setRepite(repite);
-                            m1.setRotulo(rotulo);
-                            listaMetadados.addElement(m1);
-                        }
-                        intProgressBar += 1;
-                        wait.incrementar(intProgressBar);
-                    }
-
-                    /*
-                    while (aResult.hasNext()) {
-                        fila = aResult.next();
-                        final String aValue = fila.getValue("subclase").stringValue();
-                        final Metadato m1 = new Metadato(aValue);
-                        final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
-                        if (!rotulo.isEmpty()) {
-                            final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
-                            final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
-                            m1.setObligatorio(obligatorio);
-                            m1.setRepite(repite);
-                            m1.setRotulo(rotulo);
-                            listaMetadados.addElement(m1);
-                        }
-                        intProgressBar += 1;
-                        wait.incrementar(intProgressBar);
-                    }
-                     */
-                    publish("Proceso de extracción de metadatos terminada.\n");
-                    aResult.close();
-                    //aResult2.close();
-                } catch (Exception ex) {
-                    Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                //return listaMetadados;
-                wait.close();
-                return null;
-            }
-
-            @Override
-            protected void process(List<String> chunks) {
-                ta.append(chunks.get(0));
-            }
-        };
-
-        // ordenamos
-        mySwingWorker.execute();
-        wait.makeWait("Procesando metadatos. Aguarde", evt);
-        this.ordenarMetadatos();
-
-        //return mySwingWorker.get();
-    }
-
-    public void getMetadatos_v6(JTextArea ta, ActionEvent evt) {
-        DialogWaitControl wait = new DialogWaitControl(50);
+    //public void getMetadatos_v6(JTextArea ta, ActionEvent evt) {
+    public void getMetadatos_v6(JTextArea ta, JList lista, Metadato aDriver) throws InterruptedException, ExecutionException {
+        //DialogWaitControl wait = new DialogWaitControl(50);
         SwingWorker<Void, String> mySwingWorker = new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -2272,7 +1634,6 @@ public final class StardogControl {
                     //
                     IRI iri1 = Values.iri("http://www.w3.org/2000/01/rdf-schema#subClassOf");
                     IRI iri2 = Values.iri("http://www.semanticweb.org/valeria/ontologies/2017/10/OntoVC#Metadata");
-
                     SelectQuery aQuery = conexionStardog.select(
                             "SELECT distinct ?subclase "
                             + "WHERE { "
@@ -2297,32 +1658,41 @@ public final class StardogControl {
                     } else {
                         return null;
                     }
-                    publish("Número de metadatos encontrados:" + subjects.size() + ".\n");
+                    publish("Metadatos encontrados:" + subjects.size() + ".\n");
                     // --------------------------------------------------------------------
                     publish("Procesando metadatos. Aguarde. \n");
-                    wait.setearProgressBar(subjects.size());
-                    int intProgressBar = 0;
+                    //wait.setearProgressBar(subjects.size());
+                    //int intProgressBar = 0;
+                    // -------------------------------------------------
+                    ConfigControl config = ConfigControl.getInstancia();
+                    properties = config.getConfigMetadatos();
+                    // -------------------------------------------------
                     for (String col : subjects) {
                         final String aValue = col;
                         final Metadato m1 = new Metadato(aValue);
                         final String rotulo = rotuloMetadato(m1.getTipo().trim().toLowerCase());
                         if (!rotulo.isEmpty()) {
-                            final boolean obligatorio = obligatorioMetadato(m1.getTipo().trim().toLowerCase());
+                            boolean obligatorio = false;
+                            if (aDriver != null) {
+                                obligatorio = obligatorioMetadato2(
+                                        m1.getTipo().trim().toLowerCase(),
+                                        aDriver.getDriver());
+                            } else {
+                                obligatorio = obligatorioMetadato(
+                                        m1.getTipo().trim().toLowerCase());
+                            }
                             final boolean repite = repiteMetadato(m1.getTipo().trim().toLowerCase());
                             m1.setObligatorio(obligatorio);
                             m1.setRepite(repite);
                             m1.setRotulo(rotulo);
                             listaMetadados.addElement(m1);
                         }
-                        intProgressBar += 1;
-                        wait.incrementar(intProgressBar);
                     }
                     publish("Proceso de extracción de metadatos terminada.\n");
                     aResult.close();
                 } catch (Exception ex) {
                     Logger.getLogger(StardogControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                wait.close();
                 return null;
             }
 
@@ -2330,9 +1700,73 @@ public final class StardogControl {
             protected void process(List<String> chunks) {
                 ta.append(chunks.get(0));
             }
+
+            @Override
+            protected void done() {
+                sortMetadatos();
+                lista.setModel(listaMetadados);
+            }
         };
         mySwingWorker.execute();
-        wait.makeWait("Procesando metadatos. Aguarde", evt);
+        mySwingWorker.get();
+    }
+
+    public void sortMetadatos() {
+        List<Metadato> list = new ArrayList<>();
+        for (int i = 0; i < listaMetadados.size(); i++) {
+            //System.out.println("posicion: " + i + " - valor: " +  listaMetadados.get(i)); 
+            list.add((Metadato) listaMetadados.get(i));
+        }
+        Collections.sort(list);
+        listaMetadados.removeAllElements();
+        for (Metadato s : list) {
+            listaMetadados.addElement(s);
+        }
+    }
+
+    public static void printList(String title, DefaultListModel miLista) {
+
+        System.out.println(title + "tamaño: " + miLista.size());
+
+        List<Metadato> list = new ArrayList<>();
+        for (int i = 0; i < miLista.size(); i++) {
+            list.add((Metadato) miLista.get(i));
+        }
+
+        list.forEach(x -> System.out.println("\t" + x.toString()));
+        System.out.println("");
+    }
+
+    public void quitarMetadatoCaptura(JScrollPane miScrollPanel) {
+        DefaultListModel<Metadato> misMetadatos = new DefaultListModel<>();
+        if (capturaMetadados.size() > 0) {
+            for (int i = 0; i < capturaMetadados.size(); i++) {
+                Metadato elMetadato = capturaMetadados.get(i);
+                if (!capturaMetadados.get(i).isChequeado()) {
+                    misMetadatos.addElement(elMetadato);
+                } else {
+                    System.out.println("metadato: " + elMetadato.getRotulo());
+                }
+            }
+            capturaMetadados.removeAllElements();
+            capturaMetadados = misMetadatos;
+            // Obtenemos el panel del scroll de captura.
+            JPanel miJPanel = (JPanel) miScrollPanel.getViewport().getView();
+            //
+            //ordenamos capturaMetadatos -----------------------------------                                   
+            //this.ordenar(); // No es necesatrio.
+            //--------------------------------------------------------------                       
+            //cargamos el panel con los colectores                           
+            miJPanel.removeAll();
+            for (int i = 0; i < capturaMetadados.size(); ++i) {
+                JPanel miFlowContainer = new JPanel();
+                miFlowContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+                miFlowContainer.add(capturaMetadados.get(i).getChequeado());
+                miFlowContainer.add(capturaMetadados.get(i).getEtiqueta());
+                miFlowContainer.add(capturaMetadados.get(i).getColector());
+                miJPanel.add(miFlowContainer);
+            }
+        }
     }
 
 }

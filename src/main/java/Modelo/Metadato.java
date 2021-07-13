@@ -9,6 +9,7 @@ import Control.ConfigControl;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
@@ -16,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,11 +29,13 @@ import javax.swing.JViewport;
  *
  * @author Pogliani, Germán
  */
-public class Metadato {
+public class Metadato implements Comparable<Metadato> {
 
     private String tipo = null; //Title, SubTitle, Creator, etc   
     private String rotulo = null; //nombre a mostrar en la visualización
-    private Component etiqueta = null;//tipo de contenedor: JLabel
+    private String driver = null; // coleccion del snrd
+    private JCheckBox chequeado = new JCheckBox();
+    private Component etiqueta = null;//tipo de contenedor: JLabel    
     private Component colector = null; //tipo de contenedor: textField, textArea, etc.
     private int orden = 0; //orden del metadato dentro del panel.
     private boolean obligatorio; //indica si el metadato es obligatorio.
@@ -84,6 +88,13 @@ public class Metadato {
         final String atipo = extraeMata(aTipo);
         tipo = atipo;
         rotulo = atipo;
+    }
+
+    public Metadato(String aTipo, String aData, String aDriver) {
+        final String atipo = extraeMata(aTipo);        
+        tipo = atipo;
+        rotulo = atipo;
+        driver = extraeMata(aDriver).toLowerCase();
     }
 
     public Metadato(String aTipo, String aData, boolean aObligatorio) {
@@ -144,6 +155,7 @@ public class Metadato {
             //System.out.println("entre jpanel");
             JPanel jp = ((JPanel) colector);
             aValue = validarPanel(jp);
+            //System.out.println("entre al panel");
         } else if (colector instanceof JScrollPane) {
             //System.out.println("entre jscrollpane");
             JViewport viewport = ((JScrollPane) colector).getViewport();
@@ -171,19 +183,27 @@ public class Metadato {
         Component[] components = jp.getComponents();
         //System.out.println("es un jpanel ");
         for (Component component : components) {
-            if (component instanceof JTextField) {
-                String jt = component.getName();
-                if (jt != null) {
-                    jt = component.getName().trim().toLowerCase();
-                    switch (jt) {
-                        case "apellido":
-                            final JTextField txt = (JTextField) component;
-                            aValue += this.validateTextField(txt);
-                            break;
-                        case "nombre":
-                            final JTextField txt2 = (JTextField) component;
-                            aValue += this.validateTextField(txt2);
-                            break;
+            if (component instanceof JPanel) {
+                //System.out.println("estoy dentro de un panel");
+                Component[] misComponentes = ((JPanel) component).getComponents();
+                for (Component component2 : misComponentes) {
+                    if (component2 instanceof JTextField) {
+                        String jt2 = component2.getName();
+                        //System.out.println("jt: " + jt2);
+                        if (jt2 != null) {
+                            jt2 = component2.getName().trim().toLowerCase();
+                            //System.out.println("jt: " + jt2);
+                            switch (jt2) {
+                                case "apellido":
+                                    final JTextField txt = (JTextField) component2;
+                                    aValue += this.validateTextField(txt);
+                                    break;
+                                case "nombre":
+                                    final JTextField txt2 = (JTextField) component2;
+                                    aValue += this.validateTextField(txt2);
+                                    break;
+                            }
+                        }
                     }
                 }
             }
@@ -201,6 +221,7 @@ public class Metadato {
         properties = config.getConfigValidacion();
         final String cadenaValidacion = properties.getProperty(this.tipo.toLowerCase().trim() + ".validacion");
 
+        //System.out.println("Cadena de validacion: " + this.tipo.toLowerCase().trim() + " es: " + cadenaValidacion);
         if ((cadenaValidacion == null) || cadenaValidacion.equals("default")) {
             if (txt.getText().trim().equals("")) {
                 aux = "El metadato " + this.getTipo() + " no debe ser vacio.";
@@ -408,7 +429,7 @@ public class Metadato {
         //InputStream propertiesStream = new FileInputStream(folder + "configValidacion.properties");
         //properties.load(propertiesStream);
         properties = config.getConfigValidacion();
-        
+
         if (colector instanceof JTextField) {
             JTextField txt = (JTextField) colector;
             //Ej: Gaston Paul      
@@ -623,6 +644,28 @@ public class Metadato {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public JCheckBox getChequeado() {
+        chequeado.setPreferredSize(new Dimension(30, 30));
+        return chequeado;
+    }
+
+    public boolean isChequeado() {
+        return chequeado.isSelected();
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    @Override
+    public int compareTo(Metadato o) {
+        return (this.rotulo.compareToIgnoreCase(o.rotulo));
     }
 
 }

@@ -13,6 +13,7 @@ import Modelo.BitstreamsRest;
 import Modelo.ColeccionRest;
 import Modelo.ComunidadRest;
 import Modelo.ItemRest;
+import Modelo.Metadato;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -66,16 +67,21 @@ public class Deposita extends javax.swing.JFrame {
                 taConsola.append("Servicio DSpace: DOWN!.\n");
             }
             // -----------------------------------------------------------
-            // stardog            
+            // stardog                        
+            //System.out.println("url_st: " + config.getUrl_st());
+            //System.out.println("usuario st: " + config.getUserst());
+            //System.out.println("pass st: " + config.getPassst());
+            //System.out.println("base de datos st: " + config.getBase());
             StardogControl baseGrafica = StardogControl.getInstancia();
-            System.out.println("url_st: " + config.getUrl_st());
-            System.out.println("usuario st: " + config.getUserst());
-            System.out.println("pass st: " + config.getPassst());
-            System.out.println("base de datos st: " + config.getBase());
             baseGrafica.conectar();
             if (baseGrafica.estatus()) {
                 taConsola.append("Servicio StarDog: OK!.\n");
                 baseGrafica.obtenerObjetosAprendizaje(taConsola, listaOA);
+                // Obtenemos la lista de metadatos.
+                DefaultListModel mlm = baseGrafica.getListaMetadados2();
+                if (mlm.getSize() == 0) {
+                    baseGrafica.getMetadatos_v6(new JTextArea(), listaMetadato,null);
+                }
             } else {
                 taConsola.append("Servicio StarDog: DOWN!.\n");
             }
@@ -149,7 +155,10 @@ public class Deposita extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
+        jPanel31 = new javax.swing.JPanel();
         captura = new javax.swing.JScrollPane();
+        jPanel32 = new javax.swing.JPanel();
+        btnQuitarMeta = new javax.swing.JButton();
         jPanel30 = new javax.swing.JPanel();
         jPanel29 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -160,6 +169,7 @@ public class Deposita extends javax.swing.JFrame {
         jScrollPane7 = new javax.swing.JScrollPane();
         listaMetadato = new javax.swing.JList<>();
         jPanel14 = new javax.swing.JPanel();
+        btnRefrescar = new javax.swing.JButton();
         btnAgregarMetadato = new javax.swing.JButton();
         btnRestablecerMetas = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -326,10 +336,10 @@ public class Deposita extends javax.swing.JFrame {
         jLabel1.setText("          ");
         jPanel17.add(jLabel1);
 
-        btnObtenerItems.setText("Extraer los ítems");
-        btnObtenerItems.setMaximumSize(new java.awt.Dimension(130, 23));
-        btnObtenerItems.setMinimumSize(new java.awt.Dimension(130, 23));
-        btnObtenerItems.setPreferredSize(new java.awt.Dimension(130, 23));
+        btnObtenerItems.setText("ïtem?");
+        btnObtenerItems.setMaximumSize(new java.awt.Dimension(70, 23));
+        btnObtenerItems.setMinimumSize(new java.awt.Dimension(70, 23));
+        btnObtenerItems.setPreferredSize(new java.awt.Dimension(70, 23));
         btnObtenerItems.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnObtenerItemsActionPerformed(evt);
@@ -449,7 +459,7 @@ public class Deposita extends javax.swing.JFrame {
 
         jPanel28.add(jPanel7, java.awt.BorderLayout.WEST);
 
-        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Salida de la ejecuciòn"));
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Salidas de la ejecuciòn"));
 
         taConsola.setEditable(false);
         taConsola.setColumns(20);
@@ -485,10 +495,26 @@ public class Deposita extends javax.swing.JFrame {
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
+        jPanel31.setLayout(new java.awt.BorderLayout());
+
         captura.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Descripción de metadatos."));
         captura.setToolTipText("");
         captura.setMaximumSize(new java.awt.Dimension(33, 44));
-        jPanel8.add(captura, java.awt.BorderLayout.CENTER);
+        jPanel31.add(captura, java.awt.BorderLayout.CENTER);
+
+        jPanel32.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnQuitarMeta.setText("Quitar");
+        btnQuitarMeta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuitarMetaActionPerformed(evt);
+            }
+        });
+        jPanel32.add(btnQuitarMeta);
+
+        jPanel31.add(jPanel32, java.awt.BorderLayout.PAGE_END);
+
+        jPanel8.add(jPanel31, java.awt.BorderLayout.CENTER);
 
         jPanel30.setMaximumSize(new java.awt.Dimension(502, 32800));
         jPanel30.setMinimumSize(new java.awt.Dimension(55, 55));
@@ -523,7 +549,7 @@ public class Deposita extends javax.swing.JFrame {
         jPanel18.setMinimumSize(new java.awt.Dimension(55, 33));
         jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        btnObtenerMetas.setText("Propiedades del Objeto de Aprendizaje");
+        btnObtenerMetas.setText("Propiedades");
         btnObtenerMetas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnObtenerMetasActionPerformed(evt);
@@ -554,7 +580,16 @@ public class Deposita extends javax.swing.JFrame {
         jPanel14.setMinimumSize(new java.awt.Dimension(55, 33));
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        btnAgregarMetadato.setText("Describir Metadato");
+        btnRefrescar.setText("Refrescar");
+        btnRefrescar.setEnabled(false);
+        btnRefrescar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefrescarActionPerformed(evt);
+            }
+        });
+        jPanel14.add(btnRefrescar);
+
+        btnAgregarMetadato.setText("Describir");
         btnAgregarMetadato.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarMetadatoActionPerformed(evt);
@@ -609,7 +644,7 @@ public class Deposita extends javax.swing.JFrame {
         mnuTool.setText("Herramientas");
 
         mnuConectar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuConectar.setText("Conexión");
+        mnuConectar.setText("Conexión y configurar");
         mnuConectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuConectarActionPerformed(evt);
@@ -627,7 +662,7 @@ public class Deposita extends javax.swing.JFrame {
         mnuTool.add(jMenuItem1);
 
         mnuFiltrar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        mnuFiltrar.setText("Recuperacón");
+        mnuFiltrar.setText("Recuperación");
         mnuFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuFiltrarActionPerformed(evt);
@@ -675,9 +710,7 @@ public class Deposita extends javax.swing.JFrame {
             if (rest.estatus()) {
                 // Limpiamos
                 listaRecursos.setModel(new DefaultListModel<>());
-                listaRecursos.updateUI();
                 jTree1.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Repositorio")));
-                jTree1.updateUI();
                 rest.estructuraRepositorio(taConsola, jTree1);
             } else {
                 taConsola.append("Sin servicio de Sotardog.\n");
@@ -686,15 +719,10 @@ public class Deposita extends javax.swing.JFrame {
             // Stardog
             StardogControl baseGrafica = StardogControl.getInstancia();
             if (baseGrafica.estatus()) {
-                // Limpiamos                 
-                listaOA.setModel(new DefaultListModel<>());
-                listaOA.updateUI();
-                listaMetadato.setModel(new DefaultListModel<>());
-                //listaMetadato.updateUI();
-                captura.getViewport().removeAll();
-                //captura.updateUI();
                 // Obtenemos la lista de metadatos.
-                baseGrafica.obtenerObjetosAprendizaje(taConsola, listaOA);
+                baseGrafica.obtenerObjetosAprendizaje(taConsola, listaOA); 
+                // Obtenemos los metadatos.
+                baseGrafica.getMetadatos_v6(taConsola, listaMetadato, null);
             } else {
                 taConsola.append("Sin servicio de DSpace\n");
             }
@@ -777,7 +805,7 @@ public class Deposita extends javax.swing.JFrame {
                 }
                 return;
             }
-            reiterar = 0;            
+            reiterar = 0;
             opcion += 1;
             taConsola.append("Verificando opción elegida.\n");
             switch (opcion) {
@@ -800,7 +828,7 @@ public class Deposita extends javax.swing.JFrame {
                         return;
                     }
                     // Le damos formato json a los metadatos capturados
-                    base.jsonMetadatos();
+                    base.generarJson();
                     break;
                 case 3:
                     break;
@@ -821,7 +849,7 @@ public class Deposita extends javax.swing.JFrame {
                 case 7:
                     break;
                 case 8:
-                    base.jsonMetadatosSinBitstreams();
+                    base.generarJSONSinBitstreams();
                     taConsola.append("Archivo para modificar metadatos generado.\n");
                     break;
                 default:
@@ -866,9 +894,10 @@ public class Deposita extends javax.swing.JFrame {
             //            
             StardogControl baseGrafica = StardogControl.getInstancia();
             //final JPanel aJp = baseGrafica.setPanelCaptura2(objeto, captura);
-            baseGrafica.setPanelCaptura2(objeto, captura);
+            Metadato oaSelect = (Metadato) ((Object) listaOA.getSelectedValue());
+            baseGrafica.setPanelCaptura2(objeto, captura, oaSelect);
             //captura.getViewport().setView(aJp);
-            
+            //captura.updateUI();
             //
             taConsola.append("Operación finalizada. Se agregó " + objeto.size() + " metadato.\n");
         } catch (Exception ex) {
@@ -969,7 +998,12 @@ public class Deposita extends javax.swing.JFrame {
     }//GEN-LAST:event_listaItemsMousePressed
 
     private void cbOpcionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOpcionActionPerformed
-        this.btnDepositar.setText((String) cbOpcion.getSelectedItem());
+        int opcion = cbOpcion.getSelectedIndex();
+        if (opcion == 0) {
+            this.btnDepositar.setText("Ejecutar opción");
+        } else {
+            this.btnDepositar.setText((String) cbOpcion.getSelectedItem());
+        }
     }//GEN-LAST:event_cbOpcionActionPerformed
 
     private void listaOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaOAMouseClicked
@@ -978,29 +1012,32 @@ public class Deposita extends javax.swing.JFrame {
 
     private void btnObtenerMetasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnObtenerMetasActionPerformed
         try {
-            if (listaOA.getSelectedIndex() < 0) {
-                return;
-            }
-            //Metadato dato = (Metadato) ((Object) listaOA.getSelectedValue());
-            //
-            taConsola.append("Chequeando los metadatos... por favor espere.\n");
             StardogControl base = StardogControl.getInstancia();
-            //base.getMetadatos_v2(dato, evt); // mejorado.
-            base.getMetadatos_v6(taConsola, evt); // super mejorado.
-            //            
-            // Preseteamos el panel de captura con los metadatos obligatorios.
-            taConsola.append("Preseteamos el panel de captura con los metadatos obligatorios.\n");
-            /*
-            JPanel unPanel = base.preSeteoPanelCaptura();
-            // Seteamos los metadatos a cargar
-            //
-            captura.getViewport().setView(unPanel);
-             */
-            // 
-            DefaultListModel misMetas = base.getListaMetadados();
-            listaMetadato.setModel(misMetas);
-            //
-            base.preSeteoPanelCaptura2(captura);
+            //if (listaOA.getSelectedIndex() >= 0 && base.getListaMetadados2().getSize() > 0) {
+            if (listaOA.getSelectedIndex() >= 0) {
+                Metadato aDato = (Metadato) ((Object) listaOA.getSelectedValue());
+                System.out.println("Tipo:" + aDato.getTipo() + " - Driver: " + aDato.getDriver());
+                //
+                taConsola.append("Chequeando los metadatos... por favor espere.\n");
+                // Limpiamos la lista de metadatos
+                DefaultListModel modelo = (DefaultListModel) listaMetadato.getModel();
+                modelo.removeAllElements();                
+                // mejorado
+                base.getMetadatos_v6(taConsola, listaMetadato, aDato);
+                //            
+                // Preseteamos el panel de captura con los metadatos obligatorios.
+                taConsola.append("Preseteo del panel de captura con metadatos obligatorios.\n");
+                //               
+                // Seteamos los metadatos a cargar   
+                Metadato oaSelect = (Metadato) ((Object) listaOA.getSelectedValue());
+                base.preSeteoPanelCaptura2(captura, oaSelect);
+            } else {
+                JOptionPane.showMessageDialog(
+                        this, 
+                        "No hay metadatos identificados aún.", 
+                        "informe", 
+                        JOptionPane.INFORMATION_MESSAGE);                
+            }
         } catch (Exception ex) {
             Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1011,7 +1048,8 @@ public class Deposita extends javax.swing.JFrame {
             StardogControl base = StardogControl.getInstancia();
             if (base.estatus()) {
                 this.misMetadatos.removeAllElements();
-                base.getMetadatos_v6(this.taConsola, evt); // mejorado.
+                //base.getMetadatos_v6(this.taConsola, evt); // mejorado.
+                //                        base.getMetadatos_v6(this.taConsola); // mejorado.
                 //misMetadatos = base.getListaMetadados();
                 base.ordenarMetadatos();
                 //
@@ -1037,6 +1075,36 @@ public class Deposita extends javax.swing.JFrame {
         win.setVisible(true);
         win.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void btnQuitarMetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarMetaActionPerformed
+        try {
+            StardogControl baseGrafica = StardogControl.getInstancia();
+            baseGrafica.quitarMetadatoCaptura(captura);
+            captura.updateUI();
+        } catch (Exception ex) {
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnQuitarMetaActionPerformed
+
+    private void btnRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefrescarActionPerformed
+        try {
+            StardogControl baseGrafica = StardogControl.getInstancia();
+            baseGrafica.conectar();
+            if (baseGrafica.estatus()) {
+                //taConsola.append("Servicio StarDog: OK!.\n");
+                //baseGrafica.obtenerObjetosAprendizaje(taConsola, listaOA);
+                // Obtenemos la lista de metadatos.
+                //DefaultListModel mlm = baseGrafica.getListaMetadados2();
+                //if (mlm.getSize() == 0) {
+                //baseGrafica.getMetadatos_v6(taConsola, listaMetadato);
+                //}                
+            } else {
+                taConsola.append("Servicio StarDog: DOWN!.\n");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Deposita.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnRefrescarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1079,6 +1147,8 @@ public class Deposita extends javax.swing.JFrame {
     private javax.swing.JButton btnDepositar;
     private javax.swing.JButton btnObtenerItems;
     private javax.swing.JButton btnObtenerMetas;
+    private javax.swing.JButton btnQuitarMeta;
+    private javax.swing.JButton btnRefrescar;
     private javax.swing.JButton btnRestablecerMetas;
     private javax.swing.JButton btnSalir;
     private javax.swing.JScrollPane captura;
@@ -1116,6 +1186,8 @@ public class Deposita extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;

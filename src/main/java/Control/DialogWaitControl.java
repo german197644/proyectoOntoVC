@@ -59,6 +59,21 @@ public class DialogWaitControl {
         dialog.setLocationRelativeTo(win);
         dialog.setVisible(true);
     }
+    
+    
+    public void makeWait(String msg, JFrame miFrame) {        
+        dialog = new JDialog(miFrame, msg, Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setPreferredSize(new Dimension(300, 100));
+        //JProgressBar progressBar = new JProgressBar();
+        //progressBar.setIndeterminate(true);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(progressBar, BorderLayout.CENTER);
+        panel.add(new JLabel("Procesando metadatos, por favor espere..."), BorderLayout.PAGE_START);
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(miFrame);
+        dialog.setVisible(true);
+    }
 
     public void makeWait(String msg, ActionEvent evt, int max) {
         //public void makeWait(String msg, JFrame evt) {        
@@ -91,19 +106,6 @@ public class DialogWaitControl {
         dialog.setVisible(true);
     }
 
-    public void makeWait(String msg, JFrame evt) {
-
-        Window win = SwingUtilities.getWindowAncestor(evt);
-        dialog = new JDialog(win, "Informe", Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setPreferredSize(new Dimension(300, 100));
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(progressBar, BorderLayout.CENTER);
-        panel.add(new JLabel(msg), BorderLayout.PAGE_START);
-        dialog.add(panel);
-        dialog.pack();
-        dialog.setLocationRelativeTo(win);
-        dialog.setVisible(true);
-    }
 
     public void close() {
         dialog.dispose();

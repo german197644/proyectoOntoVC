@@ -9,12 +9,11 @@ import Control.ConfigControl;
 import Control.RestControl;
 import Control.StardogControl;
 import Modelo.Metadato;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -39,8 +38,14 @@ public class Esquema extends javax.swing.JDialog {
             // seteamos los prefijos existentes
             RestControl rest = RestControl.getInstancia();
             rest.obtenerPrefix(cbPrefix);
-            DefaultComboBoxModel model = (DefaultComboBoxModel) cbPrefix.getModel();            
+            //DefaultComboBoxModel model = (DefaultComboBoxModel) cbPrefix.getModel();            
             //StardogControl base = StardogControl.getInstancia();
+            //listaMeta.setModel(base.getListaMetadados2());                        
+            StardogControl base = StardogControl.getInstancia();
+            DefaultListModel mlm = base.getListaMetadados2();
+            if (mlm.getSize() == 0) {
+                base.getMetadatos_v6(new JTextArea(), listaMeta,null);
+            }
             //listaMeta.setModel(base.getListaMetadados2());            
         } catch (Exception ex) {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
@@ -186,7 +191,7 @@ public class Esquema extends javax.swing.JDialog {
         jPanel5.setOpaque(false);
         jPanel5.setLayout(new java.awt.GridLayout(2, 0, 0, 2));
 
-        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Metadatos de la ontología"));
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Metadatos"));
         jScrollPane2.setOpaque(false);
 
         listaMeta.setModel(new javax.swing.AbstractListModel<String>() {
@@ -360,7 +365,7 @@ public class Esquema extends javax.swing.JDialog {
         });
         jPanel14.add(btnQuitar);
 
-        btnCancelar.setText("Cancelar");
+        btnCancelar.setText("Actualizar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelarActionPerformed(evt);
@@ -466,12 +471,6 @@ public class Esquema extends javax.swing.JDialog {
                 rest.obtenerEsquema(miPrefix, listaPrefix);
                 rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
             }
-            StardogControl base = StardogControl.getInstancia();
-            DefaultListModel mlm = base.getListaMetadados2();
-            if (mlm.getSize() == 0) {
-                base.getMetadatos_v6(new JTextArea(), evt);
-            } 
-            listaMeta.setModel(base.getListaMetadados2());
         } catch (Exception ex) {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -479,27 +478,36 @@ public class Esquema extends javax.swing.JDialog {
 
     private void btnAnexarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnexarActionPerformed
         DefaultTableModel modelo = (DefaultTableModel) tablaAsociados.getModel();
-        if ((listaPrefix.getSelectedIndex() > 0) && (listaMeta.getSelectedIndex() >= 0)) {
+        if ((listaPrefix.getSelectedIndex() >= 0)
+                && (listaMeta.getSelectedIndex() >= 0)) {
             String onto = ((Metadato) ((Object) listaMeta.getSelectedValue())).getRotulo();
             String schema = listaPrefix.getSelectedValue();
             String rotular = (txtRotulo.getText().isEmpty()) ? "" : txtRotulo.getText().trim();
             String[] miRow = {onto, schema, rotular};
             modelo.addRow(miRow);
+            txtRotulo.setText("");
         }
     }//GEN-LAST:event_btnAnexarActionPerformed
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
         try {
-            //int col = jTable1.getSelectedColumn();
-            //RestControl rest = RestControl.getInstancia();
-            ConfigControl config = ConfigControl.getInstancia();
-            config.quitarDeEsquema2(tablaAsociados, evt);
-            //
-            RestControl rest = RestControl.getInstancia();
-            if (cbPrefix.getSelectedIndex() > 0) {
-                String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
-                //rest.obtenerEsquema(miPrefix, listaPrefix);
-                rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+            Object[] options = {"OK", "CANCELAR"};
+            int result = JOptionPane.showOptionDialog(this,
+                    "Desea quitar esta relación",
+                    "Lo quitamos?",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    options,
+                    options[0]);
+            if (result == 0) {
+                RestControl rest = RestControl.getInstancia();
+                if (cbPrefix.getSelectedIndex() > 0) {
+                    String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
+                    //rest.obtenerEsquema(miPrefix, listaPrefix);
+                    ConfigControl config = ConfigControl.getInstancia();
+                    config.quitarDeEsquema2(tablaAsociados, miPrefix, evt);
+                    rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(Esquema.class.getName()).log(Level.SEVERE, null, ex);
@@ -523,8 +531,7 @@ public class Esquema extends javax.swing.JDialog {
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         RestControl rest = RestControl.getInstancia();
         if (cbPrefix.getSelectedIndex() > 0) {
-            String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());
-            //rest.obtenerEsquema(miPrefix, listaPrefix);
+            String miPrefix = (String) ((Object) cbPrefix.getSelectedItem());           
             rest.obtenerConfigEsquema(miPrefix, tablaAsociados);
         }
     }//GEN-LAST:event_btnCancelarActionPerformed

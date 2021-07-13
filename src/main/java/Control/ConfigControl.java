@@ -112,13 +112,16 @@ public final class ConfigControl {
     }
 
     public Properties getConfigMetadatos() {
+        URL inputURL = null;
+        URI uri = null;
+        ClassLoader classLoader = null;
         try {
-            URI uri = null;
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            //URI uri = null;
+            classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader == null) {
                 classLoader = this.getClass().getClassLoader();
             }
-            URL inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
+            inputURL = classLoader.getResource("propiedades/configMetadatos.properties");
 
             if (inputURL != null) {
                 uri = new URI(inputURL.toString());
@@ -799,7 +802,7 @@ public final class ConfigControl {
                     String clave = (String) modelo.getValueAt(i, 1);
                     String valor = (String) modelo.getValueAt(i, 2);
                     System.out.println(clave + " :: " + valor);
-                    valor = (valor == null) ? "": new String(valor.getBytes("UTF-8"));
+                    valor = (valor == null) ? "" : valor;
                     miPropiedad.setProperty(clave, valor);
                 }
                 miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
@@ -814,6 +817,7 @@ public final class ConfigControl {
         }
     }
 
+    /*
     public void quitarDeEsquema(JTable tabla, ActionEvent evt) {
         try {
             Properties miPropiedad = new Properties();
@@ -839,7 +843,7 @@ public final class ConfigControl {
                 if (numRows > 0) {
                     System.out.println("numero de filas seleccionadas: " + numRows);
                     for (int i = 0; i < numRows; i++) {
-                        System.out.println("fila seleccionada: " + tabla.getSelectedRow()+1);
+                        System.out.println("fila seleccionada: " + tabla.getSelectedRow() + 1);
                         String clave = (String) modelo.getValueAt(tabla.getSelectedRow(), 0);
                         String valor = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
                         System.out.println("clave: " + clave + "  - " + " valor: " + valor);
@@ -865,8 +869,8 @@ public final class ConfigControl {
             Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void quitarDeEsquema2(JTable tabla, ActionEvent evt) {
+     */
+    public void quitarDeEsquema2(JTable tabla, String prefix, ActionEvent evt) {
         try {
             Properties miPropiedad = new Properties();
             Window win = SwingUtilities.getWindowAncestor((AbstractButton) evt.getSource());
@@ -880,40 +884,41 @@ public final class ConfigControl {
             // No fijamos si existe el archivo de configuracion.
             File file = new File(uri.getPath());
             if (file.exists()) {
-
                 propertiesStream = new FileInputStream(uri.getPath());
                 miPropiedad.load(propertiesStream);
-                //
                 OutputStream fos = new FileOutputStream(uri.getPath());
-                //
+                // obtengo el modelo de la tabla.
                 DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
-                int numRows = tabla.getSelectedRows().length;                
+                // Vemos si hayl filas seleccionadas.
+                int numRows = tabla.getSelectedRows().length;
                 if (numRows > 0) {
                     // Nos hacemos de los indices de las filas.
                     int[] filas = tabla.getSelectedRows();
-                    System.out.println("numero de filas seleccionadas: " + numRows);
+                    //System.out.println("numero de filas seleccionadas: " + numRows);
                     for (int i = 0; i < numRows; i++) {
-                        System.out.println("fila seleccionada: " + filas[i]);
+                        //System.out.println("fila seleccionada: " + filas[i]);
                         String clave = (String) modelo.getValueAt(filas[i], 0);
                         String valor = (String) modelo.getValueAt(filas[i], 1);
-                        System.out.println("clave: " + clave + "  - " + " valor: " + valor);
+                        //System.out.println("clave: " + clave + "  - " + " valor: " + valor);
                         if (clave != null) {
-                            miPropiedad.remove(clave);
+                            miPropiedad.remove(clave, valor);
                         }
                         clave = (String) modelo.getValueAt(filas[i], 1);
+                        valor = (String) modelo.getValueAt(filas[i], 2);
                         if (clave != null) {
-                            miPropiedad.remove(clave);
+                            miPropiedad.remove(clave, valor);
                         }
                         //modelo.removeRow(tabla.getSelectedRow());
                     }
+                    // Grabamos las modificaciones.
+                    miPropiedad.store(fos, "Parámetros de Configuración Dublin Core");
+                    fos.flush();
+                    fos.close();
+                    String msg = "Esquema (" + prefix + ") modificado con éxito.";
+                    JOptionPane.showMessageDialog(win, msg);
                 }
-
-                miPropiedad.store(fos, "Parámetros de la Configuración Dublin Core");
-                fos.flush();
-                fos.close();
-                JOptionPane.showMessageDialog(win, "Esquema modificado con éxito.");
             } else {
-                JOptionPane.showMessageDialog(win, "No se puede encontrar el archivo: " + archivo);
+                JOptionPane.showMessageDialog(win, "No se puede acceder al archivo: " + archivo);
             }
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(ConfigControl.class.getName()).log(Level.SEVERE, null, ex);

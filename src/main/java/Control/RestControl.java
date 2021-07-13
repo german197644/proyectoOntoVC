@@ -1357,7 +1357,7 @@ public final class RestControl {
         } catch (Exception ex) {
             Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //base.jsonMetadatosSinBitstreams();
+        //base.generarJSONSinBitstreams();
         ta.append("Metadatos generados.\n");
         // inicio el hilo y espero el resultado.
         mySwingWorker.execute();
@@ -1592,7 +1592,7 @@ public final class RestControl {
             Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         //
-        //base.jsonMetadatosSinBitstreams();
+        //base.generarJSONSinBitstreams();
         //ta.append("Archivo de metadatos para modificar generados.\n");
         // inicio el hilo y espero el resultado.
         mySwingWorker.execute();
@@ -1612,7 +1612,7 @@ public final class RestControl {
                 case 1:
                     //StardogControl base = StardogControl.getInstancia();
                     // creamos el archivo json con los metadatos
-                    //base.jsonMetadatos();
+                    //base.generarJson();
                     result = enviarItem(coleccion, evt, ta);
                     if (result) {
                         ta.append("Se creó con éxito el item.\n");
@@ -1806,7 +1806,7 @@ public final class RestControl {
                             String value = (String) miProp.get(key);
                             //String rotulo = new String(miProp.get(value).toString().getBytes("cp1252"));
                             Object rotulo = miProp.get(value); 
-                            System.out.println("rotulo: " + rotulo);
+                            //System.out.println("rotulo: " + rotulo);
                             if (value.contains(prefix)) {
                                 //Object[] miEsquema = {key, value, rotulo,indice};
                                 Object[] miEsquema = {key, value, rotulo};
@@ -1818,7 +1818,6 @@ public final class RestControl {
                 } catch (IOException ex) {
                     Logger.getLogger(RestControl.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
                 return null;
             }
         };
